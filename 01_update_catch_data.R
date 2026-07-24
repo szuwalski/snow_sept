@@ -152,8 +152,8 @@ LenDatBig<-read.csv("data/norpac_length_report/norpac_length_report.csv",skip=6)
 LenDatBig$Haul.Offload.Date<-strptime(LenDatBig$Haul.Offload.Date,format="%d-%b-%y")
 range(LenDatBig$Haul.Offload.Date)
 
-#==CHECK DATES, EH!
-LenDat<-LenDatBig[LenDatBig$Haul.Offload.Date >= "2024-07-01" & LenDatBig$Haul.Offload.Date <= "2025-06-30" & LenDatBig$Species.Name=="OPILIO TANNER CRAB",]
+#==CHECK DATES, EH!  Current assessment-year window: crab year 2025 = Jul 1 2025 - Jun 30 2026 (advance each cycle)
+LenDat<-LenDatBig[LenDatBig$Haul.Offload.Date >= "2025-07-01" & LenDatBig$Haul.Offload.Date <= "2026-06-30" & LenDatBig$Species.Name=="OPILIO TANNER CRAB",]
 
 #==males old shell discard
 LengthBins			<-seq(25,135,5)
@@ -185,7 +185,7 @@ write.table(rbind(by_f_out,by_m_out),"data/derived/bycatch_len_comps_f_then_m.tx
 #=======================================================================
 #  all years length data
 #==
-use_yrs<-seq(1991,2025)
+use_yrs<-seq(1991,2026)   #==advance terminal year each cycle
 bycatch_fem_sc<-NULL
 bycatch_male_sc<-NULL
 LengthBins			<-seq(25,135,5)
@@ -233,7 +233,7 @@ temp<-strptime(bycatch_dat$Haul.Date,format="%d-%b-%y")
 bycatch_dat$Haul.Date<-substr(temp,start=1,stop=10)
 
 #==bycatch numbers total
-bycatchDat<-bycatch_dat[bycatch_dat$Haul.Date >= "2024-07-01" & bycatch_dat$Haul.Date <= "2025-06-30"& 
+bycatchDat<-bycatch_dat[bycatch_dat$Haul.Date >= "2025-07-01" & bycatch_dat$Haul.Date <= "2026-06-30"&
                           bycatch_dat$Species.Name=="OPILIO TANNER CRAB" & bycatch_dat$Gear.Description!="POT OR TRAP" ,]
 bycatch_num_tot<-sum(bycatchDat$Extrapolated.Number,na.rm=T)
 bycatch_wt_tot<-sum(bycatchDat$Extrapolated.Weight..kg.,na.rm=T)

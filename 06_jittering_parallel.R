@@ -10,10 +10,14 @@ use_cores<-detectCores()-2
 cl <- parallel::makeCluster(use_cores)
 doParallel::registerDoParallel(cl)
 
-orig_drv<-c("C:/Users/cody.szuwalski/Work/snow_2025_9/25_gmacs_func/")
+#==repo-relative model directory (de-hardcoded from C:/Users/cody.szuwalski/Work/snow_2025_9/...).
+#==Assumes wd = snow_sept repo root. Absolute path required because the jitter loop uses setwd().
+orig_wd<-getwd()
+model_dir<-normalizePath(file.path(orig_wd,"Models","25_gmacs_update_newmat_plus_group"),
+                         winslash="/",mustWork=FALSE)
+orig_drv<-c(paste0(model_dir,"/"))
 
 tot_it<-100
-orig_wd<-getwd()
 z<-1 # add loop for more directories...
 for(z in 1:length(orig_drv))
 {

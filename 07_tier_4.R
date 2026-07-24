@@ -20,7 +20,7 @@ library(tidyr)
 ## Pull specimen data
 specimen_data <- crabpack::get_specimen_data(species = "SNOW",
                                              region = "EBS",
-                                             years = c(1982:2025),
+                                             years = c(1982:2026),
                                              channel = 'API')
 
 
@@ -35,6 +35,9 @@ com_male<-filter(male_snow_ind,CATEGORY=="preferred_male"&YEAR >1981)$BIOMASS_MT
 lg_male<-filter(male_snow_ind,CATEGORY=="large_male"&YEAR >1981)$BIOMASS_MT
 surv_yr<-unique(male_snow_ind$YEAR)
 nat_m<-0.27
+#==NOTE (2026 update): the plotting x-vectors below are hardcoded as c(seq(1982,2019),seq(2021,2026))
+#==to reflect the 2020 no-survey gap. After the 2026 crabpack pull, VERIFY length(surv_yr) matches
+#==these vectors (mismatch will silently recycle/misalign). Prefer replacing them with `surv_yr`.
 mmb <- read.table("data/derived/index_mmb.txt")
 
 #=decrement survey by 1/2 year M
@@ -53,12 +56,12 @@ com_male_stat<-com_male_fish/com_male_bmsy
 lg_male_stat<-lg_male_fish/lg_male_bmsy
 mmb_male_stat<-mmb_male_fish/mmb_male_bmsy
 
-plot(com_male_stat~c(seq(1982,2019),seq(2021,2025)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
+plot(com_male_stat~c(seq(1982,2019),seq(2021,2026)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
      xlab="Year")
 abline(h=0.25,lty=2,col=2)
 abline(h=0.5,lty=2,col=3)
 
-plot(lg_male_stat~c(seq(1982,2019),seq(2021,2025)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
+plot(lg_male_stat~c(seq(1982,2019),seq(2021,2026)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
      xlab="Year")
 abline(h=0.25,lty=2,col=2)
 abline(h=0.5,lty=2,col=3)
@@ -107,7 +110,7 @@ OFL_mmb<-mmb*(1-exp(-nat_m))
 c(mmb,com_male_fish,lg_male_fish)
 plot_ofl<-data.frame(biomass=unlist(c(mmb,com_male_fish,lg_male_fish)),
            ofl=unlist(c(OFL_mmb,OFL_com_mmb,OFL_lg_mmb)),
-           year=rep(c(seq(1982,2019),seq(2021,2025)),3),
+           year=rep(c(seq(1982,2019),seq(2021,2026)),3),
            currency=c(rep("Morphometric",length(com_male_fish)),
                       rep(">101 mm",length(com_male_fish)),
                       rep(">95 mm",length(com_male_fish))))

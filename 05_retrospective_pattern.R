@@ -8,7 +8,12 @@ library(dplyr)
 library(reshape2)
 library(ggplot2)
 orig_wd<-getwd()
-orig_drv<-c("C:/Users/cody.szuwalski/Work/snow_2025_9/25_gmacs/")
+#==repo-relative model directory (de-hardcoded from C:/Users/cody.szuwalski/Work/snow_2025_9/...).
+#==Assumes the working directory is the snow_sept repo root. An ABSOLUTE path is required here
+#==because the retro loop uses setwd() to jump into peel folders and back.
+model_dir<-normalizePath(file.path(orig_wd,"Models","25_gmacs_update_newmat_plus_group"),
+                         winslash="/",mustWork=FALSE)
+orig_drv<-c(paste0(model_dir,"/"))
 tot_it<-10
 
 for(z in 1:length(orig_drv))
@@ -73,7 +78,7 @@ setwd(orig_wd)
 #===plot
 setwd(orig_wd)
 mod_names <- c("25.1")
-orig_drv<-c("C:/Users/cody.szuwalski/Work/snow_2025_9/25_gmacs/")
+orig_drv<-c(paste0(model_dir,"/"))   #==de-hardcoded; see model_dir defined near top of script
 retro_outs<-NULL
 for(z in 1:length(orig_drv))
 {
@@ -386,7 +391,9 @@ library(foreach)
 # Detect the number of available cores and create cluster
 cl <- parallel::makeCluster(detectCores())
 doParallel::registerDoParallel(cl)
-orig_drv<-c("C:/Users/cody.szuwalski/Work/snow_2023_5/4_gmacs_focus_m/")
+#==LEGACY 2023 exploratory block (parallel retro re-run + Tier-4 OFL pull). Repointed to the
+#==current model_dir; verify peel folders exist before running. Not part of the standard 2026 flow.
+orig_drv<-c(paste0(model_dir,"/"))
 tot_it<-100
 orig_wd<-getwd()
 foreach(x = 1:10)%dopar%
@@ -399,7 +406,7 @@ foreach(x = 1:10)%dopar%
    
    #==pull the tier 4 OFL from each
    #===PULL gmacs DATA AND outputs
-   mod_dir <- "C:/Users/cody.szuwalski/Work/snow_2023_5/4_gmacs_focus_m/retro/"
+   mod_dir <- paste0(model_dir,"/retro/")   #==de-hardcoded (legacy 2023 block)
    take_dir<-paste(mod_dir,seq(1,10),"/",sep='')
    
    fn       <- paste0(take_dir, "gmacs")

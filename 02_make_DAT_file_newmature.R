@@ -23,7 +23,7 @@ annotation_custom2 <-   function (grob, xmin = -Inf, xmax = Inf, ymin = -Inf,yma
 ## Pull specimen data
 specimen_data <- crabpack::get_specimen_data(species = "SNOW",
                                              region = "EBS",
-                                             years = c(1982:2025),
+                                             years = c(1982:2026),
                                              channel = 'API')
 
 
