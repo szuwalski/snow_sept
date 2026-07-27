@@ -110,6 +110,11 @@ data <- ret_cat_sc %>%
 midpoints <- seq(27.5, 132.5, by = 5)
 bin_width <- 5
 bin_edges <- c(midpoints - bin_width / 2, last(midpoints) + bin_width / 2)
+bin_edges[length(bin_edges)] <- 999   # PLUS GROUP: fold all crab >=135 mm into the 132.5 top bin.
+# Carried over 2026-07 from snow_crab/01_update_catch_data.R (line 63) -- this is the "plus group"
+# in the accepted model "25.1 gmacs (... + plus group + ...)". It was MISSING in snow_sept, so the
+# directed size comps previously DROPPED crab >=135 mm instead of folding them in. Applies to all
+# three directed comps (retained, total female, total male) since they share bin_edges.
 
 data <- data %>%
   dplyr::mutate(bin = cut(size, breaks = bin_edges, include.lowest = TRUE, right = FALSE, labels = midpoints))
