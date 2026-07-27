@@ -1,7 +1,7 @@
 # Render the September 2026 SAFE report.
 # Verified working invocation (R 4.5.1). pandoc is not on PATH from a plain terminal, so we point
 # rmarkdown at the pandoc bundled with Positron. Run from the snow_sept repo root:
-#   & "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe" render_report.R
+#   & "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe" 08_render_report.R
 # (Rendering from inside Positron/RStudio works without the RSTUDIO_PANDOC line, since the IDE
 #  sets it automatically.)
 

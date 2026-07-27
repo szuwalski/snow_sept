@@ -94,7 +94,7 @@ source("0-models.R") # Load model definitions
 # SEPTEMBER 2026 PORT — repointed from the May candidate bracket to the accepted model.
 # Accepted model = "25.1 gmacs (update + compfix + plus group + new_mat)" (Models/25_gmacs_update_newmat_plus_group,
 # = May's Model 25.2c). Reference (2025 accepted, rolled forward) = "25.1 gmacs" (Models/25_gmacs).
-# These names must match the case names produced when rda_ModelsResLst.RData is regenerated (03_read_model_results.R).
+# These names must match the case names produced when rda_ModelsResLst.RData is regenerated (03_build_results_object.R).
 # >>> REVIEW: confirm comparison pairs once the 2026 results object exists.
 accepted_model      <- "25.1 gmacs (update + compfix + plus group + new_mat)"
 reference_model     <- "25.1 gmacs"

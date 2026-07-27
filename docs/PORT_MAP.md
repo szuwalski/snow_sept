@@ -25,7 +25,7 @@ Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · �
 | **E. Data** (Catch data, Survey biomass & size comp, Spatial distribution, Experimental survey selectivity) | ➕ | **Port whole section**; rewire figure/table code to portable arch ⛔ |
 | F. Analytic approach (History, Model description, Model selection/eval) | ✅ (D) | 🔁 align headings to SAFE letter scheme; carry 2026 model description |
 | Results (convergence, fits, population processes, MMB & mgmt quantities) | ✅ (E) | 🔁 update to accepted model ⛔ |
-| G. Calculation of the OFL (Tier 3, Tier 4) | ✅ (F) | 🔁 final single-model OFL; Tier-4/REMA from `07_tier_4.R` ⛔ |
+| G. Calculation of the OFL (Tier 3, Tier 4) | ✅ (F) | 🔁 final single-model OFL; Tier-4/REMA from `07_calc_tier4.R` ⛔ |
 | Calculation of the ABC + Author recommendations | ✅ (G) | 🔁 buffer 0.8; final ABC ⛔ |
 | Data gaps and research priorities | ✅ (H) | 🔁 refresh for 2026 |
 | Ecosystem considerations | ➕ | Port in (May folds minimal; Sept has full section) — ESP: `Reports/2025 snow esp.pdf` |
@@ -33,8 +33,8 @@ Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · �
 | References | ✅ (J) | 🔁 merge reference lists |
 | Tables | ✅ (K) | 🔁 update; add Sept-only tables (management, status determination) ⛔ |
 | **Projections** | 🔁 stub in base (chunk ~L170–240, `do_proj`/`make_proj_fig` switches) | Wire up; needs converged model + MCMC draw ⛔ |
-| **Retrospective analysis** | ➕ | Port; run `05_retrospective_pattern.R` (10 peels) ⛔ |
-| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `06_jittering_parallel.R` (100 runs) ⛔ |
+| **Retrospective analysis** | ➕ | Port; run `05_run_retrospective.R` (10 peels) ⛔ |
+| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `06_run_jitter.R` (100 runs) ⛔ |
 | Figures appendix (size comps, maturity, CPUE, BSFRF, etc.) | partial | 🔁 many `include_graphics("plots/*.png")`; regenerate PNGs ⛔ |
 
 ---
@@ -62,7 +62,7 @@ If exact reproduction of a specific old figure proves hard, that's when Cody's `
 - `0-models.R` keeps the full May list (index stability) with a TODO to prune after the results audit.
 
 ## Hard dependencies still needed before a full render
-1. ⛔ `Models/rda_ModelsResLst.RData` regenerated for the 2 September models (`03_read_model_results.R`).
+1. ⛔ `Models/rda_ModelsResLst.RData` regenerated for the 2 September models (`03_build_results_object.R`).
 2. ⛔ Model advanced to End year 2025 + run (needs 2026 data + executable pin — EMAIL §1).
 3. ⛔ Regenerated `plots/*.png` (retros, projections, jitter, size comps, n-at-len, tier-4).
 4. Audit every `model_defs[N]` / `reslst$repsLst[[...]]` index in the Rmd body against the 2-model set.

@@ -32,7 +32,7 @@ The **September 2025 Rmd** (`SAFE_snow_gmacs.Rmd` in this repo) is the *old* arc
 - ☐ **wts* package versions**: which commits of `wtsGMACS`, `wtsUtilities` (and `wtsQMD`) he used,
   so `readModelResults()` / `extractRep1Results()` behave identically. (I have these installed but
   should match versions for a byte-faithful report.)
-- ⚙ **`rema`** (needed by `07_tier_4.R`): I can install from `afsc-assessments/rema`. Confirm he
+- ⚙ **`rema`** (needed by `07_calc_tier4.R`): I can install from `afsc-assessments/rema`. Confirm he
   used the standard release, not a fork.
 - ⚙ **`tinytex`/pandoc**: TinyTeX is installed here; I'll drive rendering via Positron's pandoc.
 
@@ -62,7 +62,7 @@ The **September 2025 Rmd** (`SAFE_snow_gmacs.Rmd` in this repo) is the *old* arc
 
 ## C. 2026 raw data inputs (not yet gathered — the bulk of the work)
 
-Scripts `01_update_catch_data.R` and `02_make_DAT_file_newmature.R` build the `data/derived/*`
+Scripts `01_prep_fishery_data.R` and `02_prep_survey_data.R` build the `data/derived/*`
 files that get pasted into the GMACS `.DAT`. They currently target **crab year 2024** (date
 windows `2024-07-01 … 2025-06-30`). For 2026 these shift to **`2025-07-01 … 2026-06-30`** and need
 the new season's data. None of the following 2026 inputs are in the repo yet:
@@ -73,7 +73,7 @@ the new season's data. None of the following 2026 inputs are in the repo yet:
 - ☐ **`data/SNOW_male_pmolt_array.csv`** — male terminal-molt probability array, updated through
   2026 (read by `02_...R`; currently missing).
 - ☐ **`data/survey/EBSCrab_Abundance_Biomass_female.csv`** and **`_male.csv`** — Kodiak-lab EBSCrab
-  pulls used by `04_n_at_len_viz.R` (the whole `data/survey/` folder is missing).
+  pulls used by `04_plot_numbers_at_length.R` (the whole `data/survey/` folder is missing).
 
 **Observer (AKFIN "Observer data" tab):**
 - ☐ **`data/norpac_length_report/norpac_length_report.csv`** — NORPAC Length Report (Haul &

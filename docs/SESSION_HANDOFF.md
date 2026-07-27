@@ -12,9 +12,9 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
 
 ## Done & verified
 - **Toolchain**: R 4.5.1; `gmr`, `wtsGMACS`, `wtsUtilities`, `crabpack`, `rema`, bookdown/officedown/
-  flextable/pacman. pandoc via Positron bundle (3.6.3) — `render_report.R` wires it in.
+  flextable/pacman. pandoc via Positron bundle (3.6.3) — `08_render_report.R` wires it in.
 - **Models** in `Models/`: `25_gmacs` (2025 reference) + `25_gmacs_update_newmat_plus_group` (accepted).
-- **Scripts** de-hardcoded / advanced to 2025/26 windows; all parse. `03_read_model_results.R`
+- **Scripts** de-hardcoded / advanced to 2025/26 windows; all parse. `03_build_results_object.R`
   (renamed from `03_buck_read_results.R`) runs headless and **verified** to build
   `Models/rda_ModelsResLst.RData` with the two correct case names matching the Rmd selectors.
 - **ADFG catch data (this session)**: Tyler's 5 CSVs (through crab_year 2025) staged into
@@ -40,7 +40,7 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
   needs the exe if advanced to 2025 for the comparison (open design Q).
 - **`model_defs[N]` index audit** not yet done — Rmd references models by position in the full May
   list; `0-models.R` keeps the full list. Audit before pruning to the 2-model set.
-- Survey-year vectors in `07_tier_4.R` (`c(seq(1982,2019),seq(2021,2026))`) must match the actual 2026
+- Survey-year vectors in `07_calc_tier4.R` (`c(seq(1982,2019),seq(2021,2026))`) must match the actual 2026
   crabpack pull length — flagged in-file.
 
 ## Blocked on data / Cody (critical path)
@@ -57,4 +57,4 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
    `docs/PORT_MAP.md`.
 2. Send `docs/EMAIL_to_tyler.md`; draft + send the Cody email (exe pin).
 3. When 2026 survey + exe land: run `01`/`02` → paste derived inputs into the `.DAT` → run gmacs →
-   `03_read_model_results.R` → `04`–`07` → `render_report.R`; then the `model_defs` index audit.
+   `03_build_results_object.R` → `04`–`07` → `08_render_report.R`; then the `model_defs` index audit.

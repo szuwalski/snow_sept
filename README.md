@@ -12,22 +12,22 @@ Authors: Grant Adams and Cody Szuwalski. Inherited from the May 2026 CPT/model-s
 ## Repository layout
 
 ```
-SAFE_snow_gmacs.Rmd        # the SAFE report (bookdown::pdf_document2). Loads Models/rda_ModelsResLst.RData
-0-models.R                 # model case definitions (model_defs) sourced by the Rmd
-render_report.R            # renders the SAFE to PDF (wires in Positron's pandoc)
+SAFE_snow_gmacs.Rmd          # the SAFE report (bookdown::pdf_document2). Loads Models/rda_ModelsResLst.RData
+0-models.R                   # model case definitions (model_defs) sourced by the Rmd
 
-01_update_catch_data.R     # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
-02_make_DAT_file_newmature.R # crabpack survey pull -> size comps, maturity, growth (data/derived/)
-03_read_model_results.R    # reads the model dirs -> writes Models/rda_ModelsResLst.RData
-04_n_at_len_viz.R          # numbers-at-length figures
-05_retrospective_pattern.R # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
-06_jittering_parallel.R    # jitter analysis (parallel)
-07_tier_4.R                # Tier-4 / REMA calculation
+01_prep_fishery_data.R       # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
+02_prep_survey_data.R        # crabpack survey PULL -> size comps, maturity, growth (data/derived/)
+03_build_results_object.R    # reads the model dirs -> writes Models/rda_ModelsResLst.RData
+04_plot_numbers_at_length.R  # numbers-at-length figures
+05_run_retrospective.R       # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
+06_run_jitter.R              # jitter analysis (parallel)
+07_calc_tier4.R              # Tier-4 / REMA calculation
+08_render_report.R           # renders the SAFE to PDF (wires in Positron's pandoc)
 
 Models/                    # LIVE model runs the report consumes
   25_gmacs/                #   2025 rolled-forward reference ("25.1 gmacs")
   25_gmacs_update_newmat_plus_group/  # ACCEPTED final ("25.1 gmacs (update + compfix + plus group + new_mat)")
-  rda_ModelsResLst.RData   #   results object built by 03_read_model_results.R
+  rda_ModelsResLst.RData   #   results object built by 03_build_results_object.R
 
 data/
   new_catch/               # WORKING copy of ADFG removals that script 01 reads (latest = crab_year 2025)
@@ -58,7 +58,7 @@ archive_2025/              # prior-cycle leftovers, kept for reference (NOT used
 - Packages: `gmr`, `wtsGMACS`, `wtsUtilities`, `crabpack`, `rema`, `bookdown`, `officedown`,
   `officer`, `flextable`, `pacman`, `pander` (+ tidyverse). `gmacsr` / Cody's old gmr fork are NOT
   required (the report was ported off the sourced-gmr architecture).
-- **pandoc**: not on the terminal PATH — `render_report.R` points `RSTUDIO_PANDOC` at the Positron
+- **pandoc**: not on the terminal PATH — `08_render_report.R` points `RSTUDIO_PANDOC` at the Positron
   bundle (`%LOCALAPPDATA%/Programs/Positron/resources/app/quarto/bin/tools`, pandoc 3.6.3).
   Rendering from inside Positron/RStudio works without this.
 
@@ -66,12 +66,12 @@ archive_2025/              # prior-cycle leftovers, kept for reference (NOT used
 
 ```powershell
 $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
-& $RS 01_update_catch_data.R        # rebuild fishery-removal inputs in data/derived/
-& $RS 02_make_DAT_file_newmature.R  # rebuild survey size-comp / maturity / growth inputs
+& $RS 01_prep_fishery_data.R        # rebuild fishery-removal inputs in data/derived/
+& $RS 02_prep_survey_data.R         # crabpack pull + rebuild survey size-comp / maturity / growth inputs
 #   -> hand-paste the data/derived/ outputs into the model .DAT, then run gmacs.exe in the model dir
-& $RS 03_read_model_results.R       # rebuild Models/rda_ModelsResLst.RData
-& $RS 04_n_at_len_viz.R; & $RS 05_retrospective_pattern.R; & $RS 06_jittering_parallel.R; & $RS 07_tier_4.R
-& $RS render_report.R               # render SAFE_snow_gmacs.Rmd -> PDF
+& $RS 03_build_results_object.R     # rebuild Models/rda_ModelsResLst.RData
+& $RS 04_plot_numbers_at_length.R; & $RS 05_run_retrospective.R; & $RS 06_run_jitter.R; & $RS 07_calc_tier4.R
+& $RS 08_render_report.R            # render SAFE_snow_gmacs.Rmd -> PDF
 ```
 
 The `.DAT` build (scripts 01/02) still ends in a **manual paste** step into the model `.DAT` file —

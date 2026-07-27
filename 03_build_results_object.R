@@ -1,6 +1,6 @@
 #--read model files and create the results object consumed by SAFE_snow_gmacs.Rmd
 #--(September 2026 SAFE). Run from the snow_sept repo root:
-#--   & "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe" 03_read_model_results.R
+#--   & "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe" 03_build_results_object.R
 require(wtsGMACS)
 
 #==repo root. De-hardcoded from rstudioapi::getActiveProject() so this runs headless / from a
