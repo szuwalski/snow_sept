@@ -28,8 +28,10 @@
 #   * crabpack API access (channel = 'API') AND the target survey year loaded in
 #     the API. The terminal survey year is the 2026 in get_specimen_data() below.
 #
-# KNOWN ISSUES (flagged in-line; NOT silently changed -- see notes below)
-#   * `mat_fem_snow_ind` is referenced but never defined -> Section 2 errors.
+# NOTES
+#   * Section 2's mature-female pull (`mat_fem_snow_ind`) was restored 2026-07
+#     from Cody's snow_crab hybrid script (it had been dropped when this script
+#     was copied into snow_sept).
 #   * `get_male_maturity()` is pulled but unused (the CSV is the live input).
 # =============================================================================
 
@@ -83,17 +85,20 @@ big_male_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
 
 write.csv(big_male_snow_ind, "data/survey/survey_large_male_index_derived.csv")
 
-# Survey female biomass + CVs: female biomass (kt), female CV, and legal-male CV
-# used as a stand-in for the MMB CV (no direct MMB CV available; ~>76 mm legals).
-#
-# >>> FIXME (BUG): `mat_fem_snow_ind` is NOT defined anywhere in this script, so
-#     this line will error with "object 'mat_fem_snow_ind' not found". It needs a
-#     mature-female bioabundance pull first. Confirm the correct crabpack category
-#     with Cody, then restore something like:
-#       mat_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
-#                                                   species = "SNOW", region = "EBS",
-#                                                   crab_category = "mature_female")
-#     Left unmodified on purpose (guessing the category could corrupt a model input).
+# Mature-female survey biomass index (morphometric maturity).
+# RESTORED 2026-07: this definition was dropped when the script was copied into
+# snow_sept, which is why Section 2 previously errored on an undefined
+# `mat_fem_snow_ind`. Taken verbatim from Cody's working
+# snow_crab/02_make_DAT_file_hybrid.R (the `newmature` ancestor relied on this
+# object lingering in the session from a prior run of the hybrid script).
+mat_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
+                                            species = "SNOW",
+                                            region  = "EBS",
+                                            crab_category   = c("mature_female"),
+                                            female_maturity = "morphometric")
+
+# Survey female biomass + CVs written for the model: female biomass (kt), female
+# CV, and legal-male CV as a stand-in for the MMB CV (no direct MMB CV; ~>76 mm).
 write.csv(cbind(mat_fem_snow_ind$BIOMASS_MT / 1000,
                 mat_fem_snow_ind$BIOMASS_MT_CV,
                 male_snow_ind$BIOMASS_MT_CV),
