@@ -94,7 +94,7 @@ source("0-models.R") # Load model definitions
 # SEPTEMBER 2026 PORT — repointed from the May candidate bracket to the accepted model.
 # Accepted model = "25.1 gmacs (update + compfix + plus group + new_mat)" (Models/25_gmacs_update_newmat_plus_group,
 # = May's Model 25.2c). Reference (2025 accepted, rolled forward) = "25.1 gmacs" (Models/25_gmacs).
-# These names must match the case names produced when rda_ModelsResLst.RData is regenerated (03_buck_read_results.R).
+# These names must match the case names produced when rda_ModelsResLst.RData is regenerated (03_read_model_results.R).
 # >>> REVIEW: confirm comparison pairs once the 2026 results object exists.
 accepted_model      <- "25.1 gmacs (update + compfix + plus group + new_mat)"
 reference_model     <- "25.1 gmacs"
@@ -1724,7 +1724,7 @@ dfrMnGr = wtsGMACS::extractRep1Results(reslst,"Mean growth") |>
   dplyr::mutate(dplyr::across(3:5,as.numeric)) |>
   dplyr::mutate(case = to_short(case));
 
-grow_dat<-read.csv("data/grow_dat.csv")
+grow_dat<-read.csv("data/growth/growth_increments_observed.csv")
 grow_dat$sex[grow_dat$Sex==1]<-'male'
 grow_dat$sex[grow_dat$Sex==2]<-'female'
 
@@ -1741,7 +1741,7 @@ ggplot()+
 
 
 ```{r obs-101-vs-pred, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.width=6.5, fig.height=7, fig.cap="Estimated abundance of male crab >101mm carapace width from the survey (black line and dots with gray 95th CI) and from each model in the assessment (colored lines)."}
-EBSdata	<-read.csv("data/survey_lg_males.csv")
+EBSdata	<-read.csv("data/survey/survey_preferred_male_index.csv")
 #==make upper and lower CIs
 EBSdata$upper_bio_ci<-exp(log(EBSdata$BIOMASS_MT)+1.96*(sqrt(log(1+EBSdata$BIOMASS_MT_CV^2))))
 EBSdata$lower_bio_ci<-exp(log(EBSdata$BIOMASS_MT)-1.96*(sqrt(log(1+EBSdata$BIOMASS_MT_CV^2))))

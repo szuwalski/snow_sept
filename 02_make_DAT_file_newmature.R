@@ -44,7 +44,7 @@ big_male_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                          region = "EBS",
                                          crab_category = c("large_male","preferred_male"))
 
-write.csv(big_male_snow_ind,"data/lg_male_surv_obs.csv")
+write.csv(big_male_snow_ind,"data/survey/survey_large_male_index_derived.csv")
 #==no great way to get a CV for MMB right now...
 #==use legals (>76mm for approx)
 write.csv(cbind(mat_fem_snow_ind$BIOMASS_MT/1000,
@@ -160,7 +160,7 @@ MaleNew<-use_new_male/1000000
 #==observed + average over years when observations are not available
 #==these names often get changed, so check
 
-new_male_mat_dat<-read.csv("data/SNOW_male_pmolt_array.csv")
+new_male_mat_dat<-read.csv("data/maturity/SNOW_male_pmolt_array.csv")
 
 male_maturity_data <- crabpack::get_male_maturity(species = "SNOW",
                                                   region = "EBS",

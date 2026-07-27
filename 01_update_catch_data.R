@@ -305,12 +305,12 @@ dev.off()
 #================================
 # Growth data
 
-grow<-read.csv("data/SnowCrabGrowthMaster.csv")
+grow<-read.csv("data/growth/SnowCrabGrowthMaster.csv")
 use_grow<-filter(grow,Legs_missing_premolt==0)
 use_grow$molt_inc<-use_grow$Postmolt_CW-use_grow$Premolt_CW
 new_grow<-cbind(use_grow[,c(6,3,17)],rep(0.03,nrow(use_grow)))
-write.csv(new_grow,'data/newgrowth.csv')
-ass_grow<-read.csv('data/growth_ass.csv')
+write.csv(new_grow,'data/growth/growth_increments_from_master.csv')
+ass_grow<-read.csv('data/growth/growth_increments_base.csv')
 keepers<-ass_grow
 colnames(keepers)<-c("pre","sex","inc","cv")
 colnames(new_grow)<-c("pre","sex","inc","cv")
@@ -328,5 +328,5 @@ for(x in 1:nrow(new_grow))
     keepers<-rbind(keepers,check)
 }
 
-write.csv(keepers,'data/newgrowth2.csv')
+write.csv(keepers,'data/growth/growth_increments_final.csv')
 

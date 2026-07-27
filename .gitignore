@@ -1,4 +1,24 @@
+# --- R / RStudio / Positron ---
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# --- OS cruft ---
+.DS_Store
+Thumbs.db
+
+# --- LaTeX / knitr / bookdown build artifacts (report is regenerable) ---
+*.aux
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+SAFE_snow_gmacs_files/
+SAFE_snow_gmacs_cache/
+
+# Note: the SAFE PDF itself is NOT ignored (final deliverable is committed on purpose).
+# ADMB run logs / .rep / .std inside model dirs are kept (needed to rebuild the results object).

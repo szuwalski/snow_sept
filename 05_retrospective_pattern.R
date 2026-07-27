@@ -424,7 +424,7 @@ foreach(x = 1:10)%dopar%
 #===========================
 library(readxl)
 
-dat<-read.csv('data/historical_mmb_estimates_survey.csv',check.names=F)
+dat<-read.csv('data/historical/historical_mmb_at_survey_by_assessment.csv',check.names=F)
 pl_dat<-melt(dat,id.vars=c("Year"))
 survey_ess<-ggplot(pl_dat)+
   geom_line(aes(x=Year,y=value,col=variable,group=variable),lwd=1.2)+
@@ -432,7 +432,7 @@ survey_ess<-ggplot(pl_dat)+
   labs(color="Assessment")+
   ggtitle("Morphometrically mature biomass at survey, subject to selectivity")
 
-dat<-read.csv('data/historical_mmb_estimates_MMB_mating.csv',check.names=F)
+dat<-read.csv('data/historical/historical_mmb_mating_by_assessment.csv',check.names=F)
 pl_dat<-melt(dat,id.vars=c("Year"))
 mating_ess<-ggplot(pl_dat)+
   geom_line(aes(x=Year,y=value,col=variable,group=variable),lwd=1.2)+
