@@ -6,8 +6,17 @@ which still uses the OLD `data/<name>.csv` paths) and to trace any runtime "file
 
 **Provider-named files were deliberately NOT renamed** (they must keep matching each delivery): all
 ADFG files (`total_catch`, `retained_catch`, `directed_total_composition`, `retained_catch_composition`,
-`crab_bycatch_composition`, `bssc_discards`), the AKFIN export `EBSCrab_AB_Sizegroup.csv`, Cody's
-`SNOW_male_pmolt_array.csv`, `SnowCrabGrowthMaster.csv`, and everything in `data/derived/`.
+`crab_bycatch_composition`, `bssc_discards`), the AKFIN export `EBSCrab_AB_Sizegroup.csv`,
+`SnowCrabGrowthMaster.csv`, and everything in `data/derived/`.
+
+**Correction (2026-07):** the male maturity array `SNOW_male_pmolt_array.csv` — the "new_mat" input read
+by `02_prep_survey_data.R:245` — was **never actually present** in snow_sept (an earlier draft of this map
+wrongly listed it as "kept as-is"). It was copied in from the authoritative `snow_crab/data/` (byte-identical,
+md5 `bfbce95c…`, survey years 1989–2025) and now lives at `data/maturity/SNOW_male_pmolt_array.csv`,
+provider name kept. For the September run this array still needs a **2026** update from E. Ryznar's maturity
+workflow (the crabpack pull does not produce it). Separately, `data/maturity/crabpack_ptermmolt.csv` is a raw
+`get_male_maturity()` dump left over from Cody's hybrid experiment — **no script reads it** (orphan); it is a
+different shape and is NOT a substitute for the array above.
 
 ## Folder relocations (loose data/ root → domain subfolders)
 | Old | New |
