@@ -3,6 +3,11 @@
 Pick-up doc for the September 2026 EBS snow crab SAFE in `snow_sept`. See `../README.md` for the full
 repo layout and run commands; this file tracks *state and next steps*.
 
+> **Report build plan (added 2026-07-30):** planning + drafts for the SAFE *report* live in this folder —
+> start with `SEPT2026_CLAUDE_CODE_HANDOFF.md` (build steps + canonical section outline), then
+> `PHASE1_SECTION_SKETCHES.md` (draft Rmd per section) and `SEPT2026_SNOW_CRAB_BUILD_PLAN.md` (scope,
+> direction, guideline reconciliation). First action there is the STEP 0 `0-models.R` audit.
+
 ## TL;DR — where we are
 Porting the September SAFE onto the portable May 2026 Rmd (not the old sourced-gmr Sept 2025 Rmd),
 faithful to the 2025 SAFE format/style. Environment, portability, model staging, and the
