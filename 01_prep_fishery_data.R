@@ -193,7 +193,18 @@ write.csv(output[, -1], "data/derived/tot_sc_m.csv")
 # Source: AKFIN "Observer data" tab -> "NORPAC Length Report - Haul & Length",
 # snow crab, for July 1 (prev yr) .. June 30 (this yr). Binned 25..135 mm with a
 # 130-mm plus group; normalised by sex.
-LenDatBig <- read.csv("data/norpac_length_report/norpac_length_report.csv", skip = 6)
+#
+# AKFIN prepends a "Parameter Value(s)" preamble whose length depends on how many
+# filters the export carried (Year / FMP Area / Species Name / ...), so the column
+# header is NOT at a fixed offset -- a plain skip=6/7 breaks whenever that count
+# changes. Locate the header instead: it is the first line starting with "Year",
+# (the data columns), as opposed to the "Year: ..." parameter echo lines above it.
+read_norpac <- function(path) {
+  hdr <- grep('^"Year",', readLines(path, n = 40))[1]
+  if (is.na(hdr)) stop("NORPAC column header (\"Year\",...) not found in ", path)
+  read.csv(path, skip = hdr - 1)
+}
+LenDatBig <- read_norpac("data/norpac_length_report/norpac_length_report.csv")
 LenDatBig$Haul.Offload.Date <- strptime(LenDatBig$Haul.Offload.Date, format = "%d-%b-%y")
 range(LenDatBig$Haul.Offload.Date)                     # sanity print of the date range
 
@@ -262,8 +273,9 @@ write.table(bycatch_male_sc, "data/derived/bycatch_len_comps_m.txt",
 # 5. NON-DIRECTED BYCATCH WEIGHTS  (NORPAC "Catch Report" + other crab fisheries)
 # =============================================================================
 # Source: AKFIN "Observer data" tab -> "NORPAC Catch Report", snow crab in the BS
-# of BSAI, Jul 1 (prev yr) .. Jun 30 (this yr). If the read fails, check skip=.
-bycatch_dat <- read.csv("data/norpac_catch_report/norpac_catch_report.csv", skip = 6)
+# of BSAI, Jul 1 (prev yr) .. Jun 30 (this yr). read_norpac() (Section 4) locates
+# the column header below AKFIN's variable-length parameter preamble.
+bycatch_dat <- read_norpac("data/norpac_catch_report/norpac_catch_report.csv")
 temp <- strptime(bycatch_dat$Haul.Date, format = "%d-%b-%y")
 bycatch_dat$Haul.Date <- substr(temp, start = 1, stop = 10)
 
