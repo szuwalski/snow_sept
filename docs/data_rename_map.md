@@ -9,14 +9,19 @@ ADFG files (`total_catch`, `retained_catch`, `directed_total_composition`, `reta
 `crab_bycatch_composition`, `bssc_discards`), the AKFIN export `EBSCrab_AB_Sizegroup.csv`,
 `SnowCrabGrowthMaster.csv`, and everything in `data/derived/`.
 
-**Correction (2026-07):** the male maturity array `SNOW_male_pmolt_array.csv` — the "new_mat" input read
-by `02_prep_survey_data.R:245` — was **never actually present** in snow_sept (an earlier draft of this map
-wrongly listed it as "kept as-is"). It was copied in from the authoritative `snow_crab/data/` (byte-identical,
-md5 `bfbce95c…`, survey years 1989–2025) and now lives at `data/maturity/SNOW_male_pmolt_array.csv`,
-provider name kept. For the September run this array still needs a **2026** update from E. Ryznar's maturity
-workflow (the crabpack pull does not produce it). Separately, `data/maturity/crabpack_ptermmolt.csv` is a raw
-`get_male_maturity()` dump left over from Cody's hybrid experiment — **no script reads it** (orphan); it is a
-different shape and is NOT a substitute for the array above.
+**Maturity array (updated 2026-08):** the male maturity array `SNOW_male_pmolt_array.csv` — the "new_mat"
+input read by `02_prep_survey_data.R:245` — was **never present** in the original snow_sept (an earlier draft
+of this map wrongly listed it as "kept as-is"). It was first copied from `snow_crab/data/` (1989–2025), then
+**replaced** with the September 2026 version built from `data/maturity/snow_ogives.csv` (the smoothed maturity
+ogive, 1989–**2026**, emailed to Grant by **Emily Ryznar**, Aug 2026; the provenance input — an already-fitted
+product, not an API pull). Build = pure **reshape** of `PROP_MATURE` onto the
+`27.5–132.5` model grid — **no re-GAM** (the ogive is already the smoothed output, so Cody's per-year
+`gam()` at `snow_crab/02_make_DAT_file_hybrid.R:389` is NOT re-run). vs the snow_crab array on 32 shared
+years: max |Δ|≈0.02, mean≈0.005 (new smoothing model); it also adds real values for 2008/2012/2014/2016
+(previously mean-filled) plus 2026. Reshape/validation script: `scratchpad/build_pmolt_array.R`.
+GATE: the survey pull (`get_specimen_data`) must also reach 2026 or Section 6's `MaleNew*in_mat` misaligns
+(maturity `in_mat` = 44 rows). Separately, `data/maturity/crabpack_ptermmolt.csv` is a stale raw
+`get_male_maturity()` dump — **no script reads it** (orphan), different shape, NOT a substitute.
 
 ## Folder relocations (loose data/ root → domain subfolders)
 | Old | New |

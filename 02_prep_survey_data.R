@@ -27,12 +27,16 @@
 #   * R 4.5.1; run from the repo root.
 #   * crabpack API access (channel = 'API') AND the target survey year loaded in
 #     the API. The terminal survey year is the 2026 in get_specimen_data() below.
+#   * data/maturity/snow_ogives.csv -- Ryznar's smoothed maturity ogive (Section 5).
+#     Must cover the same terminal year as the survey pull, or Section 6 misaligns.
 #
 # NOTES
 #   * Section 2's mature-female pull (`mat_fem_snow_ind`) was restored 2026-07
 #     from Cody's snow_crab hybrid script (it had been dropped when this script
 #     was copied into snow_sept).
-#   * `get_male_maturity()` is pulled but unused (the CSV is the live input).
+#   * Section 5 builds the maturity array by RESHAPING that ogive onto the model
+#     bins -- no GAM refit; the old pre-baked SNOW_male_pmolt_array.csv and the
+#     unused get_male_maturity() API pull were removed 2026-08.
 # =============================================================================
 
 # ---- Libraries --------------------------------------------------------------
@@ -236,23 +240,41 @@ MaleNew <- use_new_male / 1000000
 # 5. MALE TERMINAL-MOLT (MATURITY) OGIVE
 # =============================================================================
 # Probability of being (terminally) mature at size, by year. The live input is
-# the array produced by the new maturity workflow (E. Ryznar), read from CSV.
-# Years without observations are filled with the across-year mean at size.
+# Emily Ryznar's SMOOTHED maturity ogive, data/maturity/snow_ogives.csv -- a
+# long/tidy table of PROP_MATURE at observed 5-mm sizes (emailed; already the
+# fitted product). Because the smoothing is done upstream, we RESHAPE it onto the
+# model's 27.5-132.5 bins rather than refitting: pivot to year x bin, then fill
+# any bin outside a year's observed size range (immature = 0 below, mature = 1
+# above -- the same clamping the ogive itself applies). Years with no ogive at all
+# are filled further below with the across-year mean at size.
 #
-# Cody's note: the eventual goal is to avoid fitting GAMs then predicting onto
-#   these bins; crabpack may provide this directly. Column names in the CSV
-#   "often get changed", so re-check the file if this section breaks.
-new_male_mat_dat <- read.csv("data/maturity/SNOW_male_pmolt_array.csv")
+# Historical note: earlier cycles read a pre-baked SNOW_male_pmolt_array.csv that
+#   Cody produced by fitting a per-year GAM to this ogive (gam(PROP_MATURE ~
+#   s(SIZE_BIN, k = 20)) then predicting onto these bins). That smoothing now lives
+#   in Ryznar's product, so we no longer refit -- we only reshape. Re-check the
+#   column names if crabpack/Ryznar rename SIZE_5MM / PROP_MATURE.
+new_dat <- seq(27.5, 132.5, 5)                       # the 22 model size bins
 
-# NOTE: get_male_maturity() is pulled but currently UNUSED -- the CSV above is
-#       the live maturity input. Kept in case the workflow switches to the pull.
-male_maturity_data <- crabpack::get_male_maturity(species = "SNOW",
-                                                  region  = "EBS",
-                                                  channel = 'API')
+new_male_mat_dat <- read.csv("data/maturity/snow_ogives.csv") %>%
+  filter(SIZE_5MM %in% new_dat) %>%
+  select(YEAR, SIZE_5MM, PROP_MATURE) %>%
+  tidyr::pivot_wider(names_from = SIZE_5MM, values_from = PROP_MATURE) %>%
+  arrange(YEAR) %>%
+  as.data.frame()
+new_male_mat_dat <- new_male_mat_dat[, c("YEAR", as.character(new_dat))]
+# fill model bins outside each year's observed size range (0 below, 1 above)
+for (i in seq_len(nrow(new_male_mat_dat))) {
+  v   <- as.numeric(new_male_mat_dat[i, -1])
+  obs <- new_dat[!is.na(v)]
+  if (length(obs)) {
+    v[new_dat < min(obs) & is.na(v)] <- 0
+    v[new_dat > max(obs) & is.na(v)] <- 1
+    new_male_mat_dat[i, -1] <- v
+  }
+}
 
 # build a (year x size-bin) maturity matrix, filling missing years with the mean
 all_yr <- seq(1982, max(new_male_mat_dat[, 1]))
-new_dat <- seq(27.5, 132.5, 5)
 allmat <- matrix(nrow = length(all_yr), ncol = length(new_dat))
 rownames(allmat) <- all_yr
 colnames(allmat) <- new_dat
