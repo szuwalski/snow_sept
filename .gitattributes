@@ -1,0 +1,3 @@
+# NORPAC AKFIN exports: store verbatim (no EOL normalization), they are large data inputs
+data/norpac_length_report/norpac_length_report.csv -text
+data/norpac_catch_report/norpac_catch_report.csv -text

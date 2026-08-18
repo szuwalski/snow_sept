@@ -1,2 +1,13 @@
-Place here: norpac_catch_report.csv
-(AKFIN Observer > NORPAC Catch Report; snow crab, BS; Jul 1 2025 - Jun 30 2026; read by 01_update_catch_data.R skip=6)
+Place the AKFIN export here as:  norpac_catch_report.csv
+
+Source : AKFIN "Observer data" > "NORPAC Catch Report"
+Filters: Species Name = OPILIO TANNER CRAB;  FMP Area = BSAI (Bering Sea)
+Range  : export the FULL available time series -- 01_prep_fishery_data.R slices
+         by crab year internally (terminal crab year 2025 = Jul 1 2025 ..
+         Jun 30 2026; advance each cycle). Non-pot gears only are used.
+Format : save the raw CSV AS-IS, keeping AKFIN's "Parameter Value(s)" preamble.
+         01 reads it via read_norpac(), which auto-detects the column-header row
+         (the line starting with the quoted Year column) -- do NOT strip the
+         preamble or hard-code a skip=. Date column is d-b-y (e.g. 15-Jul-25).
+
+Large file (~60 MB): re-download fresh each cycle rather than editing in place.
