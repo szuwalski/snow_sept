@@ -6,17 +6,16 @@
 #   fishery-side model inputs: directed discard estimates, directed-fishery size
 #   compositions (retained / total male / total female), trawl-bycatch size
 #   compositions, non-directed bycatch weights, and growth increments.
-#   Outputs land in data/derived/ (then hand-pasted into the model .DAT -- Cody's
-#   existing workflow, flagged for future automation) and data/growth/.
+#   Outputs land in data/derived/ and data/growth/, then get written into the model
+#   .DAT/.CTL by 00_advance_model.R (no more hand-pasting).
 #
-# OUTPUTS
-#   data/derived/dir_disc_m_f.csv                directed discard (male) + female catch
-#   data/derived/ret_sc.csv                      retained size composition
-#   data/derived/tot_sc_f.csv, tot_sc_m.csv      total catch size comp (female / male)
-#   data/derived/bycatch_len_comps_f_then_m.txt  latest-year trawl bycatch size comp
-#   data/derived/bycatch_len_comps_f.txt, _m.txt all-years trawl bycatch size comps
-#   data/derived/bycatch_wt_total.csv            total non-directed bycatch weight
-#   data/growth/growth_increments_from_master.csv, growth_increments_final.csv
+# OUTPUTS  (all .csv; header row; explicit `year` column; values already in MODEL UNITS)
+#   data/derived/directed_catch.csv       year, retained_male, discard_male, discard_female (kt)
+#   data/derived/bycatch_catch.csv        year, trawl_bycatch, othercrab_bycatch, total_bycatch (kt)
+#   data/derived/fishery_size_comps.csv   year, fleet, sex, type, m27.5..m132.5
+#                                         (fleet1 retained/total/discard + fleet2 trawl bycatch; rows sum 1)
+#   data/growth/growth_increments.csv     premolt, sex, increment, cv
+#                                         (+ intermediate growth_increments_from_master.csv)
 #   plots/male_discards.png, plots/bycatch.png
 #
 # INPUTS
@@ -32,8 +31,10 @@
 #
 # NOTES / latent issues (flagged in-line; NOT changed):
 #   * `disc` (bssc_discards.csv) is read but never used downstream.
-#   * total-MALE size comp bins with right = TRUE, while retained and total-female
-#     use right = FALSE -- an endpoint-inclusion inconsistency worth confirming.
+#   * ALL carapace-width bins are cut with right = FALSE (2026-08, per Grant) -- the
+#     "previous survey approach": a crab exactly on a 5-mm cutoff goes to the UPPER
+#     bin. Big crab (>132.5) are captured by the plus group (top edge 999), NOT by
+#     the right= setting. NB the accepted May model cut total-male with right = TRUE.
 #   * `in_dat <- bycatch_dat_big[,-24]` drops a column by position (fragile).
 # =============================================================================
 
@@ -63,7 +64,7 @@ males$fish <- substring(males$fishery, 1, 2)
 
 
 # =============================================================================
-# 2. DIRECTED-FISHERY DISCARD ESTIMATES  -> dir_disc_m_f.csv
+# 2. DIRECTED-FISHERY CATCH  -> directed_catch.csv
 # =============================================================================
 # Diagnostic: total catch by fishery through time.
 png("plots/male_discards.png")
@@ -86,13 +87,23 @@ directed_discard$use_disc <- directed_discard$subtract_disc
 directed_discard$use_disc[which(directed_discard$subtract_disc < 0)] <-
   directed_discard$tot_retained_wt[which(directed_discard$subtract_disc < 0)] * med_disc_rate
 
-# columns: crab_year, directed male discard (t), directed female total catch (t)
-write.csv(cbind(directed_discard$crab_year, directed_discard$use_disc, filter(fems, fish == 'QO')$total_catch_wt / 1000),
-          "data/derived/dir_disc_m_f.csv")
+# directed_catch.csv: one row per crab year, all weights already in MODEL UNITS (kt)
+#   retained_male   = ADFG retained weight (tot_retained_wt, /1000 at L78)
+#   discard_male    = directed (QO) male discard  (use_disc)
+#   discard_female  = directed (QO) female total catch
+# NOTE: the female column assumes filter(fems, fish=='QO') is row-aligned by crab_year
+#       with directed_discard (same directed years, sorted) -- preserved from prior cycles.
+directed_catch <- data.frame(
+  year           = directed_discard$crab_year,
+  retained_male  = directed_discard$tot_retained_wt,
+  discard_male   = directed_discard$use_disc,
+  discard_female = filter(fems, fish == 'QO')$total_catch_wt / 1000
+)
+write.csv(directed_catch, "data/derived/directed_catch.csv", row.names = FALSE)
 
 
 # =============================================================================
-# 3. DIRECTED-FISHERY SIZE COMPOSITIONS  -> ret_sc / tot_sc_f / tot_sc_m
+# 3. DIRECTED-FISHERY SIZE COMPOSITIONS  -> fishery_size_comps.csv (fleet 1)
 # =============================================================================
 # Each block below follows the same pattern: sum crab by (crab_year, size), cut
 # into 5-mm bins centred on 27.5..132.5, normalise within year (rows sum to 1),
@@ -129,12 +140,26 @@ normalized_data_ret <- binned_data %>%
          normalized_crab = tot_crab_sum / total_crab_year) %>%
   ungroup()
 
-# NOTE: retained AND total-catch comps still need zeros inserted for
-# unrepresented size classes -- currently done by hand at the .DAT paste step.
-output <- dcast(normalized_data_ret, crab_year ~ bin, id.var = 'normalized_crab')
-output[is.na(output)] <- 0
-rownames(output) <- output[, 1]
-write.csv(output[, -1], "data/derived/ret_sc.csv")
+# ---- fixed 22-bin reshape helper (replaces the old dcast + by-hand zero-fill) ---
+# Reindex a normalized long comp (crab_year, bin[factor labelled by midpoint],
+# normalized_crab) onto ALL 22 model bins m27.5..m132.5, zero-filling gaps and
+# DROPPING the stray NA bin (crab < 25 mm). Guarantees exactly 22 bin columns --
+# this is what fixes the two hand-paste bugs (missing 122.5/127.5, stray NA col).
+bin_cols <- paste0("m", midpoints)                    # "m27.5" .. "m132.5"
+to_wide22 <- function(long_df) {
+  w <- long_df %>%
+    dplyr::filter(!is.na(bin)) %>%
+    dplyr::mutate(bin = as.character(bin)) %>%
+    tidyr::pivot_wider(id_cols = crab_year, names_from = bin,
+                       values_from = normalized_crab, values_fill = 0)
+  w <- as.data.frame(w)
+  for (b in as.character(midpoints)) if (!b %in% names(w)) w[[b]] <- 0  # add absent bins
+  out <- w[, as.character(midpoints), drop = FALSE]
+  names(out) <- bin_cols
+  cbind(year = w$crab_year, out)
+}
+
+ret_comp <- cbind(fleet = 1, sex = 1, type = 1, to_wide22(normalized_data_ret))
 
 # ---- 3b. total FEMALE size comp (sex == 2; right = FALSE) -------------------
 data <- filter(tot_cat_sc, sex == 2) %>%
@@ -154,22 +179,17 @@ normalized_data_tot <- binned_data %>%
                 normalized_crab = tot_crab_sum / total_crab_year) %>%
   ungroup()
 
-output <- dcast(normalized_data_tot, crab_year ~ bin, id.var = 'normalized_crab')
-output[is.na(output)] <- 0
-rownames(output) <- output[, 1]
-write.csv(output[, -1], "data/derived/tot_sc_f.csv")
+totf_comp <- cbind(fleet = 1, sex = 2, type = 2, to_wide22(normalized_data_tot))
 
 # ---- 3c. total MALE size comp (sex == 1) ------------------------------------
-# >>> NOTE (inconsistency): this block cuts with right = TRUE, whereas the
-#     retained (3a) and total-female (3b) blocks use right = FALSE. That changes
-#     which crab fall on a bin boundary. Preserved as-is (matches prior cycles);
-#     worth confirming with Cody whether the difference is intentional.
+# right = FALSE, same as 3a/3b (consistent upper-bin convention, 2026-08 per Grant).
+# NB the accepted May model cut THIS comp with right = TRUE, so total-male differs.
 data <- filter(tot_cat_sc, sex == 1) %>%
   group_by(crab_year, size) %>%
   dplyr::summarize(tot_crab = sum(total))
 
 data <- data %>%
-  dplyr::mutate(bin = cut(size, breaks = bin_edges, include.lowest = TRUE, right = TRUE, labels = midpoints))
+  dplyr::mutate(bin = cut(size, breaks = bin_edges, include.lowest = TRUE, right = FALSE, labels = midpoints))
 
 binned_data <- data %>%
   group_by(crab_year, bin) %>%
@@ -181,18 +201,15 @@ normalized_data_tot <- binned_data %>%
          normalized_crab = tot_crab_sum / total_crab_year) %>%
   ungroup()
 
-output <- dcast(normalized_data_tot, crab_year ~ bin, id.var = 'normalized_crab')
-output[is.na(output)] <- 0
-rownames(output) <- output[, 1]
-write.csv(output[, -1], "data/derived/tot_sc_m.csv")
+totm_comp <- cbind(fleet = 1, sex = 1, type = 0, to_wide22(normalized_data_tot))
 
 
 # =============================================================================
 # 4. TRAWL-BYCATCH SIZE COMPOSITIONS  (NORPAC "Length Report")
 # =============================================================================
 # Source: AKFIN "Observer data" tab -> "NORPAC Length Report - Haul & Length",
-# snow crab, for July 1 (prev yr) .. June 30 (this yr). Binned 25..135 mm with a
-# 130-mm plus group; normalised by sex.
+# snow crab, for July 1 (prev yr) .. June 30 (this yr). Binned into the 22 model
+# bins (27.5..132.5, right = FALSE) with a 132.5+ plus group; normalised by sex.
 #
 # AKFIN prepends a "Parameter Value(s)" preamble whose length depends on how many
 # filters the export carried (Year / FMP Area / Species Name / ...), so the column
@@ -208,65 +225,55 @@ LenDatBig <- read_norpac("data/norpac_length_report/norpac_length_report.csv")
 LenDatBig$Haul.Offload.Date <- strptime(LenDatBig$Haul.Offload.Date, format = "%d-%b-%y")
 range(LenDatBig$Haul.Offload.Date)                     # sanity print of the date range
 
-# ---- 4a. latest crab year only ----------------------------------------------
-# CHECK DATES: crab year 2025 = Jul 1 2025 .. Jun 30 2026 (advance each cycle).
-LenDat <- LenDatBig[LenDatBig$Haul.Offload.Date >= "2025-07-01" & LenDatBig$Haul.Offload.Date <= "2026-06-30" & LenDatBig$Species.Name == "OPILIO TANNER CRAB", ]
-
-LengthBins <- seq(25, 135, 5)
-BycatchFem  <- rep(0, length(LengthBins))
-BycatchMale <- rep(0, length(LengthBins))
-
-for (y in 1:(length(LengthBins) - 1)) {
-  BycatchFem[y]  <- sum(LenDat$Frequency[LenDat$Length..cm. >= LengthBins[y] & LenDat$Length..cm. < LengthBins[y + 1] & LenDat$Sex == "F"])
-  BycatchMale[y] <- sum(LenDat$Frequency[LenDat$Length..cm. >= LengthBins[y] & LenDat$Length..cm. < LengthBins[y + 1] & LenDat$Sex == "M"])
-}
-
-# fold everything >= 130 mm into the 130 plus group
-upperBnd <- 130
-BycatchFem[which(LengthBins == upperBnd)]  <- sum(BycatchFem[(which(LengthBins == upperBnd)):length(LengthBins)])
-BycatchFem  <- BycatchFem[1:which(LengthBins == upperBnd)]
-BycatchMale[which(LengthBins == upperBnd)] <- sum(BycatchMale[(which(LengthBins == upperBnd)):length(LengthBins)])
-BycatchMale <- BycatchMale[1:which(LengthBins == upperBnd)]
-
-# par(mfrow=c(1,2))
-# barplot(BycatchFem,names.arg=LengthBins,xlab="Carapace width (mm)",ylab="Count")
-# barplot(BycatchMale)
-
-by_f_out <- BycatchFem / sum(BycatchFem)
-by_m_out <- BycatchMale / sum(BycatchMale)
-write.table(rbind(by_f_out, by_m_out), "data/derived/bycatch_len_comps_f_then_m.txt",
-            row.names = FALSE, col.names = F)
-
-# ---- 4b. all years (1991 .. terminal) ---------------------------------------
+# ---- all years (1991 .. terminal) -------------------------------------------
 use_yrs <- seq(1991, 2026)   # advance terminal year each cycle
 bycatch_fem_sc  <- NULL
 bycatch_male_sc <- NULL
-LengthBins <- seq(25, 135, 5)
 
+# Bin each crab year's observed lengths into the SAME 22 model bins as the directed
+# comps: cut() with right = FALSE and the shared bin_edges (top edge 999 = the 132.5+
+# plus group), so every specimen >132.5 mm (there are real ones -- ~4356 records,
+# up to ~218 mm) folds into the top bin instead of being dropped. tapply keeps all
+# 22 factor levels in midpoint order (27.5 .. 132.5).
+tab22 <- function(len, freq) {
+  b <- cut(len, breaks = bin_edges, include.lowest = TRUE, right = FALSE, labels = midpoints)
+  v <- tapply(freq, b, sum)
+  v[is.na(v)] <- 0
+  as.numeric(v)
+}
 for (x in 1:(length(use_yrs) - 1)) {
   LenDat <- LenDatBig[LenDatBig$Haul.Offload.Date >= paste(use_yrs[x], "-07-01", sep = "") & LenDatBig$Haul.Offload.Date <= paste(use_yrs[x] + 1, "-06-30", sep = "") & LenDatBig$Species.Name == "OPILIO TANNER CRAB", ]
-  BycatchFem  <- rep(0, length(LengthBins))
-  BycatchMale <- rep(0, length(LengthBins))
-
-  for (y in 1:(length(LengthBins) - 1)) {
-    BycatchFem[y]  <- sum(LenDat$Frequency[LenDat$Length..cm. >= LengthBins[y] & LenDat$Length..cm. < LengthBins[y + 1] & LenDat$Sex == "F"])
-    BycatchMale[y] <- sum(LenDat$Frequency[LenDat$Length..cm. >= LengthBins[y] & LenDat$Length..cm. < LengthBins[y + 1] & LenDat$Sex == "M"])
-  }
-
-  upperBnd <- 130
-  BycatchFem[which(LengthBins == upperBnd)]  <- sum(BycatchFem[(which(LengthBins == upperBnd)):length(LengthBins)])
-  BycatchFem  <- BycatchFem[1:which(LengthBins == upperBnd)]
-  BycatchMale[which(LengthBins == upperBnd)] <- sum(BycatchMale[(which(LengthBins == upperBnd)):length(LengthBins)])
-  BycatchMale <- BycatchMale[1:which(LengthBins == upperBnd)]
-
+  fem  <- LenDat[LenDat$Sex == "F", ]
+  male <- LenDat[LenDat$Sex == "M", ]
+  BycatchFem  <- tab22(fem$Length..cm.,  fem$Frequency)
+  BycatchMale <- tab22(male$Length..cm., male$Frequency)
   bycatch_fem_sc  <- rbind(bycatch_fem_sc,  round(BycatchFem / sum(BycatchFem), 3))
   bycatch_male_sc <- rbind(bycatch_male_sc, round(BycatchMale / sum(BycatchMale), 3))
 }
 
-write.table(bycatch_fem_sc, "data/derived/bycatch_len_comps_f.txt",
-            row.names = FALSE, col.names = F)
-write.table(bycatch_male_sc, "data/derived/bycatch_len_comps_m.txt",
-            row.names = FALSE, col.names = F)
+# attach the crab year to each bycatch comp row (loop used use_yrs[x] as the start
+# year, x = 1..length-1  ->  years 1991 .. terminal-1 = 2025). The 22 bycatch bins
+# (left edges 25..130) align positionally with the model midpoints 27.5..132.5.
+byc_years  <- use_yrs[1:(length(use_yrs) - 1)]
+byc_f_comp <- data.frame(fleet = 2, sex = 2, type = 2, year = byc_years,
+                         setNames(as.data.frame(bycatch_fem_sc),  bin_cols), check.names = FALSE)
+byc_m_comp <- data.frame(fleet = 2, sex = 1, type = 2, year = byc_years,
+                         setNames(as.data.frame(bycatch_male_sc), bin_cols), check.names = FALSE)
+
+# ---- consolidated fishery size comps -> fishery_size_comps.csv ----------------
+# One tidy file, one row per (series, year); rows sum to 1.
+#   columns: year, fleet, sex, type, m27.5 .. m132.5
+#   fleet 1 = directed pot, 2 = trawl bycatch ; sex 1 = male, 2 = female
+#   type  1 = retained, 0 = total, 2 = discard/bycatch
+col_order <- c("year", "fleet", "sex", "type", bin_cols)
+fishery_size_comps <- rbind(
+  ret_comp[,  col_order],   # retained males      (fleet 1, sex 1, type 1)
+  totm_comp[, col_order],   # total males         (fleet 1, sex 1, type 0)
+  totf_comp[, col_order],   # total/discard fem   (fleet 1, sex 2, type 2)
+  byc_f_comp[, col_order],  # trawl bycatch fem   (fleet 2, sex 2, type 2)
+  byc_m_comp[, col_order]   # trawl bycatch male  (fleet 2, sex 1, type 2)
+)
+write.csv(fishery_size_comps, "data/derived/fishery_size_comps.csv", row.names = FALSE)
 
 
 # =============================================================================
@@ -315,7 +322,16 @@ colnames(nondir)[1] <- 'crab_year'
 
 all_nondir_bycatch <- merge(all_crab_bycatch, nondir)
 all_nondir_bycatch$tot_nondir <- all_nondir_bycatch$all_crab_bycatch + all_nondir_bycatch$bycatch_wt_tot
-write.csv(all_nondir_bycatch, "data/derived/bycatch_wt_total.csv")
+# bycatch_catch.csv (kt): trawl-only bycatch, other-crab-fishery bycatch, and their
+# sum. NB the old file called the trawl-only piece "bycatch_wt_tot" (a misnomer --
+# the actual total is total_bycatch, = the .dat non-directed bycatch obs).
+bycatch_catch <- data.frame(
+  year              = all_nondir_bycatch$crab_year,
+  trawl_bycatch     = all_nondir_bycatch$bycatch_wt_tot,
+  othercrab_bycatch = all_nondir_bycatch$all_crab_bycatch,
+  total_bycatch     = all_nondir_bycatch$tot_nondir
+)
+write.csv(bycatch_catch, "data/derived/bycatch_catch.csv", row.names = FALSE)
 
 # ---- diagnostic figure: bycatch numbers by gear type ------------------------
 for (y in 1:(length(bycatch_year) - 1))
@@ -347,8 +363,9 @@ dev.off()
 grow <- read.csv("data/growth/SnowCrabGrowthMaster.csv")
 use_grow <- filter(grow, Legs_missing_premolt == 0)
 use_grow$molt_inc <- use_grow$Postmolt_CW - use_grow$Premolt_CW
-new_grow <- cbind(use_grow[, c(6, 3, 17)], rep(0.03, nrow(use_grow)))   # cols: premolt CW, sex, molt_inc, + cv
-write.csv(new_grow, 'data/growth/growth_increments_from_master.csv')
+new_grow <- cbind(use_grow[, c(6, 3, 17)], rep(0.03, nrow(use_grow)))   # premolt CW, sex, molt_inc, cv
+colnames(new_grow) <- c("premolt", "sex", "increment", "cv")           # (col4 header used to be a raw R expr)
+write.csv(new_grow, 'data/growth/growth_increments_from_master.csv', row.names = FALSE)
 
 ass_grow <- read.csv('data/growth/growth_increments_base.csv')
 keepers <- ass_grow
@@ -366,4 +383,5 @@ for (x in 1:nrow(new_grow)) {
     keepers <- rbind(keepers, check)
 }
 
-write.csv(keepers, 'data/growth/growth_increments_final.csv')
+colnames(keepers) <- c("premolt", "sex", "increment", "cv")
+write.csv(keepers, 'data/growth/growth_increments.csv', row.names = FALSE)
