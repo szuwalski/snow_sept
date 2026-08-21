@@ -35,10 +35,14 @@ com_male<-filter(male_snow_ind,CATEGORY=="preferred_male"&YEAR >1981)$BIOMASS_MT
 lg_male<-filter(male_snow_ind,CATEGORY=="large_male"&YEAR >1981)$BIOMASS_MT
 surv_yr<-unique(male_snow_ind$YEAR)
 nat_m<-0.27
-#==NOTE (2026 update): the plotting x-vectors below are hardcoded as c(seq(1982,2019),seq(2021,2026))
-#==to reflect the 2020 no-survey gap. After the 2026 crabpack pull, VERIFY length(surv_yr) matches
-#==these vectors (mismatch will silently recycle/misalign). Prefer replacing them with `surv_yr`.
-mmb <- read.table("data/derived/index_mmb.txt")
+#==MMB and its CV come from the consolidated survey_indices.csv (male/mature),
+#  aligned to surv_yr. REPLACES the stale index_mmb.txt / index_female_biomass_male_cv.csv
+#  reads that lagged a cycle (the bug that ran Tier 4 on last year's MMB). Plot x-vectors
+#  below now use surv_yr directly (no hardcoded 2020-gap vector).
+survey_indices <- read.csv("data/derived/survey_indices.csv")
+mmb_tab    <- survey_indices[survey_indices$sex == "male" & survey_indices$maturity == "mature", ]
+mmb        <- mmb_tab$biomass[match(surv_yr, mmb_tab$year)]
+mmb_cv_vec <- mmb_tab$cv[match(surv_yr, mmb_tab$year)]
 
 #=decrement survey by 1/2 year M
 com_male_fish<-com_male*exp(-nat_m/2)/1000
@@ -56,12 +60,12 @@ com_male_stat<-com_male_fish/com_male_bmsy
 lg_male_stat<-lg_male_fish/lg_male_bmsy
 mmb_male_stat<-mmb_male_fish/mmb_male_bmsy
 
-plot(com_male_stat~c(seq(1982,2019),seq(2021,2026)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
+plot(com_male_stat~surv_yr,type='b',ylab='Status',ylim=c(0,4.2),las=1,
      xlab="Year")
 abline(h=0.25,lty=2,col=2)
 abline(h=0.5,lty=2,col=3)
 
-plot(lg_male_stat~c(seq(1982,2019),seq(2021,2026)),type='b',ylab='Status',ylim=c(0,4.2),las=1,
+plot(lg_male_stat~surv_yr,type='b',ylab='Status',ylim=c(0,4.2),las=1,
      xlab="Year")
 abline(h=0.25,lty=2,col=2)
 abline(h=0.5,lty=2,col=3)
@@ -101,8 +105,7 @@ OFL_lg_mmb<-lg_male_fish*(1-exp(-fofl_lg_male))
 order(com_male_fish)
 
 #==do SSC's version
-#==read in the MMB
-mmb <- read.table("data/derived/index_mmb.txt")
+#==MMB already loaded above (survey_indices, male/mature)
 
 OFL_ssc<-com_male/1000*(1-exp(-nat_m))
 OFL_mmb<-mmb*(1-exp(-nat_m))
@@ -110,7 +113,7 @@ OFL_mmb<-mmb*(1-exp(-nat_m))
 c(mmb,com_male_fish,lg_male_fish)
 plot_ofl<-data.frame(biomass=unlist(c(mmb,com_male_fish,lg_male_fish)),
            ofl=unlist(c(OFL_mmb,OFL_com_mmb,OFL_lg_mmb)),
-           year=rep(c(seq(1982,2019),seq(2021,2026)),3),
+           year=rep(surv_yr,3),
            currency=c(rep("Morphometric",length(com_male_fish)),
                       rep(">101 mm",length(com_male_fish)),
                       rep(">95 mm",length(com_male_fish))))
@@ -161,11 +164,10 @@ write.csv(compit[,c(1,2,4,11)],'obs_exp_dat.csv')
 #devtools::install_github("afsc-assessments/rema", dependencies = TRUE, build_vignettes = FALSE)
 library(rema)
 
-mmb_dat<-read.csv("data/derived/index_mmb.txt",header=F)
-mmb_cv<-read.csv("data/derived/index_female_biomass_male_cv.csv")
+mmb_dat<-mmb                         # MMB vector loaded above (survey_indices male/mature)
 com_male_cv<-filter(male_snow_ind,CATEGORY=="preferred_male"&YEAR >1981)$BIOMASS_MT_CV
 lg_male_cv<-filter(male_snow_ind,CATEGORY=="large_male"&YEAR >1981)$BIOMASS_MT_CV
-dats<-data.frame(morph=mmb_dat,morph_cv=mmb_cv[,4],large=lg_male,large_cv=lg_male_cv,
+dats<-data.frame(morph=mmb_dat,morph_cv=mmb_cv_vec,large=lg_male,large_cv=lg_male_cv,
                  pref=com_male,pref_cv=com_male_cv,year=surv_yr)
 
 keep_status<-NULL
@@ -174,7 +176,7 @@ keep_rema<-NULL
 keep_bmsy<-NULL
 #==============================
 # morphometrically mature
-morph<-data.frame(biomass=mmb_dat,cv=mmb_cv[,4],year=surv_yr,strata='EBS')
+morph<-data.frame(biomass=mmb_dat,cv=mmb_cv_vec,year=surv_yr,strata='EBS')
 colnames(morph)<-c("biomass","cv","year","strata")
 input<-prepare_rema_input(model_name='morph',biomass_dat=morph)
 m<-fit_rema(input)

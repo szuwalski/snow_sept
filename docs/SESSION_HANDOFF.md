@@ -18,7 +18,16 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
 ## Done & verified
 - **Toolchain**: R 4.5.1; `gmr`, `wtsGMACS`, `wtsUtilities`, `crabpack`, `rema`, bookdown/officedown/
   flextable/pacman. pandoc via Positron bundle (3.6.3) — `08_render_report.R` wires it in.
-- **Models** in `Models/`: `25_gmacs` (2025 reference) + `25_gmacs_update_newmat_plus_group` (accepted).
+- **Models** in `Models/`: `25_gmacs` (2025 reference), `25_gmacs_update_newmat_plus_group` (accepted May
+  baseline), `26_gmacs_update_newmat_plus_group` (Sept 2026, End yr 2025), plus a **SENSITIVITY LADDER**
+  built 2026-08 via `00_advance_model.R` to isolate each methodology change from the accepted baseline
+  (**RUN + COMPARE these for the SAFE "Summary of Major Changes"**):
+    - `25_gmacs_rightFALSE` — size-comp binning switched to right=FALSE (a crab on a 5-mm cutoff goes to
+      the UPPER bin, the previous survey convention); growth left as accepted (still carries the 73 typo).
+    - `25_gmacs_rightFALSE_growthfix` — adds the growth-data fix (a 26.3 mm crab's molt increment 73->7.3,
+      a `.DAT` transcription typo) on top of right=FALSE.
+  (`26` = both changes + the 2026 survey/fishery data.) A `25_gmacs_rightTRUE` was built then deleted
+  (right=TRUE dropped terminal MMB 114.6 -> 107.5; rejected).
 - **Scripts** de-hardcoded / advanced to 2025/26 windows; all parse. `03_build_results_object.R`
   (renamed from `03_buck_read_results.R`) runs headless and **verified** to build
   `Models/rda_ModelsResLst.RData` with the two correct case names matching the Rmd selectors.
@@ -45,8 +54,10 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
   needs the exe if advanced to 2025 for the comparison (open design Q).
 - **`model_defs[N]` index audit** not yet done — Rmd references models by position in the full May
   list; `0-models.R` keeps the full list. Audit before pruning to the 2-model set.
-- Survey-year vectors in `07_calc_tier4.R` (`c(seq(1982,2019),seq(2021,2026))`) must match the actual 2026
-  crabpack pull length — flagged in-file.
+- Survey-year vectors in `07_calc_tier4.R` — **RESOLVED (2026-08)**: the hardcoded
+  `c(seq(1982,2019),seq(2021,2026))` vectors were replaced with `surv_yr`. `07` also had a real bug — it
+  read a stale `index_mmb.txt` (last cycle's MMB), so Tier 4 ran a cycle behind; now reads
+  `survey_indices.csv` (male/mature). Verified end-to-end (MMB through 2026, rema converges).
 
 ## Blocked on data / Cody (critical path)
 1. 2026 **summer-survey** crabpack pull (script 02 runs the pull; needs the survey loaded/available).
@@ -61,5 +72,8 @@ model can be advanced to End year 2025 and run. Narrative-section port is the ne
    `archive_2025/SAFE_snow_gmacs_2025_reference.Rmd`, matching `Reports/2025 snow.pdf`. See
    `docs/PORT_MAP.md`.
 2. Send `docs/EMAIL_to_tyler.md`; draft + send the Cody email (exe pin).
-3. When 2026 survey + exe land: run `01`/`02` → paste derived inputs into the `.DAT` → run gmacs →
-   `03_build_results_object.R` → `04`–`07` → `08_render_report.R`; then the `model_defs` index audit.
+3. **Model runs**: `01`/`02` now write clean `data/derived/*` (6 tidy files) and **`00_advance_model.R`**
+   writes them into the model `.DAT`/`.CTL` — no more hand-paste. The `26` model + the two
+   `25_gmacs_rightFALSE*` sensitivities are already built and GMACS-valid. Remaining: run gmacs on those
+   three → `03_build_results_object.R` (add the sensitivity cases + advance `model_defs`) → `04`–`07` →
+   `08_render_report.R`; then the `model_defs` index audit. **Report the sensitivity comparison in the SAFE.**
