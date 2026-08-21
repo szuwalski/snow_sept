@@ -1893,13 +1893,12 @@ dfrMnGr = wtsGMACS::extractRep1Results(reslst,"Mean growth") |>
   dplyr::mutate(dplyr::across(3:5,as.numeric)) |>
   dplyr::mutate(case = to_short(case));
 
-grow_dat<-read.csv("data/growth/growth_increments_observed.csv")
-grow_dat$sex[grow_dat$Sex==1]<-'male'
-grow_dat$sex[grow_dat$Sex==2]<-'female'
+grow_dat<-read.csv("data/growth/growth_increments.csv")
+grow_dat$sex<-ifelse(grow_dat$sex==1,'male','female')   # numeric 1/2 -> facet label
 
 ggplot()+
   geom_line(data=dfrMnGr,aes(x=premolt_size,y=mean_increment,col=case))+
-  geom_point(data=grow_dat,aes(x=Premolt,y=Molt.Inc),alpha=.4)+
+  geom_point(data=grow_dat,aes(x=premolt,y=increment),alpha=.4)+
   facet_wrap(~sex)+
   theme_bw() + 
   theme(legend.title=element_blank())
@@ -1910,7 +1909,8 @@ ggplot()+
 
 
 ```{r obs-101-vs-pred, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.width=6.5, fig.height=7, fig.cap="Estimated abundance of male crab >101mm carapace width from the survey (black line and dots with gray 95th CI) and from each model in the assessment (colored lines)."}
-EBSdata	<-read.csv("data/survey/survey_preferred_male_index.csv")
+EBSdata	<-read.csv("data/survey/survey_large_male_index_derived.csv")
+EBSdata	<-EBSdata[EBSdata$CATEGORY=="preferred_male",]
 #==make upper and lower CIs
 EBSdata$upper_bio_ci<-exp(log(EBSdata$BIOMASS_MT)+1.96*(sqrt(log(1+EBSdata$BIOMASS_MT_CV^2))))
 EBSdata$lower_bio_ci<-exp(log(EBSdata$BIOMASS_MT)-1.96*(sqrt(log(1+EBSdata$BIOMASS_MT_CV^2))))

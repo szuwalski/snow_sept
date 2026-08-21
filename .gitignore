@@ -22,3 +22,11 @@ SAFE_snow_gmacs_cache/
 
 # Note: the SAFE PDF itself is NOT ignored (final deliverable is committed on purpose).
 # ADMB run logs / .rep / .std inside model dirs are kept (needed to rebuild the results object).
+
+# transient script outputs (07 Tier-4 + 05 retro diagnostics written to cwd; stray R device)
+/obs_exp_dat.csv
+/rema_outs.csv
+/opilio_tseries.csv
+/opilio_bmsy.csv
+/opilio_tseries_drop.csv
+Rplots.pdf
