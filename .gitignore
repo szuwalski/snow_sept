@@ -28,6 +28,23 @@ SAFE_snow_gmacs_cache/
 # Note: the SAFE PDF itself is NOT ignored (final deliverable is committed on purpose).
 # ADMB run logs / .rep / .std inside model dirs are kept (needed to rebuild the results object).
 
+# --- retrospective peel runs (05_run_retrospective.R) ---
+# Each peel is a full ADMB run directory (~20 MB: admodel.*, gmacs.cor, rep1,
+# checkfile, simdata). 22 peels is ~450 MB of regenerable binaries. The parsed
+# RESULTS are kept -- the *.csv summaries below are what the SAFE reads.
+Models/*/retro/*/*/
+!Models/*/retro/*.csv
+Models/*/_pre_run_backup/
+
+# --- jitter runs (06_run_jitter.R) ---
+# Same shape: each of the 100 runs is a full ADMB run directory (~20 MB with the
+# Hessian). The parsed RESULTS are kept -- jitter_results.csv here and
+# Models/rda_jitter.RData are what the SAFE reads. PROMOTION.md is kept because
+# it documents a change to the model directory itself.
+Models/*/jitter/*/
+!Models/*/jitter/*.csv
+!Models/*/jitter/PROMOTION.md
+
 # transient script outputs (07 Tier-4 + 05 retro diagnostics written to cwd; stray R device)
 /obs_exp_dat.csv
 /rema_outs.csv

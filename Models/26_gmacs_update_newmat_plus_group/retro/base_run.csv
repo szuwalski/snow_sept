@@ -1,0 +1,2 @@
+"label","ok","terminal_year","echo_end_year","last_survey_year","npar","nll","max_grad","converged","elapsed_sec","problems","warnings"
+"base",TRUE,2025,2025,2026,412,-23545.5363970914,0.0025363925955434,FALSE,931.3,"","max gradient 0.00254 > 1e-03"

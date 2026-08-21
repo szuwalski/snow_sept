@@ -79,10 +79,19 @@ N_WORKERS <- gmacs_max_workers()      # small fixed default, NOT detectCores():
                                       # corrupts the peel being written. Raise via
                                       # $env:GMACS_MAX_WORKERS. See R/gmacs_io.R:7.
 
-## Compensate GMACS's retrospective shift of snow.prj's spr_grow_yr. See the
-## long note on set_prj_growth_year() in R/gmacs_io.R, and section 4 below,
-## which MEASURES the effect rather than assuming it.
-FIX_PRJ_GROWTH_YEAR <- TRUE
+## Compensate GMACS's retrospective shift of snow.prj's spr_grow_yr?
+##
+## SETTLED FALSE, EMPIRICALLY (2026-08). The stage-4 diagnostic ran peel 1
+## twice with every input file md5-identical except one byte of snow.prj
+## (spr_grow_yr 1982 vs 1983) and recorded, in retro/prj_growth_year_diagnostic.csv:
+##     FALSE  ok=TRUE   nll = -22833.68
+##     TRUE   ok=FALSE  "exit status 1; no Gmacsall.out"
+## The compensated run dies with "Memory allocation error" while reading the
+## control file, before optimising. So the out-of-bounds read that the
+## model-folder gmacsbase.TPL (2.20.32b) implies does NOT exist in the actual
+## executable (2.20.34) -- and the compensation itself is what breaks the run.
+## Leave snow.prj alone. See the note on set_prj_growth_year() in R/gmacs_io.R.
+FIX_PRJ_GROWTH_YEAR <- FALSE
 
 RSCRIPT <- file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
 
@@ -157,6 +166,18 @@ verify_run <- function(dir, label, expect_end_year, started_at, run) {
     fail <- c(fail, "Gmacsall.out not rewritten by this run (stale output)")
   }
 
+  ## gmacs.std is written ONLY when ADMB's sd phase ran, so it is the precise
+  ## marker separating a full run from a -nohess one. Without this check a
+  ## leftover -nohess directory looks complete: Gmacsall.out and gmacs.par are
+  ## both present and the summary block is fully populated. (Guard contributed
+  ## by the parallel jitter session, 2026-08, which hit exactly that.)
+  std <- file.path(dir, "gmacs.std")
+  if (!file.exists(std)) {
+    fail <- c(fail, "no gmacs.std -- sd phase did not run (was -nohess used?)")
+  } else if (file.info(std)$mtime < started_at) {
+    fail <- c(fail, "gmacs.std predates this run (stale -nohess output?)")
+  }
+
   s <- NULL; rp <- NULL; par <- list(npar = NA_integer_, nll = NA_real_, max_grad = NA_real_)
   echo <- list(end_year = NA_integer_, last_survey_year = NA_integer_)
   if (!length(fail)) {
@@ -177,6 +198,18 @@ verify_run <- function(dir, label, expect_end_year, started_at, run) {
   if (!is.na(par$max_grad) && par$max_grad > GRAD_WARN)
     warn <- c(warn, sprintf("max gradient %.3g > %.0e", par$max_grad, GRAD_WARN))
 
+  ## Reference points must be genuinely populated. A -nohess run does NOT give
+  ## a clean all-zero block: Fmsy and Fofl are computed directly and stay
+  ## plausible, while the sdreport quantities (BMSY, Bcurr/BMSY, OFL) are
+  ## exactly 0. So a sanity check on Fmsy would pass on worthless output --
+  ## test the sdreport quantities specifically.
+  bmsy <- ofl <- NA_real_
+  if (!is.null(rp) && !inherits(rp, "try-error")) {
+    bmsy <- refpoint(rp, "BMSY"); ofl <- refpoint(rp, "OFL(tot)")
+    if (!is.na(bmsy) && !is.na(ofl) && bmsy == 0 && ofl == 0)
+      fail <- c(fail, "BMSY and OFL(tot) are exactly 0 -- sdreport quantities absent")
+  }
+
   data.frame(
     label            = label,
     ok               = length(fail) == 0L,
@@ -187,6 +220,8 @@ verify_run <- function(dir, label, expect_end_year, started_at, run) {
     nll              = par$nll,
     max_grad         = par$max_grad,
     converged        = !is.na(par$max_grad) && par$max_grad <= GRAD_WARN,
+    BMSY             = bmsy,
+    OFL_tot          = ofl,
     elapsed_sec      = round(run$elapsed, 1),
     problems         = paste(fail, collapse = "; "),
     warnings         = paste(warn, collapse = "; "),
@@ -286,13 +321,19 @@ if (STAGE %in% c("all", "base")) {
 ## reference points. But that TPL is NOT the source of gmacs.exe (2.20.34), so
 ## the defect is measured here rather than assumed: peel 1 is run twice,
 ## identical except for the compensation, and BMSY/OFL are compared.
+##
+## ALREADY RUN, 2026-08 -- see FIX_PRJ_GROWTH_YEAR in section 0 for the verdict
+## and retro/prj_growth_year_diagnostic.csv for the recorded numbers. This stage
+## is kept so the measurement can be repeated against a new executable.
+## Runs WITHOUT -nohess: reference points are ADMB sdreport quantities, so a
+## -nohess run reports BMSY/OFL as exactly zero and the comparison is vacuous.
 if (STAGE %in% c("all", "diagnose")) {
   cat("--- STAGE diagnose: snow.prj spr_grow_yr sensitivity (peel 1) ---\n")
   diag_rows <- list()
   for (fx in c(FALSE, TRUE)) {
     d <- file.path(RETRO_DIR, "_diagnostic", if (fx) "prjfix_on" else "prjfix_off")
     prepare_peel("standard", 1L, d, fix_prj = fx)
-    t0 <- Sys.time(); r <- run_gmacs(d, "-nohess")
+    t0 <- Sys.time(); r <- run_gmacs(d)
     v  <- verify_run(d, if (fx) "prjfix_on" else "prjfix_off", END_YEAR - 1L, t0, r)
     rp <- if (v$ok) read_gmacsall_refpoints(file.path(d, "Gmacsall.out")) else NULL
     diag_rows[[length(diag_rows) + 1L]] <- data.frame(
@@ -337,22 +378,41 @@ if (STAGE %in% c("all", "peels")) {
                 file.path(basename(dirname(jobs$dir[i])), basename(jobs$dir[i]))))
   }
 
-  cat(sprintf("\n--- STAGE peels: running %d GMACS fits on %d workers ---\n",
+  ## Peels run WITH the Hessian (no -nohess). BMSY, Fmsy, Fofl and the OFL are
+  ## ADMB sdreport quantities, and -nohess skips the sd phase -- a -nohess peel
+  ## writes them as exactly 0.0, so retro_refpoints.csv would be all zeros. That
+  ## was verified against the stage-4 diagnostic output. The cost is real: a
+  ## peel takes ~13 min with the Hessian versus ~3 min without.
+  cat(sprintf("\n--- STAGE peels: running %d GMACS fits (with Hessian) on %d workers ---\n",
               nrow(jobs), N_WORKERS))
+  cat(sprintf("    expect roughly %.0f min wall clock\n",
+              ceiling(nrow(jobs) / N_WORKERS) * 13))
   cl <- parallel::makeCluster(N_WORKERS)
-  on.exit(try(parallel::stopCluster(cl), silent = TRUE), add = TRUE)
   doParallel::registerDoParallel(cl)
 
-  res <- foreach(i = seq_len(nrow(jobs)), .combine = rbind,
-                 .packages = character(0)) %dopar% {
-    source(file.path(REPO_ROOT, "R", "gmacs_io.R"))
-    t0 <- Sys.time()
-    r  <- run_gmacs(jobs$dir[i], "-nohess")
-    v  <- verify_run(jobs$dir[i], sprintf("%s/%d", jobs$mode[i], jobs$peel[i]),
-                     jobs$expect_end_year[i], t0, r)
-    cbind(mode = jobs$mode[i], peel = jobs$peel[i], v)
-  }
-  parallel::stopCluster(cl)
+  ## tryCatch(finally=), NOT on.exit(). on.exit() registers a handler on the
+  ## FUNCTION frame it is called in; this code is at script top level (the
+  ## `if` block is not a function), so the handler is never run. If a worker
+  ## errored, the cluster leaked N Rsession processes, each potentially still
+  ## holding an ADMB child at 100% CPU -- the same sustained-load condition
+  ## rule 11 exists to prevent, reached by leak rather than by fan-out width,
+  ## and indistinguishable from "the machine reset again at 4 workers".
+  ## (Found by the parallel review session, 2026-08-21; verified here.)
+  res <- tryCatch(
+    foreach(i = seq_len(nrow(jobs)), .combine = rbind,
+            .packages = character(0)) %dopar% {
+      source(file.path(REPO_ROOT, "R", "gmacs_io.R"))
+      t0 <- Sys.time()
+      r  <- run_gmacs(jobs$dir[i])
+      v  <- verify_run(jobs$dir[i], sprintf("%s/%d", jobs$mode[i], jobs$peel[i]),
+                       jobs$expect_end_year[i], t0, r)
+      cbind(mode = jobs$mode[i], peel = jobs$peel[i], v)
+    },
+    finally = {
+      try(parallel::stopCluster(cl), silent = TRUE)
+      try(doParallel::stopImplicitCluster(), silent = TRUE)
+    }
+  )
 
   res <- res[order(res$mode, res$peel), ]
   write.csv(res, file.path(RETRO_DIR, "retro_diagnostics.csv"), row.names = FALSE)

@@ -643,7 +643,47 @@ The snow crab population dynamics model tracks the number of crab of sex *s*,  m
 
 A lognormal distribution was assumed for all catch and index time-series, while a robust multinomial was assumed for all size composition data. No likelihood weights were used in the assessment.
 
-A 'jittering' approach has been historically used to explore the impact of different starting values on the assessment output (Turnock, 2016). Parameter values were jittered based on a normal distribution centered on one with a standard deviation of 0.1 that was then translated to the parameter space defined by the initial value and its bounds.  One hundred jitters were run for six models that span the range of structural and data choices -- `Model 25.1c`, `Model 25.2c`, `Model 25.3c`, `Model 25.3d`, `Model 25.1e`, and `Model 25.3d` (Table \@ref(tab:model-overview)).
+```{r jitter-setup, echo=FALSE, warning=FALSE, message=FALSE}
+# Jitter outputs, written by 06_run_jitter.R. Every jitter value quoted in this
+# document is pulled from this object at knit time so the text cannot drift
+# from the runs. Absent runs yield NA and a visible note, never a plausible
+# placeholder.
+jit_path <- "Models/rda_jitter.RData"
+jit_have <- file.exists(jit_path)
+if (jit_have) load(jit_path)          # -> `jitter`: results / summary / modes / attribution / manifest
+
+jit_sum <- if (jit_have) jitter$summary   else NULL
+jit_res <- if (jit_have) jitter$results   else NULL
+jit_man <- if (jit_have) jitter$manifest  else NULL
+
+.js <- function(field, default = NA) {          # NA-safe accessor on the summary row
+  if (!jit_have || !field %in% names(jit_sum)) return(default)
+  jit_sum[[field]][1]
+}
+jit_fmt <- function(x, d = 2) if (is.null(x) || length(x) == 0 || is.na(x)) "NA" else
+  formatC(x, format = "f", digits = d, big.mark = "")
+
+jit_n         <- .js("n_runs")
+jit_sd        <- .js("jitter_sd")
+jit_conv      <- .js("n_converged")
+jit_complete  <- .js("n_complete")
+jit_pct_best  <- .js("pct_at_best_mode")
+jit_base_nll  <- .js("base_nll")
+jit_best_nll  <- .js("best_nll")
+jit_improve   <- .js("nll_improvement")
+jit_ofl_min   <- .js("ofl_min");  jit_ofl_max <- .js("ofl_max")
+jit_mmb_min   <- .js("mmb_min");  jit_mmb_max <- .js("mmb_max")
+jit_term_yr   <- .js("terminal_year")
+jit_promoted  <- isTRUE(.js("promoted", FALSE))
+
+# Number of distinct optima the runs settled into ("minor" = clusters too small
+# to count as a mode, see classify_modes() in R/gmacs_jitter.R).
+jit_nmodes <- if (jit_have)
+  length(setdiff(unique(jit_res$mode[!is.na(jit_res$mode)]), "minor")) else NA_integer_
+jit_multimodal <- !is.na(jit_nmodes) && jit_nmodes > 1
+```
+
+A 'jittering' approach has been historically used to explore the impact of different starting values on the assessment output (Turnock, 2016). Parameter values were jittered based on a normal distribution centered on one with a standard deviation of `r jit_fmt(jit_sd, 2)` that was then translated to the parameter space defined by the initial value and its bounds. `r if (jit_have) sprintf("%s jitters were run for the author-recommended model (Table \\@ref(tab:model-overview)); each run was started from an independently perturbed parameter vector and re-fit to convergence.", jit_n)` Each jitter run used an explicitly recorded random seed, so the analysis is exactly reproducible; the seed used by every run is stored alongside its results. [[VERIFY: the 2025 assessment jittered six candidate models. The September 2026 analysis jitters the single author-recommended model -- confirm this is the intended scope before the document goes to the CPT.]]
 
 ## Model selection and evaluation
 Models were evaluated based on their fit to the data, evidence of non-convergence, the credibility of the estimated population processes, and the strength of the influence of the assumptions of the model on the outcomes of the assessment. Note that for some of the model scenarios, data inputs are different and, therefore, model fits are not directly comparable.
@@ -652,7 +692,140 @@ Models were evaluated based on their fit to the data, evidence of non-convergenc
 ## Model convergence and comparison
 All `r length(model_defs)` models presented here inverted their Hessians, but most did not meet the conventional convergence threshold of a maximum absolute gradient < 0.001 (Table \@ref(tab:max-grad)). Only `Model 25.1d` fell below that threshold; the remaining 13 models had max |gradient| > 0.001, with `Model 25.3c` the largest at ~0.10. There was no consistent parameter with the highest gradient across models. Likelihood components by category for each candidate model are summarized in Table \@ref(tab:like-index-tot), \@ref(tab:like-comp-tot), and \@ref(tab:like-other-tot).
 
-As in past cycles, jittering was used to evaluate sensitivity to starting values. The bimodality in management quantities reported in the 2025 preliminary and final assessments persists in most of the 2026 candidate models. With a range of converged OFLs separated by < 10 negative-log-likelihood units and OFLs that differ by several thousand tonnes (Figure \@ref(fig:jitter)). There is a clear bimodality also visible in the corresponding estimates of 2024 male recruitment (Figure \@ref(fig:jitt-rec)) and 2024 MMB (Figure \@ref(fig:jitt-ssb)). Adding the immature survey index alongside the updated plus group (`Model 25.1e`) and new maturity (`Model 25.2d`) eliminates the bimodality, but there is a clear spead in derived quantities within 10 negative-log-likelihood units (Figure \@ref(fig:jitter)). Removing the bimodality is an encouraging diagnostic, but there is still large uncertainty across MMB and male recruitment in 2024, so the apparent fix should not be interpreted as an unqualified improvement. The recent history of bimodality in this assessment, suggests that resolving the underlying source of multiple optima will require further evaluation before September.
+`r if (!jit_have) "*Jitter results not yet generated; run 06_run_jitter.R to produce them. The paragraphs below will populate from those runs.*"`
+
+As in past cycles, jittering was used to evaluate sensitivity to starting values. `r if (jit_have) sprintf("Of the %s runs, %s produced a complete set of estimates and %s attained a maximum absolute gradient below %s. For comparison, the base fit itself attains %s, so the conventional threshold of %s is not a useful screen for this assessment and is reported rather than applied: %s of the jitter runs met it.", jit_fmt(jit_n,0), jit_fmt(jit_complete,0), jit_fmt(jit_conv,0), format(jit_man$grad_usable), formatC(.js('base_max_grad'), format='g', digits=3), format(jit_man$grad_conventional), jit_fmt(.js('n_meets_conventional'),0))`
+
+`r if (jit_have && jit_multimodal) sprintf("The runs settled into %d distinct optima (Figure \\@ref(fig:jitter)), confirming that the multimodality reported in the 2025 preliminary and final assessments persists in the 2026 model. The best-fitting mode accounted for %s%% of the runs that reached an optimum. Across all runs, total OFL ranged from %s to %s thousand tonnes and mature male biomass in %s ranged from %s to %s thousand tonnes, so the choice of starting values, not the data, moves the management quantities across that range. The same separation is visible in male recruitment (Figure \\@ref(fig:jitt-rec)) and in MMB (Figure \\@ref(fig:jitt-ssb)).", jit_nmodes, jit_fmt(jit_pct_best,1), jit_fmt(jit_ofl_min,2), jit_fmt(jit_ofl_max,2), jit_fmt(jit_term_yr,0), jit_fmt(jit_mmb_min,1), jit_fmt(jit_mmb_max,1))`
+`r if (jit_have && !jit_multimodal) sprintf("The runs settled into a single optimum (Figure \\@ref(fig:jitter)); the multimodality reported in the 2025 preliminary and final assessments is not evident in the 2026 model. Total OFL across the runs ranged from %s to %s thousand tonnes and mature male biomass in %s from %s to %s thousand tonnes, which is the residual spread within one optimum rather than a separation between optima.", jit_fmt(jit_ofl_min,2), jit_fmt(jit_ofl_max,2), jit_fmt(jit_term_yr,0), jit_fmt(jit_mmb_min,1), jit_fmt(jit_mmb_max,1))`
+
+`r if (jit_have && jit_improve > 0.001 && jit_promoted) sprintf("One jitter run found a better fit than the starting solution, improving the negative log likelihood by %s units. Following the convention used in the 2025 assessment, that run was adopted as the reported model and re-fit with the Hessian; all quantities in this document derive from it. The provenance of that fit, including its random seed, is recorded with the model.", jit_fmt(jit_improve,3))`
+`r if (jit_have && jit_improve > 0.001 && !jit_promoted) sprintf("One jitter run found a better fit than the reported model, improving the negative log likelihood by %s units. It has not been adopted. [[author: the 2025 assessment reported the lowest-likelihood run of 100 jitters; decide whether to do so here.]]", jit_fmt(jit_improve,3))`
+`r if (jit_have && jit_improve <= 0.001) "No jitter run improved materially on the reported fit, which supports the reported solution being the global optimum rather than a local one."`
+
+`r if (jit_have && !is.null(jitter$attribution)) sprintf("The parameters that separate the optima are summarized in Table \\@ref(tab:jitter-attribution) and Figure \\@ref(fig:jitt-attrib). Identifying which parameters differ between the clouds, rather than only observing that the clouds exist, was requested by the SSC and is intended to direct the structural work needed to resolve the multiple optima.")` [[author: interpret the attribution result -- which processes the separating parameters belong to, and what that implies for the structural changes to evaluate before the next cycle.]]
+
+```{r jitter-summary, echo=FALSE, warning=FALSE, message=F}
+# Summary of the jitter analysis. Values come from Models/rda_jitter.RData,
+# written by 06_run_jitter.R; nothing here is recomputed locally.
+if (jit_have) {
+  jsum_df <- data.frame(
+    Quantity = c(
+      "Jitter runs",
+      "Runs returning a complete fit",
+      sprintf("Runs with max |gradient| < %s", format(jit_man$grad_usable)),
+      sprintf("Runs meeting the conventional %s", format(jit_man$grad_conventional)),
+      "Distinct optima identified",
+      "Runs at the best-fitting optimum (%)",
+      "Negative log likelihood, base fit",
+      "Negative log likelihood, best jitter run",
+      "Total OFL, range across runs (1,000 t)",
+      sprintf("MMB in %s, range across runs (1,000 t)", jit_fmt(jit_term_yr, 0))),
+    Value = c(
+      jit_fmt(jit_n, 0),
+      jit_fmt(jit_complete, 0),
+      jit_fmt(jit_conv, 0),
+      jit_fmt(.js("n_meets_conventional"), 0),
+      jit_fmt(jit_nmodes, 0),
+      jit_fmt(jit_pct_best, 1),
+      jit_fmt(jit_base_nll, 3),
+      jit_fmt(jit_best_nll, 3),
+      sprintf("%s - %s", jit_fmt(jit_ofl_min, 2), jit_fmt(jit_ofl_max, 2)),
+      sprintf("%s - %s", jit_fmt(jit_mmb_min, 1), jit_fmt(jit_mmb_max, 1))),
+    stringsAsFactors = FALSE)
+
+  flextable::flextable(jsum_df) |>
+    flextable::autofit() |>
+    flextable::set_caption(
+      caption = "Summary of the jitter analysis of the author-recommended model.",
+      autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "jitter-summary")
+    )
+}
+```
+
+```{r jitter-attribution, echo=FALSE, warning=FALSE, message=F}
+# Parameters separating the jitter clouds. Present only when the runs settled
+# into more than one optimum -- with a single optimum there is nothing to
+# attribute, and the chunk emits nothing rather than an empty table.
+if (jit_have && !is.null(jitter$attribution)) {
+  jattr_df <- jitter$attribution
+  jattr_df <- data.frame(
+    Parameter  = jattr_df$parameter,
+    Comparison = paste0(jattr_df$mode_a, " vs ", jattr_df$mode_b),
+    `Mean in A` = round(jattr_df$mean_a, 4),
+    `Mean in B` = round(jattr_df$mean_b, 4),
+    Difference = round(jattr_df$difference, 4),
+    `Std. difference` = round(jattr_df$std_difference, 2),
+    check.names = FALSE, stringsAsFactors = FALSE)
+
+  flextable::flextable(jattr_df) |>
+    flextable::autofit() |>
+    flextable::set_caption(
+      caption = paste("Parameters that most separate the jitter clouds, ranked by the",
+                      "standardized difference in fitted value between the best-fitting",
+                      "optimum and each alternative optimum."),
+      autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "jitter-attribution")
+    )
+}
+```
+
+```{r retro-setup, echo=FALSE, warning=FALSE, message=FALSE}
+# Retrospective outputs, written by 05_run_retrospective.R. Every value quoted
+# in the narrative below is pulled from these files at knit time so the text
+# cannot drift from the runs.
+retro_dir <- "Models/26_gmacs_update_newmat_plus_group/retro"
+
+.rd <- function(f) {
+  p <- file.path(retro_dir, f)
+  if (file.exists(p)) read.csv(p, stringsAsFactors = FALSE) else NULL
+}
+retro_rho  <- .rd("mohns_rho.csv")
+retro_rel  <- .rd("retro_peel_relative.csv")
+retro_refs <- .rd("retro_refpoints.csv")
+retro_diag <- .rd("retro_diagnostics.csv")
+# NOT read here: retro/prj_growth_year_diagnostic.csv. It is a developer
+# diagnostic, not an assessment result, and the copy currently on disk records
+# BMSY = OFL = 0 from a -nohess run. Nothing in the SAFE should be able to
+# reach those zeros.
+
+retro_have <- !is.null(retro_rho)
+
+# convenience accessors; return NA (not an error) when the runs are absent
+.rho <- function(mode, quantity) {
+  if (!retro_have) return(NA_real_)
+  v <- retro_rho$mohns_rho[retro_rho$mode == mode & retro_rho$quantity == quantity]
+  if (length(v)) v[1] else NA_real_
+}
+.fmt <- function(x, d = 3) if (is.na(x)) "NA" else formatC(x, format = "f", digits = d)
+
+retro_npeel <- if (!is.null(retro_rel)) max(retro_rel$peel) else NA_integer_
+retro_yr1   <- if (!is.null(retro_rel)) max(retro_rel$terminal_year) else NA_integer_
+retro_yrN   <- if (!is.null(retro_rel)) min(retro_rel$terminal_year) else NA_integer_
+```
+
+## Retrospective analysis
+`r if (!retro_have) "*Retrospective results not yet generated; run 05_run_retrospective.R to produce them.*"`
+
+Retrospective analyses were performed by sequentially removing the terminal year of data from the model, re-fitting, and comparing the resulting time series of estimated mature male biomass with the estimates from the model fit to the full data set. A retrospective pattern is a consistent directional change in an assessment estimate for a given year as additional years of data are added. `r if (retro_have) sprintf("Peels of one through %d years were run, giving terminal years from %d back to %d.", retro_npeel, retro_yr1, retro_yrN)`
+
+Mohn's $\rho$ is reported here as the mean across peels of the relative difference between each peel's terminal-year estimate and the estimate for that same year from the model fit to all of the data,
+
+$$\rho = \frac{1}{P}\sum_{p=1}^{P}\frac{X_{T_p,\,p}-X_{T_p,\,0}}{X_{T_p,\,0}},$$
+
+where $T_p$ is the terminal year of peel $p$ and $X_{\cdot,0}$ is the unpeeled fit. A positive $\rho$ therefore means the peels sit *above* the full model, i.e. that terminal biomass is revised downward as data accumulate. Hurtado-Ferro et al. (2015) suggest that $\rho$ outside $[-0.22,\,0.30]$ for a short-lived stock indicates a retrospective pattern worth reporting.
+
+Two retrospectives are presented. The **standard** retrospective removes the last $p$ years of all data streams. The **dropped-terminal-survey** retrospective additionally withholds the most recent survey year, which isolates the leverage of the single most recent survey observation on the terminal estimate. This distinction matters for this stock because, under the crab-year convention, an assessment with end year $N$ is fit to the summer survey from year $N+1$, so the terminal MMB estimate rests heavily on one very recent survey point.
+
+`r if (retro_have) sprintf("For mature male biomass, the standard retrospective gave Mohn's $\\rho$ = %s and the dropped-terminal-survey retrospective gave $\\rho$ = %s (Table \\@ref(tab:retro-rho), Figures \\@ref(fig:retro-mmb) and \\@ref(fig:retro-drop-survey)). Male recruitment gave $\\rho$ = %s.", .fmt(.rho("standard","mature_male_biomass")), .fmt(.rho("drop_survey","mature_male_biomass")), .fmt(.rho("standard","recruitment_male")))`
+
+Management quantities recomputed for each peel ($B_{MSY}$, $B/B_{MSY}$ and the total OFL) are shown in Figure \@ref(fig:retro-refpoints); these indicate how much the advice itself would have moved under each peel, which is the quantity of direct interest for setting a buffer for scientific uncertainty.
+
+<!-- >>> REVIEW: once the peels are final, characterise the DIRECTION and PRACTICAL
+     SIGNIFICANCE of the pattern here in words (the numbers above are pulled
+     automatically, but the interpretation is an author judgement). Also state
+     whether the retrospective motivates any change to the ABC buffer. -->
+
+Each peel was re-fit with the Hessian so that $B_{MSY}$, $F_{MSY}$, $F_{OFL}$ and the OFL are estimated for the peel rather than carried over from the full model. The projection file was left unmodified; GMACS shifts its reference-point averaging windows back by the number of peeled years internally.
 
 ## Model fits
 Fits to the survey indices of mature biomass were broadly similar across the models (Figure \@ref(fig:mmbfits)). All of the data-update candidate models (i.e., every model that incorporates the 2025 NMFS summer survey, regardless of plus group, comp-fix, hybrid, or maturity treatment) continue to have difficulty fitting the terminal year of female biomass. Inputting a yearly varying probability of terminal molt from the new maturity workflow (`Models 25.2`) shifts the estimated population dynamics modestly but does not resolve the female terminal-year fit (Figure \@ref(fig:mmbfits)).
@@ -1062,6 +1235,42 @@ flextable::flextable(max_grad_df) |>
     caption = "Maximum absolute value gradient and corresponding parameter for each candidate model.",
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "max-grad")
   )
+
+```
+
+```{r retro-rho, echo=FALSE, warning=FALSE, message=F}
+
+# Mohn's rho, written by 05_run_retrospective.R (retro_rho loaded in retro-setup).
+if (is.null(retro_rho)) {
+  cat("*Retrospective results not yet generated; run `05_run_retrospective.R`.*")
+} else {
+  rho_tab <- data.frame(
+    Quantity = c(mature_male_biomass = "Mature male biomass",
+                 recruitment_male    = "Male recruitment")[retro_rho$quantity],
+    Retrospective = c(standard    = "Standard",
+                      drop_survey = "Terminal survey dropped")[retro_rho$mode],
+    Peels          = retro_rho$n_peels,
+    MohnsRho       = round(retro_rho$mohns_rho, 3),
+    RalstonsSigma  = round(retro_rho$ralstons_sigma, 3),
+    MinRel         = round(retro_rho$min_rel_diff, 3),
+    MaxRel         = round(retro_rho$max_rel_diff, 3),
+    stringsAsFactors = FALSE, row.names = NULL
+  )
+  colnames(rho_tab) <- c("Quantity", "Retrospective", "Peels", "Mohn's rho",
+                         "Ralston's sigma", "Min rel. diff.", "Max rel. diff.")
+
+  flextable::flextable(rho_tab) |>
+    flextable::autofit() |>
+    flextable::set_caption(
+      caption = paste("Retrospective statistics. Mohn's rho is the mean over peels of",
+                      "(peel - full model) / full model at each peel's terminal year, so a",
+                      "positive value means terminal estimates are revised downward as data",
+                      "accumulate. Ralston's sigma is the log-scale RMSE of the same",
+                      "terminal-year pairs. The dropped-terminal-survey peels are compared",
+                      "against the full model fit to all data."),
+      autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "retro-rho")
+    )
+}
 
 ```
 
@@ -1607,41 +1816,121 @@ print(p_idx_final)
 
 \newpage 
 
-```{r jitter, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Directed OFLs resulting from 100 jitter runs for the models that span the structural and data choices presented in this document. Each point is a converged jitter run; clouds separated vertically reflect alternative local optima."}
+```{r jitter, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap=sprintf("Total OFL resulting from %s jitter runs of the author-recommended model. Each point is one run, plotted against its negative log likelihood; the upper panel shows the full spread and the lower panel the runs within 10 likelihood units of the best fit. The dashed line marks the base fit. Points separated horizontally into distinct clouds reflect alternative local optima.", jit_fmt(jit_n, 0))}
 
-# Drop the jitter PNG into plots/jittered_ofl.png (produced by 03_jittering_parallel.R).
-# If the file is not yet present, the chunk renders nothing but does not break the build.
+# Written by 06_run_jitter.R. If the runs have not been made the chunk renders a
+# visible note rather than breaking the build -- and rather than silently
+# omitting the figure, which would leave the surrounding text referring to
+# something that is not there.
 jitter_ofl_png <- "plots/jittered_results_ofl.png"
 if (file.exists(jitter_ofl_png)) {
   knitr::include_graphics(jitter_ofl_png)
 } else {
-  cat("*Jitter OFL figure not yet generated; see `03_jittering_parallel.R` to produce `plots/jittered_results_ofl.png`.*")
+  cat("*Jitter OFL figure not yet generated; run `06_run_jitter.R` to produce `plots/jittered_results_ofl.png`.*")
 }
 ```
 
 \newpage
 
 
-```{r jitt-rec, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Estimates of male recruitment in 2024 resulting from 100 jitter runs for the models that span the structural and data choices presented in this document. Each point is a converged jitter run; clouds separated vertically reflect alternative local optima."}
+```{r jitt-rec, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap=sprintf("Estimated male recruitment in %s resulting from %s jitter runs of the author-recommended model, plotted against the negative log likelihood of each run. The dashed line marks the base fit.", jit_fmt(jit_term_yr, 0), jit_fmt(jit_n, 0))}
 
 jitter_rec_png <- "plots/jittered_results_rec.png"
 if (file.exists(jitter_rec_png)) {
   knitr::include_graphics(jitter_rec_png)
 } else {
-  cat("*Jitter recruitment figure not yet generated; see `03_jittering_parallel.R` to produce `plots/jittered_results_rec.png`.*")
+  cat("*Jitter recruitment figure not yet generated; run `06_run_jitter.R` to produce `plots/jittered_results_rec.png`.*")
 }
 ```
 
 \newpage
 
 
-```{r jitt-ssb, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Estimates of MMB in 2024 resulting from 100 jitter runs for the models that span the structural and data choices presented in this document. Each point is a converged jitter run; clouds separated vertically reflect alternative local optima."}
+```{r jitt-ssb, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap=sprintf("Estimated mature male biomass in %s resulting from %s jitter runs of the author-recommended model, plotted against the negative log likelihood of each run. The dashed line marks the base fit.", jit_fmt(jit_term_yr, 0), jit_fmt(jit_n, 0))}
 
 jitter_ssb_png <- "plots/jittered_results_ssb.png"
 if (file.exists(jitter_ssb_png)) {
   knitr::include_graphics(jitter_ssb_png)
 } else {
-  cat("*Jitter ssb figure not yet generated; see `03_jittering_parallel.R` to produce `plots/jittered_results_ssb.png`.*")
+  cat("*Jitter MMB figure not yet generated; run `06_run_jitter.R` to produce `plots/jittered_results_ssb.png`.*")
+}
+```
+
+\newpage
+
+
+```{r jitt-converge, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap=sprintf("Maximum absolute gradient against negative log likelihood for %s jitter runs. The dashed line is the conventional convergence threshold of 0.001; the dotted line is the base fit's maximum gradient.", jit_fmt(jit_n, 0))}
+
+jitter_conv_png <- "plots/jitter_convergence.png"
+if (file.exists(jitter_conv_png)) {
+  knitr::include_graphics(jitter_conv_png)
+} else {
+  cat("*Jitter convergence figure not yet generated; run `06_run_jitter.R` to produce `plots/jitter_convergence.png`.*")
+}
+```
+
+\newpage
+
+
+```{r jitt-attrib, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Parameters that most separate the jitter clouds, ranked by the standardized difference in fitted value between the best-fitting mode and each alternative mode. A large value means the two optima disagree about that parameter."}
+
+jitter_attr_png <- "plots/jitter_param_attribution.png"
+if (file.exists(jitter_attr_png)) {
+  knitr::include_graphics(jitter_attr_png)
+} else {
+  cat("*Jitter parameter-attribution figure not generated. This figure exists only when the runs settle into more than one optimum; run `06_run_jitter.R` to produce `plots/jitter_param_attribution.png`.*")
+}
+```
+
+\newpage
+
+
+```{r retro-mmb, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Standard retrospective analysis of the accepted 2026 model. Each line is a fit with the terminal years of data sequentially removed; colour denotes the terminal year of the peel and the point marks each peel's terminal estimate."}
+
+retro_mmb_png <- "plots/retro_mmb.png"
+if (file.exists(retro_mmb_png)) {
+  knitr::include_graphics(retro_mmb_png)
+} else {
+  cat("*Retrospective MMB figure not yet generated; see `05_run_retrospective.R` to produce `plots/retro_mmb.png`.*")
+}
+```
+
+\newpage
+
+
+```{r retro-drop-survey, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Retrospective analysis with the terminal survey year withheld in addition to the peeled years, isolating the leverage of the most recent survey observation on the terminal biomass estimate. Peels are compared against the model fit to all data."}
+
+retro_drop_png <- "plots/retro_mmb_drop_survey.png"
+if (file.exists(retro_drop_png)) {
+  knitr::include_graphics(retro_drop_png)
+} else {
+  cat("*Dropped-terminal-survey retrospective figure not yet generated; see `05_run_retrospective.R` to produce `plots/retro_mmb_drop_survey.png`.*")
+}
+```
+
+\newpage
+
+
+```{r retro-terminal, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Terminal-year mature male biomass from each retrospective peel (coloured) against the mature male biomass time series estimated by the model fit to all data (black). Systematic separation between the coloured and black series is the retrospective pattern."}
+
+retro_term_png <- "plots/retro_terminal_mmb.png"
+if (file.exists(retro_term_png)) {
+  knitr::include_graphics(retro_term_png)
+} else {
+  cat("*Terminal-year retrospective figure not yet generated; see `05_run_retrospective.R` to produce `plots/retro_terminal_mmb.png`.*")
+}
+```
+
+\newpage
+
+
+```{r retro-refpoints, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Management quantities recomputed for each retrospective peel: the BMSY proxy, the total OFL, and current MMB relative to BMSY, plotted against the terminal year of each peel."}
+
+retro_ref_png <- "plots/retro_refpoints.png"
+if (file.exists(retro_ref_png)) {
+  knitr::include_graphics(retro_ref_png)
+} else {
+  cat("*Retrospective reference-point figure not yet generated; see `05_run_retrospective.R` to produce `plots/retro_refpoints.png`.*")
 }
 ```
 

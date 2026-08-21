@@ -164,6 +164,21 @@ hygiene.
   priority; not done yet because it means changing the `system2()` invocation, which is on the
   path that produces the numbers (rule 3).
 
+  **A reset did recur, 2026-08-21**, during `06`'s 100-run sweep. But note the cap is per-session
+  and the hardware is not: `06` was at its 4 workers *and Grant was running two models by hand*,
+  so ~6 `gmacs.exe` processes were pinned at once. So this is not evidence that 4 is unsafe on its
+  own — it is evidence that **the cap needs to be global, not per-process-tree**. Until something
+  enforces that, anyone starting a GMACS run should check whether another is already going.
+  Damage: 18 of 44 jitter directories were left half-written; 26 survived and were reused.
+  The sweep was resumed at `--cores 2`.
+
+- **Crash-truncated output files parse.** The reset above produced `Gmacsall.out` files that stop
+  mid-block and read fine for hundreds of lines. `06_run_jitter.R`'s resume guard now requires the
+  file to end with GMACS's `>EOD<` terminator (`.ends_cleanly()`), and `prepare_run_dir()` wipes a
+  directory's previous outputs before re-running it, so a stale file cannot be mistaken for the
+  new run's result. **`05_run_retrospective.R` should carry the same terminator check** if it does
+  not already — existence of `Gmacsall.out` is not evidence a peel finished.
+
 ## From the 2026-08-21 adversarial review — not yet triaged
 
 Found by review of `832d034~1..HEAD`. Two were confirmed against run artifacts on disk, not just

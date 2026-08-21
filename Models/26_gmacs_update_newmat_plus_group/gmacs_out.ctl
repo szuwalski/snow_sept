@@ -5,7 +5,7 @@
 2
 # Block structure (number of blocks per block group)
 3 # block group 1
-43 # block group 2
+44 # block group 2
 # The blocks
 #Block 1: 
 2018 2018 # block_group_1_block_1
@@ -55,12 +55,13 @@
 2023 2023 # block_group_2_block_41
 2024 2024 # block_group_2_block_42
 2025 2025 # block_group_2_block_43
+2026 2026 # block_group_2_block_44
 
 ##  ------------------------------------------------------------------------------------ ##
 ##  OTHER  CONTROLS
 ##  ------------------------------------------------------------------------------------ ##
 1982 # First year of recruitment estimation
-2024 # Last year of recruitment estimation
+2025 # Last year of recruitment estimation
    1 # Consider terminal molting (0 = off, 1 = on). If on, the calc_stock_recruitment_relationship() isn't called in the procedure
    1 # Phase for recruitment estimation
    2 # Phase for recruitment sex-ratio estimation
@@ -102,7 +103,7 @@
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
             16.500000   -10.000000    20.000000          0   -10.000000    20.000000     -2      0      0      0      0      0      0  30.0000 # Log(R0)
             15.000000   -10.000000    30.000000          0    10.000000    20.000000     -1      0      0      0      0      0      0  30.0000 # Log(Rinitial)
-            14.344846   -10.000000    30.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Log(Rbar)
+            13.951542   -10.000000    30.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Log(Rbar)
             32.500000     7.500000    42.500000          0    32.500000     2.250000     -4      0      0      0      0      0      0  30.0000 # Recruitment_ra-males
              1.000000     0.100000    10.000000          0     0.100000     5.000000     -4      0      0      0      0      0      0  30.0000 # Recruitment_rb-males
              0.000000   -10.000000    10.000000          0     0.000000    20.000000     -4      0      0      0      0      0      0  30.0000 # Recruitment_ra-females (ln-scale offset to males!)
@@ -110,89 +111,89 @@
             -0.900000   -10.000000     0.750000          0   -10.000000     0.750000     -4      0      0      0      0      0      0  30.0000 # log(SigmaR)
              0.750000     0.200000     1.000000          3     3.000000     2.000000     -2      0      0      0      0      0      0  30.0000 # Steepness
              0.010000     0.000100     1.000000          3     1.010000     1.010000     -3      0      0      0      0      0      0  30.0000 # Rho
-             9.912577   -10.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_1
-             9.918617   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_2
-             9.947454   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_3
-            10.058685   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_4
-            10.570863   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_5
-            11.186819   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_6
-            11.647340   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_7
-            11.809554   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_8
-            11.838617   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_9
-            11.807557   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_10
-            11.718753   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_11
-            11.401135   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_12
-            10.995562   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_13
-            10.624606   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_14
-            10.650449   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_15
-            11.539933   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_16
-            11.082296   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_17
-            10.291976   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_18
-             9.300547   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_19
-             8.308949   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_20
-             7.482653   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_21
-             7.079106   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_22
-            12.906133   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_1
-            13.485064   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_2
-            13.462022   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_3
-            13.528356   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_4
-            12.982805   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_5
-            13.037900   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_6
-            12.732642   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_7
-            12.467261   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_8
-            12.381472   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_9
-            11.876659   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_10
-            11.291958   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_11
-            11.236484   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_12
-            11.322179   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_13
-            10.339880   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_14
-             8.998670   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_15
-             7.986845   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_16
-             7.226731   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_17
-             6.675769   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_18
-             6.272840   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_19
-             5.974473   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_20
-             5.766972   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_21
-             5.659310   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_22
-            12.238713   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_1
-            12.256454   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_2
-            12.301133   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_3
-            12.403190   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_4
-            13.541992   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_5
-            13.608149   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_6
-            13.000750   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_7
-            12.154293   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_8
-            11.021655   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_9
-             9.961645   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_10
-             9.228110   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_11
-             8.800570   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_12
-             8.595939   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_13
-             8.548630   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_14
-             8.447426   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_15
-             8.236344   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_16
-             7.960975   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_17
-             7.687943   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_18
-             7.433275   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_19
-             7.193735   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_20
-             7.029509   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_21
-             6.933843   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_22
-           -13.808801   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_1
-           -13.856271   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_2
-           -13.945429   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_3
-           -14.092978   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_4
-           -13.629878   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_5
-           -13.461128   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_6
-           -14.592155   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_7
-           -15.615028   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_8
-           -16.423134   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_9
-           -17.050835   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_10
-           -17.503836   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_11
-           -17.844857   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_12
-           -18.114808   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_13
-           -18.341099   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_14
-           -18.537272   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_15
-           -18.710308   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_16
-           -18.863880   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_17
+             9.731270   -10.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_1
+             9.745066   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_2
+             9.791792   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_3
+             9.917115   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_4
+            10.351337   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_5
+            10.890769   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_6
+            11.331700   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_7
+            11.525384   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_8
+            11.574321   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_9
+            11.559912   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_10
+            11.493947   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_11
+            11.243312   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_12
+            10.953098   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_13
+            10.726453   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_14
+            10.824700   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_15
+            11.868920   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_16
+            11.278980   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_17
+            10.251486   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_18
+             9.168422   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_19
+             8.138278   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_20
+             7.305821   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_21
+             6.895047   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_mature_newshell_class_22
+            12.132047   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_1
+            12.309187   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_2
+            13.179643   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_3
+            13.671253   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_4
+            12.910051   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_5
+            12.955480   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_6
+            12.638765   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_7
+            12.366407   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_8
+            12.265124   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_9
+            11.707438   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_10
+            11.053672   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_11
+            10.932551   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_12
+            10.996984   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_13
+            10.031314   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_14
+             8.684757   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_15
+             7.651842   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_16
+             6.909646   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_17
+             6.387160   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_18
+             6.005511   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_19
+             5.722320   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_20
+             5.524884   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_21
+             5.422215   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_male_mature_immature_newshell_class_22
+            12.192172   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_1
+            12.197407   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_2
+            12.222951   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_3
+            12.342937   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_4
+            13.356583   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_5
+            13.638203   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_6
+            13.161822   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_7
+            12.323915   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_8
+            11.243395   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_9
+            10.103018   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_10
+             9.309334   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_11
+             8.819844   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_12
+             8.530335   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_13
+             8.442164   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_14
+             8.314980   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_15
+             8.093907   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_16
+             7.810707   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_17
+             7.520332   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_18
+             7.240551   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_19
+             6.978204   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_20
+             6.802113   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_21
+             6.722945   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_mature_newshell_class_22
+           -13.836768   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_1
+           -13.858574   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_2
+           -13.923086   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_3
+           -13.966042   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_4
+           -13.701718   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_5
+           -13.421714   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_6
+           -14.326900   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_7
+           -15.380639   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_8
+           -16.297641   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_9
+           -16.986382   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_10
+           -17.469901   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_11
+           -17.812730   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_12
+           -18.092446   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_13
+           -18.325581   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_14
+           -18.526931   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_15
+           -18.704078   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_16
+           -18.861031   -20.000000    25.000000          0    10.000000    20.000000      1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_17
            -19.000000   -20.000000    25.000000          0    10.000000    20.000000     -1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_18
            -19.000000   -20.000000    25.000000          0    10.000000    20.000000     -1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_19
            -19.000000   -20.000000    25.000000          0    10.000000    20.000000     -1      0      0      0      0      0      0  30.0000 # Initial_logN_for_sex_female_mature_immature_newshell_class_20
@@ -295,6 +296,10 @@
      0.00000766     0.00001290     0.00002000     0.00002950     0.00004170     0.00005680     0.00007530     0.00009745     0.00012369     0.00015433     0.00018974     0.00023028     0.00027631     0.00032821     0.00038633     0.00045106     0.00052275     0.00060180     0.00068856     0.00078342     0.00088677     0.00099897
      0.00000766     0.00001290     0.00002000     0.00002950     0.00004170     0.00005680     0.00007530     0.00009745     0.00012369     0.00015433     0.00018974     0.00023028     0.00027631     0.00032821     0.00038633     0.00045106     0.00052275     0.00060180     0.00068856     0.00078342     0.00088677     0.00099897
      0.00000766     0.00001290     0.00002000     0.00002950     0.00004170     0.00005680     0.00007530     0.00009745     0.00012369     0.00015433     0.00018974     0.00023028     0.00027631     0.00032821     0.00038633     0.00045106     0.00052275     0.00060180     0.00068856     0.00078342     0.00088677     0.00099897
+     0.00000766     0.00001290     0.00002000     0.00002950     0.00004170     0.00005680     0.00007530     0.00009745     0.00012369     0.00015433     0.00018974     0.00023028     0.00027631     0.00032821     0.00038633     0.00045106     0.00052275     0.00060180     0.00068856     0.00078342     0.00088677     0.00099897
+     0.00000766     0.00001290     0.00002000     0.00002950     0.00004170     0.00005680     0.00007530     0.00009745     0.00012369     0.00015433     0.00018974     0.00023028     0.00027631     0.00032821     0.00038633     0.00045106     0.00052275     0.00060180     0.00068856     0.00078342     0.00088677     0.00099897
+     0.00000917     0.00001440     0.00002130     0.00002980     0.00004030     0.00005290     0.00006770     0.00008480     0.00010445     0.00012676     0.00015186     0.00017988     0.00021096     0.00024523     0.00028282     0.00032385     0.00036845     0.00041673     0.00046883     0.00052485     0.00058492     0.00064916
+     0.00000917     0.00001440     0.00002130     0.00002980     0.00004030     0.00005290     0.00006770     0.00008480     0.00010445     0.00012676     0.00015186     0.00017988     0.00021096     0.00024523     0.00028282     0.00032385     0.00036845     0.00041673     0.00046883     0.00052485     0.00058492     0.00064916
      0.00000917     0.00001440     0.00002130     0.00002980     0.00004030     0.00005290     0.00006770     0.00008480     0.00010445     0.00012676     0.00015186     0.00017988     0.00021096     0.00024523     0.00028282     0.00032385     0.00036845     0.00041673     0.00046883     0.00052485     0.00058492     0.00064916
      0.00000917     0.00001440     0.00002130     0.00002980     0.00004030     0.00005290     0.00006770     0.00008480     0.00010445     0.00012676     0.00015186     0.00017988     0.00021096     0.00024523     0.00028282     0.00032385     0.00036845     0.00041673     0.00046883     0.00052485     0.00058492     0.00064916
      0.00000917     0.00001440     0.00002130     0.00002980     0.00004030     0.00005290     0.00006770     0.00008480     0.00010445     0.00012676     0.00015186     0.00017988     0.00021096     0.00024523     0.00028282     0.00032385     0.00036845     0.00041673     0.00046883     0.00052485     0.00058492     0.00064916
@@ -476,66 +481,68 @@
 
 # Inputs for sex * type 1
 # MAIN PARS: Initial  Lower_bound  Upper_bound Prior_type       Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-             1.035425    -5.000000    20.000000          0     2.049000     1.000000      3      0      0      0      0      0      0   0.3000 # Alpha_male
-            -0.239439    -1.000000     0.000000          0    -0.225800     0.500000      3      0      0      0      0      0      0   0.3000 # Beta_male
+             0.038439    -5.000000    20.000000          0     2.049000     1.000000      3      0      0      0      0      0      0   0.3000 # Alpha_male
+            -0.254537    -1.000000     0.000000          0    -0.225800     0.500000      3      0      0      0      0      0      0   0.3000 # Beta_male
              0.250000     0.001000     5.000000          0     0.000000   999.000000     -3      0      0      0      0      0      0   0.3000 # Gscale_male
 # EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1      Prior_2  Phase Reltve 
 # Inputs for sex * type 2
 # MAIN PARS: Initial  Lower_bound  Upper_bound Prior_type       Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-            -4.799531    -5.000000    10.000000          0    -1.153900     1.000000      3      0      0      0      0      0      0   0.3000 # Alpha_female
-            -0.425957    -1.000000     0.000000          0    -0.338900     0.500000      3      0      0      0      0      0      0   0.3000 # Beta_female
+            -4.745110    -5.000000    10.000000          0    -1.153900     1.000000      3      0      0      0      0      0      0   0.3000 # Alpha_female
+            -0.424079    -1.000000     0.000000          0    -0.338900     0.500000      3      0      0      0      0      0      0   0.3000 # Beta_female
              0.250000     0.001000     5.000000          0     0.000000   999.000000     -3      0      0      0      0      0      0   0.3000 # Gscale_female
 # EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1      Prior_2  Phase Reltve 
 
 # Using custom mature probability
 #Pre-specified mature probability
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0020 0.0030 0.0130 0.0310 0.0580 0.1320 0.2290 0.2920 0.3160 0.3510 0.3770 0.3720 0.3660 0.4210 0.5510 0.7050 0.8660 0.9190 0.9340 0.9590 0.9800 0.9920 
-0.0030 0.0040 0.0100 0.0170 0.0320 0.0720 0.1350 0.1810 0.2280 0.3220 0.3610 0.3610 0.3440 0.3750 0.4590 0.5890 0.7340 0.8090 0.8360 0.8720 0.9210 0.9240 
-0.0010 0.0020 0.0070 0.0260 0.0470 0.0880 0.1410 0.1850 0.2180 0.2630 0.3050 0.3160 0.3070 0.3310 0.4540 0.6680 0.8350 0.8870 0.9050 0.9330 0.9590 0.9750 
-0.0010 0.0040 0.0130 0.0400 0.0910 0.1560 0.2470 0.2950 0.3190 0.3910 0.4330 0.4440 0.4560 0.5050 0.6250 0.7840 0.9050 0.9450 0.9580 0.9680 0.9820 0.9870 
-0.0020 0.0040 0.0150 0.0570 0.1400 0.2820 0.4170 0.4880 0.5680 0.6390 0.6530 0.6360 0.6360 0.6700 0.7700 0.8720 0.9350 0.9600 0.9710 0.9800 0.9850 0.9950 
-0.0000 0.0020 0.0060 0.0200 0.0500 0.1120 0.1790 0.2120 0.2430 0.2750 0.3110 0.3220 0.3460 0.3960 0.5590 0.7670 0.8830 0.9450 0.9530 0.9600 0.9750 0.9790 
-0.0000 0.0020 0.0060 0.0160 0.0440 0.1250 0.2130 0.2840 0.3440 0.3910 0.4140 0.3990 0.3790 0.4770 0.5890 0.7730 0.8980 0.9630 0.9750 0.9830 0.9920 0.9940 
-0.0040 0.0060 0.0130 0.0400 0.0990 0.1750 0.2520 0.3070 0.3570 0.3970 0.4200 0.4020 0.3890 0.4230 0.5040 0.6740 0.8290 0.8870 0.9060 0.9620 0.9720 0.9790 
-0.0110 0.0210 0.0140 0.0290 0.0220 0.0540 0.1220 0.1890 0.2360 0.2870 0.3170 0.3130 0.3210 0.3420 0.4360 0.5870 0.7520 0.8250 0.8800 0.9270 0.9740 0.9810 
-0.0090 0.0130 0.0360 0.0480 0.0470 0.0930 0.1580 0.2340 0.3230 0.3780 0.4050 0.4160 0.4220 0.4540 0.5820 0.7600 0.8890 0.9300 0.9470 0.9680 0.9810 0.9860 
-0.0050 0.0030 0.0130 0.0180 0.0440 0.0980 0.1670 0.2180 0.2710 0.3170 0.4000 0.3970 0.4190 0.5040 0.6410 0.7850 0.9080 0.9260 0.9420 0.9500 0.9610 0.9740 
-0.0070 0.0080 0.0150 0.0220 0.0470 0.1000 0.1790 0.2470 0.3050 0.3510 0.3920 0.3970 0.4380 0.5230 0.6930 0.8560 0.9520 0.9690 0.9750 0.9830 0.9890 0.9920 
-0.0020 0.0090 0.0100 0.0160 0.0370 0.0910 0.1560 0.2140 0.2570 0.3030 0.3270 0.3190 0.3340 0.3950 0.5350 0.7750 0.8980 0.9510 0.9650 0.9750 0.9840 0.9990 
-0.0050 0.0020 0.0270 0.0440 0.0450 0.0630 0.1150 0.1780 0.2280 0.2860 0.3270 0.3420 0.3520 0.4200 0.5720 0.7530 0.8930 0.9390 0.9610 0.9830 0.9880 0.9840 
-0.0000 0.0020 0.0040 0.0120 0.0320 0.0670 0.1090 0.1730 0.2070 0.2610 0.2700 0.2520 0.2600 0.3090 0.4250 0.6580 0.8210 0.8850 0.9130 0.9340 0.9720 0.9750 
-0.0030 0.0070 0.0150 0.0280 0.0530 0.1090 0.1770 0.2390 0.2880 0.3380 0.3900 0.4010 0.4130 0.4650 0.6070 0.7710 0.8880 0.9310 0.9440 0.9660 0.9780 0.9840 
-0.0010 0.0040 0.0140 0.0350 0.1220 0.2120 0.2360 0.2910 0.3580 0.4390 0.4860 0.4920 0.4960 0.5380 0.6790 0.8470 0.9310 0.9640 0.9730 0.9830 0.9920 0.9950 
-0.0010 0.0030 0.0060 0.0240 0.0740 0.1650 0.1980 0.2740 0.3340 0.3490 0.3990 0.4190 0.4890 0.5700 0.6630 0.8040 0.9200 0.9600 0.9670 0.9870 0.9880 0.9710 
-0.0010 0.0040 0.0070 0.0190 0.0610 0.1350 0.2400 0.3230 0.3920 0.4050 0.4210 0.4080 0.3980 0.4490 0.5850 0.7800 0.8930 0.9450 0.9600 0.9700 0.9860 0.9950 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0010 0.0030 0.0100 0.0260 0.0700 0.1550 0.2430 0.2970 0.3300 0.3630 0.3810 0.3630 0.3390 0.3710 0.4690 0.6820 0.8460 0.9100 0.9280 0.9450 0.9620 0.9730 
-0.0040 0.0100 0.0130 0.0330 0.0820 0.1770 0.2940 0.3730 0.4230 0.4680 0.4640 0.4550 0.4570 0.5290 0.6330 0.7830 0.8870 0.9140 0.9320 0.9510 0.9700 0.9760 
-0.0030 0.0050 0.0060 0.0240 0.0620 0.1570 0.2620 0.3390 0.3900 0.3980 0.3950 0.3800 0.4690 0.5890 0.7110 0.8210 0.8890 0.9250 0.9300 0.9380 0.9600 0.9620 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0040 0.0090 0.0310 0.0640 0.1170 0.2220 0.3000 0.3620 0.4030 0.4200 0.3920 0.4030 0.4850 0.5890 0.7270 0.8330 0.8730 0.8970 0.9210 0.9560 0.9770 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0050 0.0050 0.0070 0.0240 0.0560 0.1170 0.1980 0.2520 0.2900 0.3530 0.4170 0.4190 0.4560 0.4960 0.6400 0.7980 0.8850 0.9250 0.9230 0.9340 0.9580 0.9710 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0030 0.0060 0.0120 0.0320 0.0820 0.1750 0.2650 0.3290 0.3510 0.3810 0.3960 0.4200 0.5030 0.6370 0.7530 0.8730 0.9450 0.9750 0.9870 0.9900 0.9960 0.9970 
-0.0030 0.0060 0.0120 0.0340 0.0950 0.2020 0.3090 0.3960 0.4620 0.5450 0.6020 0.6020 0.5560 0.5570 0.6770 0.8300 0.9210 0.9550 0.9770 0.9900 0.9920 0.9960 
-0.0100 0.0200 0.1480 0.0930 0.1130 0.2200 0.3170 0.3420 0.3730 0.4610 0.5250 0.5900 0.6350 0.6680 0.7680 0.8860 0.9090 0.9250 0.9320 0.9650 0.9550 0.9990 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
-0.0050 0.0100 0.0130 0.0550 0.0840 0.2810 0.3650 0.4050 0.4130 0.4120 0.4180 0.4210 0.4950 0.6080 0.7950 0.9130 0.9640 0.9850 0.9820 0.9920 0.9970 0.9990 
-0.0020 0.0100 0.0130 0.0250 0.0410 0.0810 0.1460 0.2080 0.2940 0.3480 0.4130 0.4290 0.4570 0.5580 0.7110 0.8630 0.9270 0.9610 0.9710 0.9830 0.9870 0.9980 
-0.0010 0.0020 0.0070 0.0310 0.1010 0.1720 0.2450 0.3010 0.3220 0.3580 0.4070 0.4000 0.4270 0.4940 0.6450 0.8300 0.9280 0.9590 0.9650 0.9820 0.9890 0.9950 
-0.0020 0.0030 0.0050 0.0200 0.0650 0.1380 0.2160 0.2730 0.2930 0.3190 0.3510 0.3830 0.3790 0.4530 0.5860 0.7770 0.8700 0.9300 0.9350 0.9590 0.9720 0.9980 
-0.0010 0.0010 0.0060 0.0260 0.0750 0.1690 0.2640 0.3370 0.3790 0.4570 0.5090 0.5070 0.5260 0.5940 0.6920 0.7950 0.9090 0.9320 0.9610 0.9640 0.9830 0.9360 
-0.0030 0.0060 0.0160 0.0310 0.0670 0.1400 0.2190 0.2800 0.3270 0.3750 0.4100 0.4110 0.4270 0.4880 0.6120 0.7750 0.8860 0.9280 0.9430 0.9610 0.9760 0.9820 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0145 0.0328 0.0599 0.1346 0.2308 0.2912 0.3175 0.3543 0.3821 0.3786 0.3739 0.4280 0.5611 0.7120 0.8712 0.9211 0.9372 0.9604 0.9813 0.9925 
+0.0000 0.0000 0.0110 0.0188 0.0353 0.0755 0.1401 0.1867 0.2362 0.3293 0.3722 0.3735 0.3612 0.3915 0.4766 0.6093 0.7523 0.8244 0.8520 0.8875 0.9273 0.9362 
+0.0000 0.0000 0.0088 0.0279 0.0502 0.0929 0.1487 0.1924 0.2272 0.2730 0.3153 0.3315 0.3258 0.3477 0.4706 0.6827 0.8425 0.8920 0.9073 0.9351 0.9608 0.9759 
+0.0000 0.0000 0.0152 0.0403 0.0887 0.1581 0.2463 0.2979 0.3258 0.3976 0.4404 0.4573 0.4708 0.5155 0.6351 0.7930 0.9074 0.9462 0.9588 0.9688 0.9815 0.9866 
+0.0000 0.0000 0.0185 0.0594 0.1420 0.2901 0.4282 0.4972 0.5810 0.6495 0.6619 0.6473 0.6514 0.6844 0.7823 0.8785 0.9375 0.9623 0.9727 0.9812 0.9853 0.9958 
+0.0000 0.0000 0.0077 0.0210 0.0516 0.1153 0.1819 0.2166 0.2512 0.2833 0.3208 0.3325 0.3593 0.4021 0.5636 0.7693 0.8821 0.9431 0.9521 0.9567 0.9708 0.9753 
+0.0000 0.0000 0.0075 0.0175 0.0474 0.1330 0.2238 0.2938 0.3556 0.4011 0.4221 0.4079 0.3895 0.4849 0.5945 0.7785 0.9015 0.9632 0.9746 0.9841 0.9919 0.9930 
+0.0000 0.0000 0.0202 0.0529 0.1163 0.1931 0.2673 0.3193 0.3675 0.4061 0.4303 0.4165 0.4052 0.4359 0.5131 0.6805 0.8315 0.8847 0.9029 0.9600 0.9721 0.9788 
+0.0000 0.0000 0.0154 0.0302 0.0236 0.0568 0.1248 0.1950 0.2441 0.2955 0.3258 0.3236 0.3321 0.3517 0.4470 0.6024 0.7636 0.8325 0.8845 0.9276 0.9706 0.9795 
+0.0000 0.0000 0.0452 0.0515 0.0501 0.0988 0.1646 0.2408 0.3302 0.3852 0.4100 0.4247 0.4329 0.4644 0.5931 0.7691 0.8935 0.9322 0.9490 0.9688 0.9802 0.9873 
+0.0000 0.0000 0.0177 0.0202 0.0451 0.0994 0.1703 0.2254 0.2811 0.3279 0.4094 0.4097 0.4309 0.5115 0.6483 0.7938 0.9121 0.9296 0.9440 0.9517 0.9595 0.9735 
+0.0000 0.0000 0.0189 0.0235 0.0479 0.1041 0.1846 0.2538 0.3150 0.3589 0.4024 0.4123 0.4564 0.5417 0.7071 0.8639 0.9568 0.9731 0.9790 0.9858 0.9916 0.9934 
+0.0000 0.0000 0.0120 0.0171 0.0375 0.0939 0.1607 0.2206 0.2648 0.3112 0.3354 0.3318 0.3487 0.4109 0.5518 0.7879 0.9032 0.9532 0.9670 0.9766 0.9860 0.9992 
+0.0000 0.0000 0.0324 0.0462 0.0447 0.0637 0.1168 0.1785 0.2292 0.2903 0.3331 0.3524 0.3652 0.4336 0.5860 0.7673 0.9002 0.9420 0.9633 0.9833 0.9887 0.9880 
+0.0000 0.0000 0.0054 0.0134 0.0328 0.0685 0.1113 0.1740 0.2097 0.2652 0.2739 0.2609 0.2708 0.3193 0.4377 0.6711 0.8323 0.8932 0.9199 0.9386 0.9725 0.9769 
+0.0000 0.0000 0.0180 0.0288 0.0531 0.1101 0.1797 0.2423 0.2943 0.3459 0.3972 0.4135 0.4247 0.4738 0.6137 0.7762 0.8881 0.9303 0.9439 0.9653 0.9769 0.9835 
+0.0000 0.0000 0.0166 0.0373 0.1238 0.2170 0.2420 0.2964 0.3646 0.4434 0.4905 0.5006 0.5084 0.5516 0.6926 0.8565 0.9355 0.9663 0.9749 0.9851 0.9907 0.9955 
+0.0000 0.0000 0.0067 0.0232 0.0757 0.1731 0.2075 0.2816 0.3430 0.3581 0.4071 0.4316 0.5019 0.5829 0.6761 0.8156 0.9268 0.9629 0.9694 0.9876 0.9880 0.9738 
+0.0000 0.0000 0.0085 0.0199 0.0624 0.1392 0.2446 0.3285 0.3983 0.4069 0.4184 0.4096 0.4063 0.4619 0.5979 0.7925 0.9013 0.9490 0.9631 0.9716 0.9873 0.9949 
+0.0000 0.0000 0.0146 0.0272 0.0715 0.1502 0.2407 0.3089 0.3551 0.3983 0.4347 0.4608 0.5019 0.5644 0.6684 0.7997 0.8936 0.9293 0.9493 0.9618 0.9738 0.9793 
+0.0000 0.0000 0.0120 0.0289 0.0695 0.1562 0.2446 0.2991 0.3342 0.3674 0.3866 0.3740 0.3521 0.3825 0.4836 0.6909 0.8492 0.9107 0.9287 0.9416 0.9605 0.9712 
+0.0000 0.0000 0.0160 0.0359 0.0892 0.1903 0.3084 0.3885 0.4356 0.4750 0.4700 0.4633 0.4683 0.5395 0.6425 0.7918 0.8942 0.9195 0.9361 0.9528 0.9713 0.9774 
+0.0000 0.0000 0.0081 0.0264 0.0654 0.1626 0.2692 0.3460 0.3980 0.4060 0.4024 0.3881 0.4804 0.5980 0.7207 0.8291 0.8953 0.9294 0.9337 0.9421 0.9620 0.9650 
+0.0000 0.0000 0.0191 0.0526 0.1024 0.1710 0.2638 0.3149 0.3747 0.4459 0.4950 0.5007 0.5040 0.5384 0.6199 0.7724 0.8897 0.9341 0.9548 0.9676 0.9790 0.9839 
+0.0000 0.0000 0.0111 0.0322 0.0650 0.1204 0.2265 0.3051 0.3678 0.4089 0.4237 0.3957 0.4088 0.4909 0.5958 0.7346 0.8334 0.8743 0.9001 0.9216 0.9548 0.9769 
+0.0000 0.0000 0.0156 0.0437 0.1078 0.1955 0.2954 0.3584 0.4054 0.4684 0.5031 0.5167 0.5258 0.5586 0.6487 0.7946 0.8926 0.9328 0.9505 0.9649 0.9751 0.9801 
+0.0000 0.0000 0.0080 0.0247 0.0558 0.1193 0.2018 0.2551 0.2949 0.3574 0.4204 0.4247 0.4634 0.5019 0.6469 0.8035 0.8892 0.9258 0.9236 0.9344 0.9575 0.9698 
+0.0000 0.0000 0.0151 0.0454 0.0934 0.1877 0.3014 0.3520 0.4066 0.4539 0.4928 0.5107 0.5452 0.6156 0.7390 0.8569 0.9252 0.9529 0.9616 0.9728 0.9773 0.9774 
+0.0000 0.0000 0.0148 0.0344 0.0845 0.1803 0.2704 0.3343 0.3557 0.3840 0.3995 0.4292 0.5147 0.6480 0.7616 0.8791 0.9484 0.9762 0.9879 0.9906 0.9960 0.9974 
+0.0000 0.0000 0.0140 0.0363 0.0988 0.2110 0.3195 0.4040 0.4681 0.5498 0.6088 0.6145 0.5716 0.5731 0.6956 0.8450 0.9294 0.9604 0.9798 0.9905 0.9929 0.9964 
+0.0000 0.0000 0.1618 0.0998 0.1170 0.2265 0.3215 0.3476 0.3796 0.4676 0.5330 0.6017 0.6485 0.6773 0.7752 0.8906 0.9164 0.9323 0.9386 0.9690 0.9578 0.9984 
+0.0000 0.0000 0.0182 0.0340 0.0715 0.1475 0.2288 0.2903 0.3402 0.3887 0.4245 0.4322 0.4501 0.5094 0.6303 0.7867 0.8919 0.9320 0.9476 0.9635 0.9766 0.9830 
+0.0000 0.0000 0.0175 0.0595 0.0904 0.2770 0.3590 0.4010 0.4147 0.4130 0.4192 0.4265 0.5006 0.6121 0.7990 0.9160 0.9654 0.9857 0.9817 0.9921 0.9969 0.9987 
+0.0000 0.0000 0.0160 0.0268 0.0429 0.0844 0.1485 0.2068 0.2958 0.3506 0.4217 0.4417 0.4730 0.5681 0.7150 0.8659 0.9266 0.9607 0.9714 0.9836 0.9874 0.9982 
+0.0000 0.0000 0.0080 0.0334 0.1058 0.1820 0.2534 0.3066 0.3272 0.3602 0.4121 0.4105 0.4333 0.5050 0.6532 0.8384 0.9318 0.9603 0.9682 0.9838 0.9895 0.9954 
+0.0000 0.0000 0.0058 0.0204 0.0645 0.1388 0.2176 0.2756 0.2965 0.3210 0.3548 0.3900 0.3872 0.4591 0.5938 0.7850 0.8748 0.9328 0.9386 0.9605 0.9760 0.9979 
+0.0000 0.0000 0.0069 0.0257 0.0733 0.1712 0.2673 0.3406 0.3850 0.4622 0.5145 0.5189 0.5398 0.6045 0.6991 0.8006 0.9117 0.9326 0.9615 0.9655 0.9812 0.9300 
+0.0000 0.0000 0.0101 0.0215 0.0608 0.1163 0.1823 0.2655 0.3543 0.4103 0.4658 0.5075 0.5204 0.6162 0.7134 0.8121 0.8938 0.9313 0.9805 0.9792 0.9823 0.9985 
 
 # Using custom mature probability
 #Pre-specified mature probability
+0.0061 0.0189 0.0584 0.1775 0.4667 0.7761 0.8119 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 
 0.0061 0.0189 0.0584 0.1775 0.4667 0.7761 0.8119 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 
 0.0061 0.0189 0.0584 0.1775 0.4667 0.7761 0.8119 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 
 0.0061 0.0189 0.0584 0.1775 0.4667 0.7761 0.8119 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 0.9999 
@@ -611,21 +618,21 @@
  # sex*maturity state: female & 2
 
 #      Initial    Lower_bound    Upper_bound  Prior_type        Prior_1        Prior_2  Phase 
-    0.28820486     0.15000000     0.70000000           1     0.27100000     0.00454000      4 # M_base_male_mature
-    1.54765063    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_mature_block_group_1_block_1
-    0.73148982    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_mature_block_group_1_block_2
+    0.29055900     0.15000000     0.70000000           1     0.27100000     0.00454000      4 # M_base_male_mature
+    0.37114851    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_mature_block_group_1_block_1
+    1.09869802    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_mature_block_group_1_block_2
     0.00000000    -1.00000000    10.00000000           0     0.00000000     0.25000000     -4 # M_male_mature_block_group_1_block_3
-   -0.02416672    -1.00000000     1.00000000           0     0.00000000     0.00000000      4 # M_base_male_immature
+   -0.18788459    -1.00000000     1.00000000           0     0.00000000     0.00000000      4 # M_base_male_immature
     0.00000000    -1.00000000    10.00000000           0     0.00000000     0.25000000     -4 # M_male_immature_block_group_1_block_1
-    2.33538469    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_immature_block_group_1_block_2
+    1.99562329    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_male_immature_block_group_1_block_2
     0.00000000    -1.00000000    10.00000000           0     0.00000000     0.25000000     -4 # M_male_immature_block_group_1_block_3
-    0.26631587     0.15000000     0.70000000           1     0.27100000     0.00454000      4 # M_base_female_mature
-   -0.66173078    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_mature_block_group_1_block_1
-    0.97182882    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_mature_block_group_1_block_2
+    0.26606929     0.15000000     0.70000000           1     0.27100000     0.00454000      4 # M_base_female_mature
+    0.01179998    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_mature_block_group_1_block_1
+    1.28007782    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_mature_block_group_1_block_2
     0.00000000    -1.00000000    10.00000000           0     0.00000000     0.25000000     -4 # M_female_mature_block_group_1_block_3
-    0.99999980    -1.00000000     1.00000000           0     0.00000000     0.00000000      4 # M_base_female_immature
-    1.69962123    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_immature_block_group_1_block_1
-    2.00242219    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_immature_block_group_1_block_2
+    0.51228727    -1.00000000     1.00000000           0     0.00000000     0.00000000      4 # M_base_female_immature
+    1.75183315    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_immature_block_group_1_block_1
+    7.40358740    -1.00000000    10.00000000           0     0.00000000     0.25000000      4 # M_female_immature_block_group_1_block_2
     0.00000000    -1.00000000    10.00000000           0     0.00000000     0.25000000     -4 # M_female_immature_block_group_1_block_3
 
 ## ==================================================================================== ##
@@ -697,107 +704,107 @@
 
 # Inputs for type*sex*fleet: selectivity male Pot_Fishery
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-           105.506544     5.000000   186.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_male_base_Logistic_mean
-             5.222863     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_male_base_Logistic_cv
+           108.774284     5.000000   186.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_male_base_Logistic_mean
+             5.468439     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_male_base_Logistic_cv
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
 
 # Inputs for type*sex*fleet: selectivity male Trawl_Bycatch
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-           118.917229     5.000000   185.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Trawl_Bycatch_male_base_Logistic_mean
-            10.657464     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Trawl_Bycatch_male_base_Logistic_cv
+           127.479422     5.000000   185.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Trawl_Bycatch_male_base_Logistic_mean
+            10.821361     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Trawl_Bycatch_male_base_Logistic_cv
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
 
 # Inputs for type*sex*fleet: selectivity male NMFS_Trawl_1982
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-             0.033029     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_1
-             0.062964     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_2
-             0.088766     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_3
-             0.205499     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_4
-             0.194777     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_5
-             0.238631     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_6
-             0.318709     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_7
-             0.332323     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_8
-             0.307669     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_9
-             0.329552     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_10
-             0.363188     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_11
-             0.389043     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_12
-             0.405517     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_13
-             0.449616     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_14
-             0.454801     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_15
-             0.381168     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_16
-             0.421540     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_17
-             0.511567     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_18
-             0.618821     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_19
-             0.731876     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_20
-             0.810317     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_21
-             0.772542     0.000010     1.000000          1     0.999900     0.108700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_22
+             0.038717     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_1
+             0.058044     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_2
+             0.089937     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_3
+             0.190302     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_4
+             0.200356     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_5
+             0.242303     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_6
+             0.328750     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_7
+             0.342159     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_8
+             0.315140     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_9
+             0.338183     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_10
+             0.371319     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_11
+             0.394324     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_12
+             0.408162     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_13
+             0.447689     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_14
+             0.447746     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_15
+             0.396151     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_16
+             0.469575     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_17
+             0.526638     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_18
+             0.640718     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_19
+             0.749459     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_20
+             0.830616     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_21
+             0.812977     0.000010     1.000000          1     0.999900     0.108700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_male_base_class_22
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
 
 # Inputs for type*sex*fleet: selectivity male NMFS_Trawl_1989
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-             0.013196     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_1
-             0.033729     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_2
-             0.068063     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_3
-             0.157327     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_4
-             0.179248     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_5
-             0.220954     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_6
-             0.277536     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_7
-             0.313458     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_8
-             0.298178     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_9
-             0.302957     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_10
-             0.319620     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_11
-             0.346088     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_12
-             0.370126     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_13
-             0.426470     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_14
-             0.509353     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_15
-             0.669072     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_16
-             0.755551     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_17
-             0.822796     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_18
-             0.856427     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_19
-             0.892004     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_20
-             0.925317     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_21
-             0.921698     0.000010     1.000000          1     0.999900     0.108700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_22
+             0.021393     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_1
+             0.039858     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_2
+             0.085144     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_3
+             0.171373     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_4
+             0.211430     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_5
+             0.259649     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_6
+             0.320029     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_7
+             0.356190     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_8
+             0.336637     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_9
+             0.339152     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_10
+             0.359506     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_11
+             0.388930     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_12
+             0.408946     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_13
+             0.460618     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_14
+             0.536752     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_15
+             0.690416     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_16
+             0.773331     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_17
+             0.833470     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_18
+             0.860073     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_19
+             0.895647     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_20
+             0.936474     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_21
+             0.953647     0.000010     1.000000          1     0.999900     0.108700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_male_base_class_22
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
 
 # Inputs for type*sex*fleet: selectivity female Pot_Fishery
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-            67.697706     5.000000   150.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_female_base_Logistic_mean
-             2.698170     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_female_base_Logistic_cv
+            67.002437     5.000000   150.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_female_base_Logistic_mean
+             2.765857     0.010000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Sel_Pot_Fishery_female_base_Logistic_cv
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
 
 # Inputs for type*sex*fleet: selectivity female NMFS_Trawl_1982
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-             0.005214     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_1
-             0.004544     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_2
-             0.013408     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_3
-             0.171998     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_4
-             0.310428     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_5
-             0.572880     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_6
-             0.576739     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_7
-             0.470321     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_8
-             0.435783     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_9
-             0.398526     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_10
-             0.403304     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_11
-             0.418665     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_12
-             0.432621     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_13
-             0.453410     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_14
-             0.486097     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_15
-             0.532111     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_16
-             0.589089     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_17
-             0.654877     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_18
-             0.730641     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_19
-             0.819263     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_20
-             0.920496     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_21
+             0.002607     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_1
+             0.004529     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_2
+             0.016435     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_3
+             0.111959     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_4
+             0.257753     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_5
+             0.547605     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_6
+             0.584449     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_7
+             0.472859     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_8
+             0.445982     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_9
+             0.397927     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_10
+             0.399431     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_11
+             0.418177     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_12
+             0.432685     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_13
+             0.453799     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_14
+             0.486615     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_15
+             0.532538     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_16
+             0.589388     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_17
+             0.655105     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_18
+             0.730822     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_19
+             0.819420     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_20
+             0.920669     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_21
              0.999900     0.000010     1.000000          1     0.999900     0.108700     -3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1982_female_base_class_22
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
@@ -805,27 +812,27 @@
 
 # Inputs for type*sex*fleet: selectivity female NMFS_Trawl_1989
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-             0.016562     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_1
-             0.037981     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_2
-             0.074663     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_3
-             0.368743     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_4
-             0.612220     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_5
-             0.792804     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_6
-             0.717204     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_7
-             0.406884     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_8
-             0.348510     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_9
-             0.282305     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_10
-             0.290715     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_11
-             0.388228     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_12
-             0.437376     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_13
-             0.459394     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_14
-             0.491302     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_15
-             0.536128     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_16
-             0.592025     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_17
-             0.657083     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_18
-             0.732479     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_19
-             0.821013     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_20
-             0.922638     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_21
+             0.010388     0.000010     1.000000          1     0.136100     0.117800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_1
+             0.024625     0.000010     1.000000          1     0.248600     0.084700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_2
+             0.043884     0.000010     1.000000          1     0.350400     0.073800      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_3
+             0.304141     0.000010     1.000000          1     0.428600     0.072100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_4
+             0.546590     0.000010     1.000000          1     0.474000     0.072200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_5
+             0.822322     0.000010     1.000000          1     0.486100     0.071200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_6
+             0.767458     0.000010     1.000000          1     0.474000     0.069200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_7
+             0.415810     0.000010     1.000000          1     0.452000     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_8
+             0.358049     0.000010     1.000000          1     0.432900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_9
+             0.291402     0.000010     1.000000          1     0.423100     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_10
+             0.253019     0.000010     1.000000          1     0.422300     0.067100      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_11
+             0.357504     0.000010     1.000000          1     0.427800     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_12
+             0.434848     0.000010     1.000000          1     0.438900     0.067200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_13
+             0.459307     0.000010     1.000000          1     0.458600     0.067000      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_14
+             0.491287     0.000010     1.000000          1     0.490600     0.067500      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_15
+             0.536114     0.000010     1.000000          1     0.535700     0.067700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_16
+             0.592011     0.000010     1.000000          1     0.591800     0.068200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_17
+             0.657069     0.000010     1.000000          1     0.656900     0.068700      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_18
+             0.732465     0.000010     1.000000          1     0.732300     0.068300      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_19
+             0.820999     0.000010     1.000000          1     0.820900     0.070200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_20
+             0.922619     0.000010     1.000000          1     0.923300     0.079200      3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_21
              0.999900     0.000010     1.000000          1     0.999900     0.108700     -3      0      0      0      0      0      0   0.3000 # Sel_NMFS_Trawl_1989_female_base_class_22
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
@@ -833,8 +840,8 @@
 
 # Inputs for type*sex*fleet: retention male Pot_Fishery
 # MAIN PARS:  Initial  Lower_bound  Upper_bound Prior_type     Prior_1      Prior_2  Phase  Block Blk_fn  Env_L Env_vr     RW RW_Blk RW_Sigma
-            98.844467     1.000000   190.000000          1    98.000000    10.000000      4      0      0      0      0      0      0   0.3000 # Ret_Pot_Fishery_male_base_Logistic_mean
-             1.069591     0.001000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Ret_Pot_Fishery_male_base_Logistic_cv
+            99.481769     1.000000   190.000000          1    98.000000    10.000000      4      0      0      0      0      0      0   0.3000 # Ret_Pot_Fishery_male_base_Logistic_mean
+             1.351112     0.001000    20.000000          0     1.000000   999.000000      4      0      0      0      0      0      0   0.3000 # Ret_Pot_Fishery_male_base_Logistic_cv
 # NO EXTRA PARS: Initial  Lower_bound  Upper_bound Prior_type      Prior_1     Prior_2  Phase    Reltve 
 ##--they would be defined here, but aren't required given the MAIN PARS defined above.
 
@@ -907,22 +914,22 @@
  # Estimates related to fishing mortality
 # Male fishing mortality by fleet
 #Pot_Fishery Trawl_Bycatch NMFS_Trawl_1982 NMFS_Trawl_1989 
-# -0.15544669  -5.05877710  -4.00000000  -4.00000000 
+#  0.23145176  -4.53876728  -4.00000000  -4.00000000 
 # Female offset fishing mortality by fleet
 #Pot_Fishery Trawl_Bycatch NMFS_Trawl_1982 NMFS_Trawl_1989 
-# -6.83583089   0.00000000   0.00000000   0.00000000 
+# -7.44411353   0.00000000   0.00000000   0.00000000 
 # Male annual offset fishing mortality deviations by fleet
-# Pot_Fishery         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2024 
-# Pot_Fishery  -1.33260983  -1.75653510  -1.13749087  -0.77973676  -0.65350198  -0.30741646  -0.27260078  -0.26257513   0.70952268   0.29979640   0.61018054   0.71630503   0.41837442   0.55070548   0.54628422   0.44041227   1.10489308  -0.31463914  -0.40855569   0.22564189   0.30100268  -0.35275748  -0.59460055  -0.78487996  -0.22786634   0.15912331  -0.15029245  -0.51979264  -0.62730457  -0.05733095   0.39325926   0.73107582   1.07097665   1.10013910   0.61353917   0.32808722   1.11876983   0.23532571   1.00224723  -0.84302286  -1.29215246 
-# Trawl_Bycatch         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024 
-# Trawl_Bycatch   0.24713809   0.10471015  -0.10900900  -0.29722817  -9.25588198  -5.12889779  -5.56128819  -1.72300339  -0.46920921   2.06958702   1.56892770   1.42184111   1.31390661   1.67316322   1.44865670   0.66987750   0.85967241   0.35820075   0.54820411   0.58201960   0.15303087   0.13749924   0.06486994   0.02555844   0.74704931   0.50277074  -0.18479092   0.38408705  -0.85154944  -0.59781286  -0.00786561   0.33402197   1.82932230   3.11766418  -0.57665749   0.20999626   1.65932573   0.37891259   0.97182157   0.65333504  -0.04686281   0.54644796   0.22843871 
+# Pot_Fishery         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2024         2025 
+# Pot_Fishery  -1.54736741  -1.83069564  -1.21033264  -0.87302733  -0.75253177  -0.34390886  -0.34491523  -0.40579965   0.61950429   0.21740202   0.68181723   0.87316836   0.26299178   0.57592070   0.56770455   0.32258591   1.16927869  -0.32048147  -0.40999862   0.18665904   0.31192116  -0.29481375  -0.45052955  -0.75637571  -0.21715034   0.15026577  -0.10659389  -0.62235838  -0.61378259  -0.16272907   0.23864396   0.60856732   1.03106812   1.00830436   0.57540731   0.66104791   1.08426023   0.92894767   1.26913788  -0.63535687  -0.88094937  -0.56490609 
+# Trawl_Bycatch         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024         2025 
+# Trawl_Bycatch   0.03798934   0.00617081  -0.21691967  -0.43179388  -9.39880945  -5.20712723  -5.67001455  -1.90182974  -0.58082853   1.99598413   1.55890849   1.47238670   1.12020879   1.64219717   1.41295527   0.57603738   0.88270822   0.27175911   0.48019245   0.49401889   0.11702326   0.14143756   0.17278234  -0.01007403   0.68673746   0.44792475  -0.18456127   0.24482950  -0.87091211  -0.74737804  -0.19960984   0.18821614   1.73632159   2.98679815  -0.62666449   0.42552430   1.65706514   0.84037631   1.21731947   0.82597683  -0.15039792   0.52824196   0.51349300   1.51533630 
 # NMFS_Trawl_1982 
 # NMFS_Trawl_1982 
 # NMFS_Trawl_1989 
 # NMFS_Trawl_1989 
 # Female annual offset fishing mortality deviations by fleet
-# Pot_Fishery         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2024 
-# Pot_Fishery   1.29815115   1.63327558   1.27157786   1.14594314   1.91755159   1.52887572   0.67773288   0.46342036   2.85793926   1.35189497   1.54852156   0.73512329   0.78965283  -0.53160335   1.08885715   1.25182624  -1.85249428  -0.35322059  -2.34245549   0.00371850  -2.14856842  -2.17085515  -1.19952691  -0.77456073  -2.65013906  -0.24933705   0.17774728   0.39796218   0.41287927   2.36059512   0.50365211   0.95937010   1.70758040   0.82011075   0.15987853   0.26432487  -1.06693839   0.23949030  -3.40752515  -4.22264285  -4.59778550 
+# Pot_Fishery         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2024         2025 
+# Pot_Fishery   1.63745440   1.83153092   1.46831850   1.37627091   2.16141340   1.48522257   0.66521389   0.51414820   2.87273292   1.37645035   1.44473987   0.58218262   0.95515173  -0.58578697   0.95756916   1.18045532  -2.15720407  -0.44272712  -2.29374549   0.13377524  -2.10007263  -2.25578898  -1.46878291  -0.84177999  -2.70129400  -0.29013483   0.04838466   0.39638573   0.26942702   2.49173648   0.69935147   1.08583458   1.70198976   0.89523896   0.25381954  -0.01290190  -1.08239659  -0.41313656  -3.53814704  -4.29561347  -5.19075728   1.18547163 
 # Trawl_Bycatch 
 # Trawl_Bycatch 
 # NMFS_Trawl_1982 
@@ -931,10 +938,10 @@
 # NMFS_Trawl_1989 
 #
  # Estimates related to recruitment
-# Annual_deviations         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024 
-# Annual_deviations   0.20014418   0.03792669   0.93939993   1.83944974   1.08907849   0.63476874  -0.47139671  -0.21050193   0.22568133   0.72036114  -0.35223196  -0.05476799  -0.71606943  -1.15626524  -0.05677863  -1.21690906  -0.58183907  -0.66487280  -1.72446574  -0.31988178   1.32797432  -0.27043941  -0.14820142  -0.88186487  -1.52794040  -0.38535800   1.22221664  -0.75660006  -0.64778724  -0.89565058  -0.08178374  -0.80278986   1.34876560   1.25028092   1.34368019  -0.86887492  -0.73702628  -1.26527904  -0.05051833   0.23189149   1.06070362   0.26451903  -0.47862228 
-# Sex_ratio_devians         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024 
-# Sex_ratio_devians   2.37922743   1.25073868  -0.27214809  -0.87650085  -3.70834983  -0.82118861   0.58709260  -0.68245741   1.02053404   1.07748285  -1.09101571  -1.02525863  -1.74196310  -0.93962660  -2.73952288   3.40133512  -1.16226203  -0.15420483  -1.41029071   1.50524139  -2.00288915   0.40909668   0.90923765  -0.17161316  -0.20590873  -0.37013871  -1.86002891  -1.39562612  -1.03702738  -1.82868297  -0.38683815  -0.62257809   1.15535261   0.01156905  -2.31345026   3.41288955   5.83941648   0.53997641  -0.03886036   0.58120597   0.56949010  -0.08373242   4.29227709 
+# Annual_deviations         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024         2025 
+# Annual_deviations   0.65304435   0.06207202   1.35460801   1.76490304   1.00091221   0.17779754  -0.47612009  -0.77618005   0.73626699   0.91091239  -0.29989705   0.10865100  -0.41183435  -0.90594233  -1.50553947  -1.37699556  -0.57109993  -0.65416147  -1.43684084   0.03684512   1.21544907  -0.53032500   0.18621837  -0.76442266  -1.57992659   0.01519356   0.93582388  -0.64642000  -0.63131442  -0.50335111  -0.97788279  -0.81230814   1.10619211   1.25353974   1.53514309  -0.52633230  -0.96888075  -0.92939533   0.12225652   0.49283765   1.48824755  -0.36291207  -0.79391024  -0.39177959 
+# Sex_ratio_devians         1982         1983         1984         1985         1986         1987         1988         1989         1990         1991         1992         1993         1994         1995         1996         1997         1998         1999         2000         2001         2002         2003         2004         2005         2006         2007         2008         2009         2010         2011         2012         2013         2014         2015         2016         2017         2018         2019         2020         2021         2022         2023         2024         2025 
+# Sex_ratio_devians   3.48303979   1.62516264   0.05890047  -0.63093523  -3.60333243   0.33083696  -0.20396090   1.03253392   1.92453532   1.46925121  -2.01435385  -1.52316267  -1.41735410  -1.21487808   3.74552753   0.96220833   0.11090293  -0.87216688  -2.14044932   1.02263275  -1.64035246   3.81319926   0.99802772  -0.72301005   1.91443209  -0.31836619  -1.00889333  -1.80998995  -0.48511780  -1.83288650   1.38704258   0.10767687   0.92993882  -0.99648614  -3.60299934  -3.00627621  -2.12338766  -2.52131018   0.70232593   0.64769217  -0.23123789   4.15785070   2.71810119   0.77908795 
 
 ## ==================================================================================== ##
 ## SIZE COMPOSITIONS OPTIONS                                                            ##

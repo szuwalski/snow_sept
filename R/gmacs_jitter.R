@@ -286,9 +286,32 @@ prepare_run_dir <- function(gc, dest) {
 
   link_or_copy_exe(file.path(gc$dir, "gmacs.exe"), file.path(dest, "gmacs.exe"))
 
-  ## Never inherit a pin, and never inherit a previous run's seed record.
-  for (junk in c("gmacs.pin", "jitter.txt"))
-    if (file.exists(file.path(dest, junk))) unlink(file.path(dest, junk))
+  ## Clear every output of any previous attempt in this directory.
+  ##
+  ## A hard reset mid-run leaves a half-written directory that still looks
+  ## plausible -- a truncated Gmacsall.out parses fine for hundreds of lines.
+  ## Re-preparing a directory therefore wipes the prior outputs rather than
+  ## running on top of them, so a stale file can never be mistaken for this
+  ## run's result if this run also fails to finish. (This machine hard-reset
+  ## during a 100-run sweep on 2026-08-21; 18 of 44 directories were left in
+  ## exactly this state.)
+  ##
+  ## gmacs.pin matters most: ADMB reads it automatically and it would override
+  ## the jittered starting values. jitter.txt is the seed record and must belong
+  ## to this run, not the last one.
+  stale <- c("gmacs.pin", "jitter.txt", "Gmacsall.out", "Gmacsall.std",
+             "gmacs.par", "gmacs.std", "gmacs.rep", "gmacs.rep1", "gmacs.cor",
+             "gmacs.bar", "gmacs.eva", "gmacs.log", "checkfile.rep",
+             "personal.rep", "gmacs_files_in.dat", "gmacs_in.dat",
+             "gmacs_in.ctl", "gmacs_in.prj", "gmacs_out.dat", "gmacs_out.ctl",
+             "simdata.out", "gradient.dat", "fmin.log")
+  for (f in stale) {
+    p <- file.path(dest, f)
+    if (file.exists(p)) unlink(p)
+  }
+  ## ADMB scratch + phase files, which can be large and are never inputs.
+  unlink(list.files(dest, pattern = "^(admodel[.]|gmacs[.][bpr][0-9]|gradient[.][0-9]|.*[.]tmp$)",
+                    full.names = TRUE))
 
   invisible(dest)
 }
@@ -389,13 +412,70 @@ verify_jitter_run <- function(run_dir, expected_seed, expected_sd = NULL,
 ## estimate at token 3 for one-word names and token 4 for two-word names -- one
 ## inserted row and it silently returns the wrong quantity under the right
 ## column heading.
+## WHICH QUANTITIES SURVIVE -nohess
+##
+## Jitter runs are made with -nohess (the Hessian is only worth its run time for
+## the run that is finally adopted). Some of the derived-quantities block then
+## comes back as exactly 0.0 rather than missing.
+##
+## WHAT IS ZEROED DEPENDS ON WHETHER THE RUN IS PEELED. Measured 2026-08-21:
+##
+##   UNPEELED -nohess (nyrRetro = 0, i.e. every jitter run here)
+##     survives : Ofl (1..4), Fmsy, Fofl, SSB (MMB), Recruit_male,
+##                spr_cofl_ret, all likelihood components
+##     zeroed   : OFL(tot), BMSY, Bcurr/BMSY, every Standard_error column
+##
+##   PEELED -nohess (nyrRetro > 0)
+##     the ENTIRE derived-quantities block is zero, Ofl and Fmsy included.
+##     (Observed in the retrospective work; do not trust Ofl (1) from a peel.)
+##
+## So this is NOT the simple rule "the sdreport quantities die" -- Ofl (1)
+## survives unpeeled and does not survive peeled. Do not generalise from the
+## jitter case to a peel.
+##
+## A 0.0 here means "not computed", not "estimated as zero". Those fields are
+## recorded as NA whenever gmacs.std is absent; writing the 0 through would put
+## a fabricated estimate into the results table.
+##
+## OFL(tot) is recovered by summing Ofl (1..4). Within a single fit that
+## identity is exact -- on the base fit
+##   86.71810286 + 0.23616043 + 0 + 0 = 86.95426329 = OFL(tot)
+## to all eight printed decimals. reconcile_ofl_total() below re-checks it on
+## every fit that reports both, so a GMACS change that broke the identity would
+## surface instead of silently producing a wrong total.
+##
+## The jitter FIGURES plot Ofl (1), the directed OFL, which is what the SAFE's
+## jitter figure has always shown.
+## Total OFL, with the reported value and the sum of the per-fleet parts kept
+## separate so they can be compared rather than assumed equal.
+##
+## Returns: total       the value to use (reported when real, else the sum)
+##          reported    OFL(tot) as printed; NA when it is the -nohess zero
+##          from_parts  sum of Ofl (1..4)
+##          discrepancy |reported - from_parts|, NA when only one is available
+reconcile_ofl_total <- function(rp) {
+  reported <- refpoint(rp, "OFL(tot)")
+  parts <- vapply(sprintf("Ofl (%d)", 1:4), function(nm) refpoint(rp, nm), numeric(1))
+  from_parts <- if (all(is.na(parts))) NA_real_ else sum(parts, na.rm = TRUE)
+
+  ## A reported 0 is the -nohess placeholder, not an estimate of zero: a fitted
+  ## model with positive biomass never has a total OFL of exactly 0.
+  if (!is.na(reported) && reported == 0) reported <- NA_real_
+
+  disc <- if (!is.na(reported) && !is.na(from_parts)) abs(reported - from_parts) else NA_real_
+  list(total      = if (!is.na(reported)) reported else from_parts,
+       reported   = reported,
+       from_parts = from_parts,
+       discrepancy = disc)
+}
+
 collect_run <- function(run_dir, idx, seed, run_info = NULL) {
   out <- data.frame(
     idx = as.integer(idx), objFun = NA_real_, maxGrad = NA_real_,
     seed = as.integer(seed), folder = normalizePath(run_dir, winslash = "/", mustWork = FALSE),
     npar = NA_integer_, bmsy = NA_real_, status = NA_real_,
-    ofl_tot = NA_real_, ofl_ret = NA_real_, ofl_disc = NA_real_,
-    fmsy = NA_real_, fofl = NA_real_,
+    ofl_tot = NA_real_, ofl_directed = NA_real_, ofl_disc = NA_real_,
+    fmsy = NA_real_, fofl = NA_real_, has_hessian = FALSE,
     mmb_terminal = NA_real_, rec_terminal = NA_real_, terminal_year = NA_integer_,
     seed_used = NA_integer_, exit_code = NA_integer_, elapsed_s = NA_real_,
     complete = FALSE, note = "", stringsAsFactors = FALSE)
@@ -416,17 +496,33 @@ collect_run <- function(run_dir, idx, seed, run_info = NULL) {
     return(out)
   }
 
+  ## gmacs.std exists only when the sd phase ran -- the marker for whether the
+  ## sdreport quantities below are real or placeholder zeros.
+  out$has_hessian <- file.exists(file.path(run_dir, "gmacs.std"))
+
   rp <- tryCatch(read_gmacsall_refpoints(allout), error = function(e) e)
   if (inherits(rp, "error")) {
     out$note <- trimws(paste(out$note, "refpoints unreadable:", conditionMessage(rp)))
   } else {
-    out$bmsy     <- refpoint(rp, "BMSY")
-    out$status   <- refpoint(rp, "Bcurr/BMSY")
-    out$ofl_tot  <- refpoint(rp, "OFL(tot)")
-    out$ofl_ret  <- refpoint(rp, "Ofl (1)")
-    out$ofl_disc <- refpoint(rp, "Ofl (2)")
-    out$fmsy     <- refpoint(rp, "Fmsy (1)")
-    out$fofl     <- refpoint(rp, "Fofl (1)")
+    out$ofl_directed <- refpoint(rp, "Ofl (1)")
+    out$ofl_disc     <- refpoint(rp, "Ofl (2)")
+    out$fmsy         <- refpoint(rp, "Fmsy (1)")
+    out$fofl         <- refpoint(rp, "Fofl (1)")
+
+    ## BMSY and Bcurr/BMSY have no non-sdreport counterpart -- if the Hessian
+    ## did not run they are simply unavailable.
+    if (out$has_hessian) {
+      out$bmsy   <- refpoint(rp, "BMSY")
+      out$status <- refpoint(rp, "Bcurr/BMSY")
+    }
+    ## OFL(tot) is recoverable either way: reported directly when the Hessian
+    ## ran, summed from the per-fleet Ofl values when it did not.
+    ofl <- reconcile_ofl_total(rp)
+    out$ofl_tot <- ofl$total
+    if (!is.na(ofl$discrepancy) && ofl$discrepancy > 1e-6)
+      out$note <- trimws(paste(out$note,
+                               sprintf("OFL(tot) %.8f != sum of Ofl(1..4) %.8f",
+                                       ofl$reported, ofl$from_parts)))
   }
 
   sm <- tryCatch(read_gmacsall_summary(allout), error = function(e) e)
@@ -452,7 +548,9 @@ collect_run <- function(run_dir, idx, seed, run_info = NULL) {
                              sprintf("objective mismatch: gmacs.par %.6f vs Gmacsall.out Total %.6f",
                                      out$objFun, tot)))
 
-  out$complete <- !is.na(out$objFun) && !is.na(out$ofl_tot) && !is.na(out$mmb_terminal)
+  ## Keyed on the DIRECTED OFL, which -nohess preserves; ofl_tot is legitimately
+  ## NA for a jitter run and must not gate completeness.
+  out$complete <- !is.na(out$objFun) && !is.na(out$ofl_directed) && !is.na(out$mmb_terminal)
   out
 }
 

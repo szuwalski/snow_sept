@@ -64,10 +64,20 @@ MIN_DISK_GB <- 50          # ADMB writes ~700 MB of temp per concurrent run
 ## the source() below. Deliberately NOT detectCores(): a wide fan-out of ADMB
 ## processes hard-resets this laptop mid-run (2026-08, per Grant).
 
-## Max |gradient| above which a run is not treated as converged. WARN-ONLY for
-## the base fit: the accepted May 2026 model sits at 1.46e-3, so a hard 1e-3
-## abort would reject the accepted fit.
-MAX_GRAD_TOL <- 1e-3
+## Two gradient thresholds, deliberately separate.
+##
+## GRAD_CONVENTIONAL is the textbook convergence criterion. It is REPORTED, not
+## used to filter: this assessment does not meet it. The 2026 base fit sits at
+## 2.54e-3 and the SAFE already states that most candidate models exceed 1e-3.
+## Screening on it would discard every run and leave the jitter with nothing to
+## analyse -- which looks like a clean result and is actually an empty one.
+##
+## GRAD_USABLE is the screen for admitting a run to the cloud analysis: loose
+## enough to include runs comparable to the base fit, tight enough to exclude
+## runs that stopped nowhere near an optimum. Both counts are reported so the
+## SAFE can state convergence honestly rather than against a flattering cutoff.
+GRAD_CONVENTIONAL <- 1e-3
+GRAD_USABLE       <- 1e-2
 
 NLL_TOL     <- 0.001       # nll difference treated as "the same optimum"
 MODE_GAP    <- 0.01        # cluster height separating jitter clouds
@@ -194,9 +204,10 @@ if (base$stale) {
 } else {
   message("Base fit is current; skipping (End year ", base$end_year, ").")
 }
-if (!is.na(base$max_grad) && base$max_grad > MAX_GRAD_TOL)
-  warning(sprintf("Base fit max|grad| = %.3g exceeds %.3g. Recorded, not fatal.",
-                  base$max_grad, MAX_GRAD_TOL), call. = FALSE)
+if (!is.na(base$max_grad) && base$max_grad > GRAD_CONVENTIONAL)
+  message(sprintf("  note: base max|grad| %.3g exceeds the conventional %.0e. ",
+                  base$max_grad, GRAD_CONVENTIONAL),
+          "Expected for this assessment; recorded and reported, not fatal.")
 BASE_NLL <- base$nll
 
 ## ===========================================================================
@@ -211,8 +222,23 @@ run_seeds <- SEED_BASE + seq_len(N_RUNS)
 
 ## Resume: a directory counts as done only if it holds output AND its recorded
 ## seed is the one we would ask for now.
+## Deliberately does NOT require gmacs.std: jitter runs are made with -nohess,
+## so a complete run legitimately has no .std file.
+##
+## It DOES require that Gmacsall.out ends with GMACS's ">EOD<" terminator.
+## File existence is not enough: a hard reset mid-write leaves a truncated
+## Gmacsall.out that still parses for hundreds of lines and looks like a result.
+## This machine reset during a 100-run sweep on 2026-08-21 and left 18 of 44
+## directories in that state. Without this check they would be treated as done
+## and silently omitted from the analysis forever.
+.ends_cleanly <- function(f) {
+  if (!file.exists(f)) return(FALSE)
+  L <- tryCatch(readLines(f, warn = FALSE), error = function(e) character(0))
+  L <- trimws(L[nzchar(trimws(L))])
+  length(L) > 0L && utils::tail(L, 1L) == ">EOD<"
+}
 is_done <- function(d, seed) {
-  file.exists(file.path(d, "Gmacsall.out")) &&
+  .ends_cleanly(file.path(d, "Gmacsall.out")) &&
     file.exists(file.path(d, "gmacs.par")) &&
     isTRUE(identical(suppressWarnings(as.integer(trimws(readLines(
       file.path(d, "jitter.txt"), warn = FALSE)[1]))), as.integer(seed)))
@@ -236,8 +262,18 @@ if (length(todo)) {
     source(file.path(REPO_ROOT, "R", "gmacs_jitter.R"))
     prepare_run_dir(gc_ctl, run_dirs[i])
     ## -jitter <seed> forces IsJittered=1 and fixes the seed; gmacs.dat is
-    ## copied unmodified. -nohess because per-run standard errors are not used;
-    ## the promoted winner is re-fit with the Hessian.
+    ## copied unmodified.
+    ##
+    ## -nohess: the jitter asks "where does the optimiser land", which needs the
+    ## likelihood and the point estimates, not their standard errors. Skipping
+    ## the sd phase roughly halves run time (~2 min vs ~4). The single run that
+    ## is finally adopted IS re-fit with the Hessian, in Phase F.
+    ##
+    ## The cost is that the ADMB sdreport quantities -- OFL(tot), BMSY,
+    ## Bcurr/BMSY -- come back as exactly 0.0 rather than missing. collect_run()
+    ## records those as NA (never 0) and the figures use Ofl (1), the DIRECTED
+    ## OFL, which -nohess preserves and which is what the SAFE's jitter figure
+    ## has always plotted. See the note above collect_run() in R/gmacs_jitter.R.
     run_gmacs(run_dirs[i],
               args = c("-jitter", run_seeds[i], "-nohess", "-nox", "-verbose", "0"))
   }
@@ -280,22 +316,40 @@ res <- do.call(rbind, lapply(seq_len(N_RUNS), function(i) {
   r$seed_used <- ver[[i]]$seed_used
   r
 }))
-res$converged <- res$complete & !is.na(res$maxGrad) & res$maxGrad < MAX_GRAD_TOL
+res$converged           <- res$complete & !is.na(res$maxGrad) & res$maxGrad < GRAD_USABLE
+res$meets_conventional  <- res$complete & !is.na(res$maxGrad) & res$maxGrad < GRAD_CONVENTIONAL
 
 ## Batch-level assertions.
 ok_runs <- res[res$complete, ]
 if (!nrow(ok_runs)) stop("No jitter run produced complete results.")
 if (anyDuplicated(res$seed))
   stop("Duplicate seeds requested -- the runs would not be independent.")
+
+## An all-zero OFL cloud is what a -nohess run produces: BMSY / Bcurr/BMSY /
+## OFL are sdreport quantities and come back exactly 0 when the sd phase is
+## skipped, while Fmsy and Fofl still look plausible. Catch it here rather than
+## letting a figure of zeros reach the SAFE.
+if (all(ok_runs$ofl_directed == 0, na.rm = TRUE))
+  stop("Every run returned a directed OFL of 0. Ofl (1) normally survives ",
+       "-nohess, so this means the reference-point calculation did not run at ",
+       "all -- check that gmacs.dat still has 'Calculate reference points' = 1.")
+if (any(ok_runs$ofl_directed == 0, na.rm = TRUE))
+  warning(sum(ok_runs$ofl_directed == 0, na.rm = TRUE),
+          " run(s) returned a directed OFL of 0 and are excluded from the OFL figures.",
+          call. = FALSE)
 if (nrow(ok_runs) > 1L && length(unique(round(ok_runs$objFun, 8))) == 1L)
   stop("Every completed run returned an identical objective function. The jitter ",
        "is not taking effect -- do not report these results.")
 
-message(sprintf("complete: %d/%d   converged (max|grad| < %.0e): %d",
-                nrow(ok_runs), N_RUNS, MAX_GRAD_TOL, sum(res$converged)))
+message(sprintf("complete: %d/%d   usable (max|grad| < %.0e): %d   meets %.0e: %d",
+                nrow(ok_runs), N_RUNS, GRAD_USABLE, sum(res$converged),
+                GRAD_CONVENTIONAL, sum(res$meets_conventional)))
+message(sprintf("max|grad| range: %.3g to %.3g   (base %.3g)",
+                min(ok_runs$maxGrad, na.rm = TRUE), max(ok_runs$maxGrad, na.rm = TRUE),
+                base$max_grad))
 message(sprintf("nll range: %.4f to %.4f   (base %.4f)",
                 min(ok_runs$objFun), max(ok_runs$objFun), BASE_NLL))
-message(sprintf("OFL range: %.3f to %.3f kt", min(ok_runs$ofl_tot), max(ok_runs$ofl_tot)))
+message(sprintf("directed OFL range: %.3f to %.3f kt", min(ok_runs$ofl_directed), max(ok_runs$ofl_directed)))
 
 if (PILOT) {
   message("\n--pilot: verification gate PASSED for ", N_RUNS, " run(s).")
@@ -316,7 +370,7 @@ improvement <- BASE_NLL - best$objFun
 message(sprintf("best run %s: nll %.4f (base %.4f, improvement %.4f), max|grad| %.3g",
                 sprintf("%03d", best$idx), best$objFun, BASE_NLL, improvement, best$maxGrad))
 message(sprintf("  OFL %.3f kt (base run's OFL is in the model dir), MMB %.3f kt",
-                best$ofl_tot, best$mmb_terminal))
+                best$ofl_directed, best$mmb_terminal))
 
 promoted <- FALSE
 if (improvement > NLL_TOL) {
@@ -452,7 +506,7 @@ if (!requireNamespace("gridExtra", quietly = TRUE)) {
 }
 
 term_yr <- if (all(is.na(res$terminal_year))) yr$end_year else max(res$terminal_year, na.rm = TRUE)
-save_jitter_fig("jittered_results_ofl.png", "ofl_tot", "Total OFL (1,000 t)")
+save_jitter_fig("jittered_results_ofl.png", "ofl_directed", "Directed OFL (1,000 t)")
 save_jitter_fig("jittered_results_ssb.png", "mmb_terminal", sprintf("MMB in %d (1,000 t)", term_yr))
 save_jitter_fig("jittered_results_rec.png", "rec_terminal", sprintf("Male recruitment in %d", term_yr))
 
@@ -460,11 +514,13 @@ png(file.path(REPO_ROOT, "plots", "jitter_convergence.png"),
     height = 5, width = 7, res = 350, units = "in")
 print(ggplot(plt, aes(x = objFun, y = abs(maxGrad), colour = mode)) +
         geom_point(size = 2, alpha = 0.85) +
-        geom_hline(yintercept = MAX_GRAD_TOL, linetype = 2, colour = "grey30") +
+        geom_hline(yintercept = GRAD_CONVENTIONAL, linetype = 2, colour = "grey30") +
+        geom_hline(yintercept = base$max_grad, linetype = 3, colour = "firebrick") +
         scale_y_log10() + theme_bw() +
         labs(x = "Negative log likelihood", y = "Maximum |gradient|", colour = "Mode",
              title = sprintf("Convergence of %d jitter runs", nrow(plt)),
-             subtitle = sprintf("dashed line = convergence threshold %.0e", MAX_GRAD_TOL)))
+             subtitle = sprintf("dashed = conventional threshold %.0e; dotted = base fit (%.3g)",
+                                GRAD_CONVENTIONAL, base$max_grad)))
 dev.off()
 
 if (!is.null(attribution)) {
@@ -494,14 +550,16 @@ summ <- data.frame(
   n_runs           = N_RUNS,
   n_complete       = nrow(ok_runs),
   n_converged      = sum(res$converged),
+  n_meets_conventional = sum(res$meets_conventional),
+  base_max_grad    = base$max_grad,
   jitter_sd        = jspec$sd,
   base_nll         = BASE_NLL,
   best_nll         = best$objFun,
   nll_improvement  = improvement,
   n_at_best_mode   = sum(res$mode == "A", na.rm = TRUE),
   pct_at_best_mode = round(100 * sum(res$mode == "A", na.rm = TRUE) / max(1L, sum(res$converged)), 1),
-  ofl_min          = min(ok_runs$ofl_tot), ofl_max = max(ok_runs$ofl_tot),
-  ofl_cv           = stats::sd(ok_runs$ofl_tot) / mean(ok_runs$ofl_tot),
+  ofl_min          = min(ok_runs$ofl_directed), ofl_max = max(ok_runs$ofl_directed),
+  ofl_cv           = stats::sd(ok_runs$ofl_directed) / mean(ok_runs$ofl_directed),
   mmb_min          = min(ok_runs$mmb_terminal), mmb_max = max(ok_runs$mmb_terminal),
   terminal_year    = term_yr,
   promoted         = promoted,
@@ -521,7 +579,8 @@ jitter <- list(
     exe          = exe,
     gmacs_version = gmacs_exe_version(MODEL_DIR),
     n_runs = N_RUNS, jitter_sd = jspec$sd, seed_base = SEED_BASE,
-    max_grad_tol = MAX_GRAD_TOL, nll_tol = NLL_TOL, mode_gap = MODE_GAP,
+    grad_usable = GRAD_USABLE, grad_conventional = GRAD_CONVENTIONAL,
+    nll_tol = NLL_TOL, mode_gap = MODE_GAP,
     base_nll = BASE_NLL, promoted = promoted,
     start_year = yr$start_year, end_year = yr$end_year,
     r_version = R.version.string, git_commit = git_sha,

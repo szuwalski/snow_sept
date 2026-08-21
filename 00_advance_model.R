@@ -21,7 +21,18 @@
 ## END_YEAR; survey data through END_YEAR + 1.
 ##
 ## Usage:
-##   Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix=TRUE] [repo_root]
+##   Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> \
+##                              [growth_fix=TRUE] [repo_root] [survey_end]
+##
+## survey_end (arg 7, default END_YEAR + 1) cuts the SURVEY DATA short without
+## touching the fishery data or the .CTL structure. Used by
+## 05_run_retrospective.R to build the "drop terminal survey" retrospective:
+## peel p wants fishery <= END_YEAR but survey <= END_YEAR - p. It affects the
+## .DAT index and survey size-comp blocks ONLY. The .CTL time blocks and the
+## molt-probability matrix stay pinned to END_YEAR + 1 (CTL_END), because a
+## GMACS retrospective never rewrites the .CTL -- it clamps over-long blocks
+## itself (gmacsbase.TPL:1499-1500) and auto-shifts the last rec_dev
+## (gmacsbase.TPL:1632).
 ##
 ## Always regenerates out_dir fresh from template_dir (idempotent).
 ## ============================================================================
@@ -33,7 +44,8 @@ options(warn = 1)
 ## ---------------------------------------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 4)
-  stop("Usage: Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [repo_root]")
+  stop("Usage: Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> ",
+       "[growth_fix=TRUE] [repo_root] [survey_end]")
 
 TEMPLATE_DIR <- normalizePath(args[1], winslash = "/", mustWork = TRUE)
 OUT_DIR      <- args[2]
@@ -46,7 +58,24 @@ GROWTH_FIX   <- if (length(args) >= 5) toupper(args[5]) %in% c("TRUE", "T", "YES
 REPO_ROOT    <- if (length(args) >= 6) normalizePath(args[6], winslash = "/", mustWork = TRUE) else
                 normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 
-SURVEY_END <- END_YEAR + 1L   # crab-year convention: end-year N -> N+1 summer survey
+## CTL_END fixes the .CTL structure (time blocks, molt-probability matrix rows).
+## SURVEY_END cuts the .DAT survey DATA and defaults to the same value; only the
+## "drop terminal survey" retrospective passes something smaller.
+CTL_END    <- END_YEAR + 1L   # crab-year convention: end-year N -> N+1 summer survey
+SURVEY_END <- if (length(args) >= 7) as.integer(args[7]) else CTL_END
+if (is.na(SURVEY_END)) stop("survey_end (arg 7) is not an integer: ", args[7])
+if (SURVEY_END > CTL_END)
+  stop(sprintf("survey_end (%d) cannot exceed end_year+1 (%d)", SURVEY_END, CTL_END))
+if (SURVEY_END < 1989L)
+  stop(sprintf("survey_end (%d) is before the era-2 survey start (1989)", SURVEY_END))
+
+## Shared GMACS file I/O (raw-bytes readers, anchor helpers). Also sourced by
+## 05_run_retrospective.R -- one parser, not two.
+GMACS_IO <- file.path(REPO_ROOT, "R", "gmacs_io.R")
+if (!file.exists(GMACS_IO))
+  stop("Cannot find R/gmacs_io.R under repo_root '", REPO_ROOT,
+       "'. Run from the snow_sept repo root or pass repo_root as arg 6.")
+source(GMACS_IO)
 
 DERIVED <- file.path(REPO_ROOT, "data", "derived")
 GROWTHD <- file.path(REPO_ROOT, "data", "growth")
@@ -55,6 +84,9 @@ cat(sprintf("\n=== 00_advance_model.R ===\n"))
 cat(sprintf("template_dir : %s\n", TEMPLATE_DIR))
 cat(sprintf("out_dir      : %s\n", OUT_DIR))
 cat(sprintf("end_year     : %d  (fishery<=%d, survey<=%d)\n", END_YEAR, END_YEAR, SURVEY_END))
+if (SURVEY_END != CTL_END)
+  cat(sprintf("               DROP-SURVEY build: survey cut %d yr short of end_year+1 (%d)\n",
+              CTL_END - SURVEY_END, CTL_END))
 cat(sprintf("out_dat_name : %s\n", OUT_DAT_NAME))
 cat(sprintf("growth_fix   : %s\n", GROWTH_FIX))
 cat(sprintf("derived dir  : %s\n\n", DERIVED))
@@ -70,42 +102,11 @@ TEMPLATE_GMACS <- file.path(TEMPLATE_DIR, "gmacs.dat")
 stopifnot(file.exists(TEMPLATE_CTL), file.exists(TEMPLATE_GMACS))
 
 ## ---------------------------------------------------------------------------
-## 1. Raw line-based file I/O (preserves line endings + non-ASCII bytes)
+## 1. Raw line I/O + anchor helpers
 ## ---------------------------------------------------------------------------
-read_raw_lines <- function(path) {
-  raw <- readBin(path, "raw", n = file.info(path)$size)
-  txt <- rawToChar(raw)
-  Encoding(txt) <- "bytes"                       # treat as opaque bytes
-  crlf <- grepl("\r\n", txt, fixed = TRUE, useBytes = TRUE)
-  eol  <- if (crlf) "\r\n" else "\n"
-  trailing_eol <- grepl(paste0(eol, "$"), txt, useBytes = TRUE)
-  lines <- strsplit(txt, eol, fixed = TRUE, useBytes = TRUE)[[1]]
-  list(lines = lines, eol = eol, trailing_eol = trailing_eol)
-}
-write_raw_lines <- function(obj, path) {
-  txt <- paste(obj$lines, collapse = obj$eol)
-  if (isTRUE(obj$trailing_eol)) txt <- paste0(txt, obj$eol)
-  con <- file(path, open = "wb")
-  on.exit(close(con))
-  writeBin(charToRaw(txt), con)
-}
-
-## trimmed content of a line (whitespace-insensitive helpers)
-ltrim <- function(x) sub("^[[:space:]]+", "", x)
-norm_ws <- function(x) gsub("[[:space:]]+", " ", trimws(x))
-
-## Find the UNIQUE line index containing a fixed (whitespace-normalized) anchor.
-find_anchor <- function(lines, anchor, expect_one = TRUE) {
-  hits <- which(grepl(anchor, norm_ws(lines), fixed = TRUE))
-  if (expect_one && length(hits) != 1)
-    stop(sprintf("Anchor '%s' matched %d lines (expected 1).", anchor, length(hits)))
-  hits
-}
-## First data line index at/after i for which is_data() is TRUE.
-next_data <- function(lines, i, is_data) {
-  while (i <= length(lines) && !is_data(lines[i])) i <- i + 1L
-  i
-}
+## read_raw_lines / write_raw_lines / ltrim / norm_ws / find_anchor / next_data
+## / toks now live in R/gmacs_io.R (sourced in section 0) so that this script
+## and 05_run_retrospective.R share one implementation.
 
 ## ---------------------------------------------------------------------------
 ## 2. is_data classifiers for each block type
@@ -168,8 +169,7 @@ rebuild_region <- function(lines, count_idx, is_data, run_builders, count_line_b
   list(lines = new_lines, counts = counts)
 }
 
-## split a whitespace-delimited data line into tokens
-toks <- function(x) strsplit(trimws(x), "[[:space:]]+")[[1]]
+## (toks() -- split a whitespace-delimited data line -- is defined in R/gmacs_io.R)
 
 ## ---------------------------------------------------------------------------
 ## 4. Load derived data (character = verbatim; convert to numeric only for keys)
@@ -422,7 +422,9 @@ bpg_c <- find_anchor(C, "Number of blocks per group")
 bpg_idx <- next_data(C, bpg_c + 1L, function(x) grepl("^[[:space:]]*[0-9]", x))
 bpg_tok <- toks(C[bpg_idx])                          # e.g. "3 43"
 block1_n <- bpg_tok[1]
-block2_pairs <- 1983:SURVEY_END                      # block 2 spans 1983 .. END_YEAR+1
+## CTL_END, not SURVEY_END: the .CTL structure is pinned to END_YEAR+1 even for
+## a drop-survey build, matching how a GMACS retrospective leaves the .CTL alone.
+block2_pairs <- 1983:CTL_END                         # block 2 spans 1983 .. END_YEAR+1
 C[bpg_idx] <- paste(block1_n, length(block2_pairs))
 
 ## Replace block-2 definition lines (after "# Block 2" up to the next blank line)
@@ -445,7 +447,7 @@ C[rd_c] <- sub("^[[:space:]]*[0-9]+", sprintf("%d      ", END_YEAR), C[rd_c])
 
 ## --- 7c. MALES molt-probability matrix <- male_maturity_ogive --------------
 og_year <- as.integer(og$year)
-og_keep <- og[og_year <= SURVEY_END, , drop = FALSE]
+og_keep <- og[og_year <= CTL_END, , drop = FALSE]   # CTL structure -> END_YEAR+1
 og_keep <- og_keep[order(as.integer(og_keep$year)), , drop = FALSE]
 if (as.integer(og_keep$year[1]) != 1982L) stop("Male maturity ogive row 1 is not 1982.")
 n_molt <- nrow(og_keep)
@@ -640,9 +642,9 @@ Vc <- read_raw_lines(OUT_CTL)$lines
 ma <- which(norm_ws(Vc) == "## MALES"); fa2 <- which(norm_ws(Vc) == "## FEMALES")
 male_rows <- Vc[(next_data(Vc, ma+1L, function(x) grepl("^[[:space:]]*[0-9.]",x))):(fa2-1L)]
 male_rows <- male_rows[grepl("^[[:space:]]*[0-9.]", male_rows)]
-expect_molt <- SURVEY_END - 1982L + 1L
+expect_molt <- CTL_END - 1982L + 1L
 check(length(male_rows) == expect_molt,
-      sprintf("MALES molt matrix has %d rows (expected %d = 1982..%d)", length(male_rows), expect_molt, SURVEY_END))
+      sprintf("MALES molt matrix has %d rows (expected %d = 1982..%d)", length(male_rows), expect_molt, CTL_END))
 row1 <- suppressWarnings(as.numeric(toks(male_rows[1])))
 og1  <- suppressWarnings(as.numeric(as.character(og_keep[1, 2:23])))
 check(length(row1)==22L && max(abs(row1 - og1)) < 1e-9, "MALES molt row1 == ogive(1982), 22 cols")
@@ -655,8 +657,8 @@ check(length(female_rows) == expect_molt && length(unique(female_rows)) == 1L,
 
 ## ctl block/rec_dev
 bpg2 <- toks(Vc[next_data(Vc, find_anchor(Vc,"Number of blocks per group")+1L, function(x) grepl("^[[:space:]]*[0-9]",x))])
-check(as.integer(bpg2[2]) == (SURVEY_END - 1983L + 1L),
-      sprintf("blocks-per-group block-2 count = %s (expected %d)", bpg2[2], SURVEY_END - 1983L + 1L))
+check(as.integer(bpg2[2]) == (CTL_END - 1983L + 1L),
+      sprintf("blocks-per-group block-2 count = %s (expected %d)", bpg2[2], CTL_END - 1983L + 1L))
 rdv <- toks(Vc[find_anchor(Vc,"last rec_dev")])[1]
 check(as.integer(rdv) == END_YEAR, sprintf("last rec_dev = %s (expected %d)", rdv, END_YEAR))
 
@@ -679,8 +681,29 @@ for (fi in 1:4) {
 }
 check(hist_ok, sprintf("all %d pre-1990 catch rows byte-identical to template", hist_checked))
 
-## (f) spot-check known values in the END_YEAR=2025 (26) output
-if (END_YEAR == 2025L) {
+## (e2) survey data actually stops at SURVEY_END (the drop-survey knob works,
+##      and for a normal build it re-confirms the crab-year convention).
+##      Compared against the last survey year the DERIVED DATA actually has at
+##      or below SURVEY_END, not against SURVEY_END itself: there was no 2020
+##      survey (COVID cancellation), so a cut at 2020 correctly yields 2019.
+si_yrs      <- as.integer(si$year[si$sex == "male" & si$maturity == "mature"])
+expect_surv <- max(si_yrs[si_yrs <= SURVEY_END])
+
+ir_all <- Filter(function(s) s$type == "data", pr_i$segs)[[1]]$lines
+ir_yrs <- vapply(ir_all, function(x) as.integer(toks(x)[2]), integer(1))
+check(max(ir_yrs) == expect_surv,
+      sprintf("last survey index year = %d (expected %d, the last survey at or before survey_end %d)",
+              max(ir_yrs), expect_surv, SURVEY_END))
+sc_surv_max <- max(vapply(6:13, function(k) {
+  ln <- Filter(function(s) s$type == "data" && s$k == k, pr_sc$segs)[[1]]$lines
+  max(vapply(ln, function(x) as.integer(toks(x)[1]), integer(1)))
+}, integer(1)))
+check(sc_surv_max == expect_surv,
+      sprintf("last survey size-comp year = %d (expected %d)", sc_surv_max, expect_surv))
+
+## (f) spot-check known values in the END_YEAR=2025 (26) output.
+##     Skipped for drop-survey builds -- the 2026 survey is deliberately absent.
+if (END_YEAR == 2025L && SURVEY_END == 2026L) {
   getrow <- function(segs, run, y) {
     ln <- Filter(function(s) s$type=="data" && s$k==run, segs)[[1]]$lines
     ln[which(vapply(ln, function(x) as.integer(toks(x)[1]), integer(1)) == y)]
@@ -713,7 +736,8 @@ cat(sprintf("  catch counts     : %s\n", paste(CATCH_COUNTS, collapse=" ")))
 cat(sprintf("  index count      : %d\n", INDEX_COUNT))
 cat(sprintf("  size-comp counts : %s\n", paste(COMP_COUNTS, collapse=" ")))
 cat(sprintf("  growth nobs      : %d\n", GROWTH_COUNT))
-cat(sprintf("  molt-matrix rows : %d (1982..%d)\n", n_molt, SURVEY_END))
+cat(sprintf("  molt-matrix rows : %d (1982..%d)\n", n_molt, CTL_END))
+cat(sprintf("  survey data thru : %d\n", SURVEY_END))
 cat(sprintf("  PASS=%d  FAIL=%d\n", pass, fail))
 if (fail > 0) quit(status = 1L)
 cat(sprintf("  Wrote: %s\n         %s\n         %s (datafile -> %s)\n",
