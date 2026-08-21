@@ -14,15 +14,22 @@ hygiene.
 
 ## Tier 0 — breaks a fresh clone or corrupts output silently
 
-- [ ] **1. The SAFE does not render at all.** `SAFE_snow_gmacs.Rmd:695` and `:804` put escaped
-  backticks inside an inline `` `r ` `` expression:
-  `` `r if (!jit_have) "... run \\`06_run_jitter.R\\` ..."` ``. knitr's inline pattern is
-  `` `r <code>` `` and stops at the **first** backtick, so the expression is truncated mid-string
-  and R sees `unexpected INCOMPLETE_STRING`. Reproduced 2026-08-21 by parsing every inline
-  expression in the file: 2 of them fail. **`08_render_report.R` therefore produces no PDF.**
-  Fix: drop the backticks (`run 06_run_jitter.R`) or use `\\texttt{}`. Note both lines are inside
-  the not-yet-generated placeholder branches, so this only bites once — but it bites on *every*
-  render until fixed.
+- [ ] **1. Nothing currently open at Tier 0.** Items land here when they break a fresh clone or
+  corrupt output silently. See Done for what cleared.
+
+  **Standing rule from the 2026-08-21 render blocker:** never put a backtick inside an inline
+  `` `r ` `` expression, escaped or not. knitr's inline pattern stops at the first backtick, so the
+  expression truncates mid-string and the whole document fails to knit — one bad line costs the
+  entire PDF. To name a script in placeholder prose, write it bare (`run 06_run_jitter.R`). Cheap
+  check before any render:
+
+  ```r
+  L <- readLines("SAFE_snow_gmacs.Rmd", warn = FALSE)
+  m <- gregexpr("`r[ #][^`]*`", L)
+  for (i in seq_along(L)) for (h in regmatches(L[i], m[i])[[1]])
+    tryCatch(parse(text = sub("^`r[ #]", "", sub("`$", "", h))),
+             error = function(e) cat("line", i, "FAILS:", conditionMessage(e), "\n"))
+  ```
 
 - [ ] **2. `README.md` documents a workflow that no longer exists.** `README.md:71` and `:77-78`
   describe hand-pasting `data/derived/` into the model `.DAT` — the step `00_advance_model.R`
@@ -190,6 +197,11 @@ convention and denominator.
 
 ## Done
 
+- [x] ~~The SAFE did not render at all: escaped backticks inside inline `` `r ` `` expressions at
+  `SAFE_snow_gmacs.Rmd:695` and `:804` truncated the expression, so knitr failed with
+  `unexpected INCOMPLETE_STRING` and `08_render_report.R` produced no PDF.~~ Both fixed
+  2026-08-21 (804 by Grant, 695 here). Verified by parsing every inline expression in the file:
+  **29 expressions, 0 failing.** Still to confirm with an actual knit.
 - [x] ~~`R/` untracked in git while three committed scripts hard-stop without it.~~ Tracked in
   `832d034` (`R/gmacs_io.R`, `R/gmacs_jitter.R`, 899 lines).
 - [x] ~~`06`'s single `MAX_GRAD_TOL = 1e-3` gate marked every run non-converged (pilot runs sit at
