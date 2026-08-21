@@ -7,19 +7,17 @@
 #     * male size compositions by shell condition (new / old), 5-mm bins
 #     * male terminal-molt (maturity) ogive
 #     * mature / immature male survey size comps and biomass indices
+#     * mature / immature FEMALE survey size comps (SNOW-only)
 #     * several diagnostic figures
-#   Outputs land in data/derived/ (then hand-pasted into the model .DAT),
-#   data/survey/, and plots/.
+#   Outputs land in data/derived/ (then written into the model .DAT/.CTL by
+#   00_advance_model.R), data/survey/, and plots/.
 #
-# OUTPUTS  (consumed downstream -- keep these paths in sync with the .DAT paste
-#           step and the Rmd if you ever rename them)
+# OUTPUTS  (all .csv; header row + explicit `year` column; values in model units)
 #   data/survey/survey_large_male_index_derived.csv   large/preferred male index
-#   data/derived/index_female_biomass_male_cv.csv     female biomass + CVs
-#   data/derived/2prob_term_molt_males_new.csv        male prob-terminal-molt array
-#   data/derived/2surv_len_comp_male_mat_newmat.txt   mature male size comp
-#   data/derived/2surv_len_comp_male_imm_newmat.txt   immature male size comp
-#   data/derived/2index_mmb_new_mat.txt               mature male biomass index
-#   data/derived/2index_imm_male_new_mat.txt          immature male biomass index
+#   data/derived/survey_size_comps.csv    year, sex, maturity, m27.5..m132.5
+#                                         (male + female, mature + immature; rows sum 1)
+#   data/derived/survey_indices.csv       year, sex, maturity, biomass (kt), cv
+#   data/derived/male_maturity_ogive.csv  year, m27.5..m132.5  (prob terminal molt)
 #   plots/size_bins_comp_Kodiak_m.png, maturity_facet.png,
 #   plots/maturity_facet_all.png, plots/imm_v_mat.png
 #
@@ -87,7 +85,7 @@ big_male_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                              region  = "EBS",
                                              crab_category = c("large_male", "preferred_male"))
 
-write.csv(big_male_snow_ind, "data/survey/survey_large_male_index_derived.csv")
+write.csv(big_male_snow_ind, "data/survey/survey_large_male_index_derived.csv", row.names = FALSE)
 
 # Mature-female survey biomass index (morphometric maturity).
 # RESTORED 2026-07: this definition was dropped when the script was copied into
@@ -101,12 +99,9 @@ mat_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                             crab_category   = c("mature_female"),
                                             female_maturity = "morphometric")
 
-# Survey female biomass + CVs written for the model: female biomass (kt), female
-# CV, and legal-male CV as a stand-in for the MMB CV (no direct MMB CV; ~>76 mm).
-write.csv(cbind(mat_fem_snow_ind$BIOMASS_MT / 1000,
-                mat_fem_snow_ind$BIOMASS_MT_CV,
-                male_snow_ind$BIOMASS_MT_CV),
-          "data/derived/index_female_biomass_male_cv.csv")
+# (Female biomass + CV, the male MMB, and the immature-male index are assembled
+#  together into data/derived/survey_indices.csv in Section 6, once male_mat_bio
+#  exists. The legal-male CV is used there as the MMB-CV proxy; ~>76 mm.)
 
 
 # =============================================================================
@@ -178,8 +173,8 @@ ggplot(yarp) +
 # (new_hardshell + soft_molting) and old-shell (oldshell + very_oldshell), then
 # reshape wide, constrain to the model's 27.5-132.5 bins with a 132.5+ plus
 # group, and convert to millions of crab -> MaleNew, MaleOld.
-# NB: keep endpoint inclusion (right = FALSE) consistent with every other data
-#     source that bins carapace width.
+# NB: right = FALSE here (the "previous survey approach"): a crab on a 5-mm cutoff
+#     goes to the UPPER bin. Consistent with the fishery comps (2026-08, per Grant).
 
 # ---- new-shell males --------------------------------------------------------
 new_male_snow <- filter(male_snow, SHELL_TEXT %in% c('new_hardshell', 'soft_molting')) %>%
@@ -286,7 +281,10 @@ mean_mat <- apply(allmat, 2, mean, na.rm = T)
 for (x in which(is.na(allmat[, 1])))
   allmat[x, ] <- mean_mat
 
-write.csv(allmat, "data/derived/2prob_term_molt_males_new.csv")
+male_maturity_ogive <- data.frame(year = as.numeric(rownames(allmat)), allmat,
+                                   check.names = FALSE)
+names(male_maturity_ogive) <- c("year", paste0("m", new_dat))
+write.csv(male_maturity_ogive, "data/derived/male_maturity_ogive.csv", row.names = FALSE)
 
 # ---- 5a. Diagnostic figures: maturity-at-size -------------------------------
 male_mat_alt <- melt(allmat)
@@ -329,12 +327,9 @@ MaleNewMature <- MaleNew * in_mat
 male_immature <- MaleNew * (1 - in_mat)
 male_mature   <- MaleNewMature + MaleOld
 
-# normalized size compositions (rows sum to 1)
+# normalized MALE size compositions (rows sum to 1)
 sc_male_mat <- sweep(male_mature,   1, apply(male_mature,   1, sum, na.rm = T), FUN = "/")
 sc_male_imm <- sweep(male_immature, 1, apply(male_immature, 1, sum, na.rm = T), FUN = "/")
-
-write.table(round(sc_male_mat, 4), "data/derived/2surv_len_comp_male_mat_newmat.txt", row.names = FALSE, col.names = F)
-write.table(round(sc_male_imm, 4), "data/derived/2surv_len_comp_male_imm_newmat.txt", row.names = FALSE, col.names = F)
 
 # ---- biomass indices (numbers-at-size x weight-at-size) ---------------------
 wt_at_size   <- read.csv("data/wt_at_size.csv")
@@ -345,8 +340,73 @@ male_imm_bio <- apply(sweep(male_immature, 2, wt_at_size[, 1], FUN = "*"), 1, su
 plot(male_mat_bio, type = 'b', ylim = c(0, 400))
 lines(male_imm_bio, type = 'b', col = 2)
 
-write.table(male_mat_bio, "data/derived/2index_mmb_new_mat.txt",      row.names = FALSE, col.names = F)
-write.table(male_imm_bio, "data/derived/2index_imm_male_new_mat.txt", row.names = FALSE, col.names = F)
+
+# =============================================================================
+# 6b. FEMALE SURVEY SIZE COMPOSITIONS  (SNOW-only, morphometric maturity)
+# =============================================================================
+# The male path above produces no female comps; historically they came from Cody's
+# hybrid script (SNOW+HYBRID). Per Grant the accepted basis is SNOW-only, so pull
+# female numbers-at-size by maturity from crabpack (SNOW only), bin to the 22 model
+# bins (right = FALSE, 132.5+ plus group) and normalize within year.
+bin_edges5 <- c(seq(27.5, 132.5, 5) - 2.5, 999)      # 25,30,..,130, then plus group
+midpoints5 <- seq(27.5, 132.5, 5)
+nas_to_comp22 <- function(nas) {                     # nas: YEAR, SIZE_1MM, ABUNDANCE
+  b <- nas %>%
+    dplyr::group_by(YEAR, bin = cut(SIZE_1MM, breaks = bin_edges5, include.lowest = TRUE,
+                                    right = FALSE, labels = midpoints5)) %>%
+    dplyr::summarise(n = sum(ABUNDANCE), .groups = "drop") %>%
+    dplyr::filter(!is.na(bin)) %>%
+    dplyr::mutate(bin = as.character(bin))
+  w <- as.data.frame(tidyr::pivot_wider(b, id_cols = YEAR, names_from = bin,
+                                        values_from = n, values_fill = 0))
+  for (mm in as.character(midpoints5)) if (!mm %in% names(w)) w[[mm]] <- 0
+  m  <- as.matrix(w[, as.character(midpoints5), drop = FALSE])
+  rs <- rowSums(m)
+  m  <- m / ifelse(rs == 0, 1, rs)                   # normalize; leave empty years at 0
+  data.frame(year = w$YEAR, setNames(as.data.frame(m), paste0("m", midpoints5)),
+             check.names = FALSE)
+}
+fem_comp <- list()
+for (fm in c("mature_female", "immature_female")) {
+  fnas <- crabpack::calc_bioabund(crab_data = specimen_data, species = "SNOW", region = "EBS",
+                                  crab_category   = fm,
+                                  female_maturity = "morphometric",
+                                  size_min = 25, bin_1mm = TRUE)
+  fem_comp[[fm]] <- cbind(sex = "female",
+                          maturity = ifelse(fm == "mature_female", "mature", "immature"),
+                          nas_to_comp22(fnas))
+}
+
+# ---- consolidated survey size comps -> survey_size_comps.csv -----------------
+# year, sex, maturity, m27.5..m132.5  (rows sum to 1); male + female, mat + imm.
+mk_male <- function(sc, maturity)
+  data.frame(year = as.numeric(rownames(sc)), sex = "male", maturity = maturity,
+             setNames(as.data.frame(sc), paste0("m", midpoints5)), check.names = FALSE)
+scomp_order       <- c("year", "sex", "maturity", paste0("m", midpoints5))
+survey_size_comps <- rbind(
+  mk_male(sc_male_mat, "mature")[,   scomp_order],
+  mk_male(sc_male_imm, "immature")[, scomp_order],
+  fem_comp[["mature_female"]][,      scomp_order],
+  fem_comp[["immature_female"]][,    scomp_order]
+)
+write.csv(survey_size_comps, "data/derived/survey_size_comps.csv", row.names = FALSE)
+
+# ---- consolidated survey indices -> survey_indices.csv -----------------------
+# year, sex, maturity, biomass (kt), cv.  Mature-female biomass + CV from the
+# morphometric pull; mature-male (MMB) biomass from male_mat_bio with the legal-
+# male CV as the MMB-CV proxy (merged by year); immature-male kept for diagnostics.
+mmb_df <- merge(data.frame(year = as.numeric(names(male_mat_bio)), biomass = as.numeric(male_mat_bio)),
+                data.frame(year = male_snow_ind$YEAR, cv = male_snow_ind$BIOMASS_MT_CV),
+                by = "year", all.x = TRUE)
+survey_indices <- rbind(
+  data.frame(year = mat_fem_snow_ind$YEAR, sex = "female", maturity = "mature",
+             biomass = mat_fem_snow_ind$BIOMASS_MT / 1000, cv = mat_fem_snow_ind$BIOMASS_MT_CV),
+  data.frame(year = mmb_df$year, sex = "male", maturity = "mature",
+             biomass = mmb_df$biomass, cv = mmb_df$cv),
+  data.frame(year = as.numeric(names(male_imm_bio)), sex = "male", maturity = "immature",
+             biomass = as.numeric(male_imm_bio), cv = NA_real_)
+)
+write.csv(survey_indices, "data/derived/survey_indices.csv", row.names = FALSE)
 
 # ---- 6a. Diagnostic figure: mature vs immature numbers-at-size --------------
 lng_mat <- melt(as.matrix(male_mature));   lng_mat$maturity <- "mature"
