@@ -14,10 +14,15 @@ hygiene.
 
 ## Tier 0 — breaks a fresh clone or corrupts output silently
 
-- [ ] **1. `R/` is untracked in git.** `git ls-files R/` returns nothing, but three committed
-  scripts hard-`stop()` without it: `00_advance_model.R:74-78`, `05_run_retrospective.R:65-67`, and
-  `06_run_jitter.R:97-98` (which also needs `R/gmacs_jitter.R`). **A fresh clone cannot advance the
-  model, run a retrospective, or run a jitter.** One `git add R/` fixes it. *Do this first.*
+- [ ] **1. The SAFE does not render at all.** `SAFE_snow_gmacs.Rmd:695` and `:804` put escaped
+  backticks inside an inline `` `r ` `` expression:
+  `` `r if (!jit_have) "... run \\`06_run_jitter.R\\` ..."` ``. knitr's inline pattern is
+  `` `r <code>` `` and stops at the **first** backtick, so the expression is truncated mid-string
+  and R sees `unexpected INCOMPLETE_STRING`. Reproduced 2026-08-21 by parsing every inline
+  expression in the file: 2 of them fail. **`08_render_report.R` therefore produces no PDF.**
+  Fix: drop the backticks (`run 06_run_jitter.R`) or use `\\texttt{}`. Note both lines are inside
+  the not-yet-generated placeholder branches, so this only bites once — but it bites on *every*
+  render until fixed.
 
 - [ ] **2. `README.md` documents a workflow that no longer exists.** `README.md:71` and `:77-78`
   describe hand-pasting `data/derived/` into the model `.DAT` — the step `00_advance_model.R`
@@ -118,6 +123,29 @@ hygiene.
   version pinning; R 4.5.1 is documented in prose only. A `packages.R` would be the cheap version;
   `renv` the real one.
 
+- **`SAFE_snow_gmacs.Rmd` — the max-gradient paragraph opening `## Model convergence and
+  comparison` is still 2025 text.** It asserts that "only `Model 25.1d` fell below that threshold;
+  the remaining 13 models had max |gradient| > 0.001, with `Model 25.3c` the largest at ~0.10" —
+  hardcoded claims about a 14-model bracket that the September set does not contain. Left alone
+  deliberately when the jitter paragraphs beside it were rewritten (2026-08-21, rule 9): fixing it
+  properly depends on the `model_defs` prune, which is still open. Until then the paragraph names
+  models the document no longer presents.
+
+- **`data/derived/fishery_size_comps.csv` rows do not sum to 1.** 66 of 174 rows are off by up to
+  3.0e-03. Cause is `01_prep_fishery_data.R:250-251`, which normalizes then rounds to 3 dp
+  (`round(BycatchFem / sum(BycatchFem), 3)`); 55 of the affected rows are fleet 2 / type 2, matching
+  that code exactly. Violates the "comps sum to 1" contract. Cheap fix is to drop the rounding, but
+  it changes model inputs, so it needs the rule-3 identity check.
+
+- **`plots/size_bins_comp_Kodiak_m.png` is written by two scripts.** `02_prep_survey_data.R:156`
+  and `04_plot_numbers_at_length.R:74`. `04` runs later, so `02`'s version never survives.
+
+- **All 44 male/immature CVs in `data/derived/survey_indices.csv` are `NA`.** Inert today —
+  `00_advance_model.R:326` filters to `maturity == "mature"`, so those rows never reach the model.
+  It becomes live the moment anyone acts on the SSC's immature-index suggestion.
+
+- **`Models/25_gmacs` has no `gmacs.exe`.** It has results but cannot be re-run or peeled.
+
 ---
 
 ## Watch list
@@ -129,8 +157,44 @@ hygiene.
   priority; not done yet because it means changing the `system2()` invocation, which is on the
   path that produces the numbers (rule 3).
 
+## From the 2026-08-21 adversarial review — not yet triaged
+
+Found by review of `832d034~1..HEAD`. Two were confirmed against run artifacts on disk, not just
+read from the diff. Ranked; none fixed (they sit in in-flight work).
+
+- [ ] **A. `05_run_retrospective.R:168` — `verify_run` never checks reference points are non-zero.**
+  `retro/_diagnostic/prjfix_off/` has BMSY = OFL = `0.0` and is recorded `ok = TRUE`. Combined with
+  the `-nohess` behaviour (see CLAUDE.md known traps), the same condition in the peels stage puts
+  **zeros** into `retro_refpoints.csv` and the SAFE figure. Highest-consequence finding.
+- [ ] **B. `05:343` / `06:228` — top-level `on.exit()` never fires** (verified). A worker error
+  leaks N ADMB-holding Rsessions — exactly the condition rule 11 exists to prevent. Wrap the
+  cluster in a function, or register the cleanup with `reg.finalizer`/explicit `tryCatch`.
+- [ ] **C. `06:217` — `is_done()` calls `readLines()` on a possibly-absent `jitter.txt`.**
+  `suppressWarnings` does not catch a connection error, so the resume scan aborts the run instead
+  of re-running that directory.
+- [ ] **D. `05:174` — `last_survey_year` is collected but never asserted**, so `drop_survey`'s
+  defining property is unverified. A regression would make it silently identical to `standard`.
+- [ ] **E. `05:465` — `rho_table`/`peel_rel` loop `1:N_PEELS`**, excluding the `drop_survey` peel-0
+  run, which is the run that isolates the terminal survey's leverage.
+- [ ] **F. `05:490` — Ralston's sigma divides by `n-1` where `n` counts non-NA `rel`**, not non-NA
+  `lg` (which carries an extra guard), understating the RMSE.
+- [ ] **G. `00_advance_model.R:701` — the (e2) check** compares survey comp years against an
+  index-derived, male-only `expect_surv`, forcing two derived files to share a terminal year. A
+  legitimate mismatch exits 1 and breaks every `drop_survey` peel.
+
+**Cleared by the same review** (checked, no defect): `foreach` auto-export in `05`;
+`read_gmacsall_summary` header/row token alignment (25/25 against the real `Gmacsall.out`); every
+`refpoint()` name lookup; `gmacs_echo_value` keys vs `gmacs_files_in.dat`; `set_prj_growth_year`
+round-trip on the real `snow.prj`; `infos[[run_ids[i]]]` on a missing name; Mohn's rho sign
+convention and denominator.
+
 ## Done
 
+- [x] ~~`R/` untracked in git while three committed scripts hard-stop without it.~~ Tracked in
+  `832d034` (`R/gmacs_io.R`, `R/gmacs_jitter.R`, 899 lines).
+- [x] ~~`06`'s single `MAX_GRAD_TOL = 1e-3` gate marked every run non-converged (pilot runs sit at
+  5.6e-3 to 1.59e-2, base at 2.54e-3), emptying the mode analysis while exiting 0.~~ Split into
+  `GRAD_CONVENTIONAL` (1e-3, reported) and `GRAD_USABLE` (1e-2, the screen), `06:79-80`.
 - [x] ~~`05`/`06` duplicated the GMACS run-directory setup instead of using
   `set_retro_peel()`/`set_jitter()` from `R/gmacs_io.R`, and left `setwd()` unguarded.~~
   Fixed 2026-08-21: both now source `R/gmacs_io.R` (`05:67`, `06:97`) and use

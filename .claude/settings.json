@@ -4,16 +4,47 @@
       "Read(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
       "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
+
+      "Bash(Rscript:*)",
+      "Bash(C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe:*)",
+      "Bash(\"C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe\":*)",
+      "Bash($RS:*)",
+      "PowerShell(& $RS:*)",
+      "PowerShell(Rscript:*)",
+
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git show:*)",
       "Bash(git ls-files:*)",
       "Bash(git branch:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git restore:*)",
+      "Bash(git stash list:*)",
+
       "Bash(ls:*)",
       "Bash(wc:*)",
       "Bash(head:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(diff:*)",
+      "Bash(md5sum:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(cut:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(du:*)",
+      "Bash(stat:*)"
     ],
     "deny": [
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/Reports/**)",
@@ -21,7 +52,12 @@
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/archive_2025/**)",
       "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/archive_2025/**)",
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)",
-      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)"
+      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)",
+
+      "Bash(git push:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(rm:*)"
     ]
   }
 }

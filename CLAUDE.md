@@ -182,9 +182,13 @@ delivery names (ADFG, `EBSCrab_*`, `SnowCrabGrowthMaster.csv`); everything else 
 
 Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACKLOG.md`.
 
-- **`R/` is untracked in git**, but `00_advance_model.R`, `05_run_retrospective.R`, and
-  `06_run_jitter.R` all hard-stop without it. A fresh clone cannot advance the model, run a
-  retrospective, or run a jitter.
+- **Reference points need the Hessian.** `-nohess` skips ADMB's sd phase, so BMSY/Fmsy/Fofl/OFL
+  come back as exactly `0.0` — not missing, *zero*. Measured 2026-08-21: base fit BMSY 177.6, the
+  `-nohess` peel 0. A run that used `-nohess` must never reach `retro_refpoints.csv` or a SAFE
+  figure.
+- **Never rewrite `spr_grow_yr` in `snow.prj`.** A one-byte change (1982→1983) kills GMACS with
+  "Memory allocation error" while reading the control file. The folder `gmacsbase.TPL` is 2.20.32b
+  but the exe is 2.20.34 and does not behave like it (measured 2026-08-21).
 - `README.md` still documents the hand-paste `.DAT` workflow that `00_advance_model.R` replaced,
   and omits `00` entirely. Trust `00`, not the README.
 - Two figure filenames are written by two different places each — last writer wins, silently.
