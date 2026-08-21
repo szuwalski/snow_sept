@@ -91,8 +91,20 @@ Many new chunks depend on runs that don't exist yet. Keep the document knitting:
 
 ---
 
-## STEP 4 — Phase 2 (blocked on the 2026 summer-survey crabpack pull + Cody's GMACS exe)
-Build the runs that **do not exist yet** — the May final model advanced to End year 2025, plus the **male-only** and **data-through-2019** variants (only `25_gmacs` and `25_gmacs_update_newmat_plus_group` are in `Models/` today). Then run the pipeline: `01`/`02` → build `.DAT` → GMACS → `03_build_results_object.R` → `05` retrospective → `06` jitter → `07_tier_4.R` → projections → `08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify the `07_tier_4.R` output object matches the interface the sketches assume (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); if the columns differ, adapt **only** the `tier4-setup` chunk. Repopulate every management quantity from the real runs.
+## STEP 4 — Phase 2 (data pipeline DONE 2026-08; models built, need RUNNING)
+The old blockers are **RESOLVED**: the 2026 summer-survey crabpack pull runs (`02`), the GMACS exe is present, and `01`/`02` now write clean `data/derived/*` (6 tidy files) that **`00_advance_model.R`** transcribes into the model `.DAT`/`.CTL` — no more hand-paste (see the `snow-sept-2026-model-pipeline` project memory).
+
+**Already built (End year 2025, GMACS-valid — but NOT yet run to convergence):**
+- `Models/26_gmacs_update_newmat_plus_group` — the recommended 25.2c advanced to End year 2025 (right=FALSE binning, growth-typo fix, 2026 data). Terminal MMB 114.576.
+- **Two methodology sensitivities** on the accepted 2025 endpoint: `25_gmacs_rightFALSE` (size-comp binning switched right=TRUE→FALSE alone) and `25_gmacs_rightFALSE_growthfix` (adds the growth-typo fix on top).
+
+⚠️ Those three new dirs currently hold **STALE run artifacts** copied from the template (they show the *accepted* model's results) and have **no committed `gmacs.exe`**. Before running, refresh each with `Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix]` (it copies a runnable dir), then run GMACS.
+
+**Still to build:** the **male-only** and **data-through-2019** variants of 25.2c.
+
+**Run the pipeline** — for each model dir: GMACS to convergence → `03_build_results_object.R` (advance `model_defs` to add the 2026 case + the sensitivity cases) → `05` retrospective → `06` jitter → `07_tier_4.R` → projections → `08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify `07_tier_4.R`'s output matches the sketches' interface (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); adapt **only** the `tier4-setup` chunk if columns differ. Repopulate every management quantity from the real runs.
+
+**Report the two methodology sensitivities in `# A. Summary of Major Changes`** — each isolates one change's effect vs the accepted May model: (1) the size-comp edge convention (right=TRUE→FALSE, "a crab on a 5-mm cutoff goes to the upper bin" — the previous survey convention; this is why terminal MMB is 114.6 and not the rejected right=TRUE value 107.5), and (2) the growth-data fix (a 26.3 mm crab's molt increment `73`→`7.3`, a `.DAT` transcription typo confirmed against the specimen master).
 
 ## STEP 5 — Verification / acceptance criteria
 - Document knits cleanly at the end of Phase 1 (placeholders allowed) and Phase 2 (real numbers).
