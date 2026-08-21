@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
+      "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
+      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)"
+    ],
+    "deny": [
+      "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/Reports/**)",
+      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/Reports/**)",
+      "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/archive_2025/**)",
+      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/archive_2025/**)",
+      "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)",
+      "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)"
+    ]
+  }
+}
