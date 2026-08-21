@@ -183,9 +183,10 @@ delivery names (ADFG, `EBSCrab_*`, `SnowCrabGrowthMaster.csv`); everything else 
 Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACKLOG.md`.
 
 - **Reference points need the Hessian.** `-nohess` skips ADMB's sd phase, so BMSY/Fmsy/Fofl/OFL
-  come back as exactly `0.0` — not missing, *zero*. Measured 2026-08-21: base fit BMSY 177.6, the
-  `-nohess` peel 0. A run that used `-nohess` must never reach `retro_refpoints.csv` or a SAFE
-  figure.
+  come back as exactly `0.0` — not missing, *zero*. Verified 2026-08-21 against
+  `Models/26_gmacs_update_newmat_plus_group/Gmacsall.out`: base fit BMSY 149.51794249,
+  OFL(tot) 86.95426329; a `-nohess` peel reports 0. A run that used `-nohess` must never reach
+  `retro_refpoints.csv` or a SAFE figure.
 - **Never rewrite `spr_grow_yr` in `snow.prj`.** A one-byte change (1982→1983) kills GMACS with
   "Memory allocation error" while reading the control file. The folder `gmacsbase.TPL` is 2.20.32b
   but the exe is 2.20.34 and does not behave like it (measured 2026-08-21).
@@ -194,6 +195,13 @@ Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACK
 - Two figure filenames are written by two different places each — last writer wins, silently.
 - The Rmd defends against missing models by substituting `NA`/`0`, so a stale model directory
   yields a plausible-looking table instead of an error. Check what actually loaded.
+  **This has already happened once.** Until 2026-08-21 `Models/26_gmacs_update_newmat_plus_group/`
+  held a byte-identical copy of the May 25-baseline run — terminal year 2024, `gmacs_files_in.dat`
+  naming the *25* `.dat` — and reported BMSY 177.60767282. The genuine first fit of the 26 model
+  (terminal 2025, survey to 2026, npar 412, nll -23545.5364) gives **149.51794249**, a 19%
+  difference in the quantity the OFL is built on. The stale values are preserved in
+  `_pre_run_backup/`. Before trusting any model directory, check `Year_range` in `Gmacsall.out` and
+  the datafile named in `gmacs_files_in.dat` — a `.dat` filename from the wrong cycle is the tell.
 - `07_calc_tier4.R` and `02_prep_survey_data.R` both pull crabpack with a hardcoded year range.
   They must be advanced together, by hand.
 - A hard reset during `05`/`06` leaves a **half-written** peel/jitter directory that still looks
