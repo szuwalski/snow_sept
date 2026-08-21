@@ -362,3 +362,23 @@ read_gmacs_echo <- function(model_dir) {
   list(end_year         = end_year,
        last_survey_year = if (length(yrs)) max(yrs) else NA_integer_)
 }
+
+## ---------------------------------------------------------------------------
+## 7. Parallel worker budget
+## ---------------------------------------------------------------------------
+## Each parallel worker is a full ADMB process: one CPU core pinned at 100% for
+## the whole fit, plus a ~700 MB cmpdiff.tmp. On a mobile workstation (the
+## Precision 5690 / Core Ultra 9 185H this is run on, 16 physical / 22 logical
+## cores) a wide fan-out draws more sustained package power than the chassis can
+## shed, and the machine HARD-RESETS mid-run -- which corrupts whatever peel or
+## jitter directory was being written (2026-08, per Grant).
+##
+## So the budget is a small fixed default, NOT detectCores(). Raise it only on a
+## machine known to sustain it, via the env var or the scripts' --cores flag:
+##   $env:GMACS_MAX_WORKERS = 8      # PowerShell, this session only
+gmacs_max_workers <- function(default = 4L) {
+  v <- suppressWarnings(as.integer(Sys.getenv("GMACS_MAX_WORKERS", "")))
+  n <- if (is.na(v) || v < 1L) as.integer(default) else v
+  ## Never exceed the machine: detectCores() is the ceiling, not the target.
+  max(1L, min(n, parallel::detectCores()))
+}

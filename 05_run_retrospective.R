@@ -1,465 +1,625 @@
-#==set working drive
-#==create retro
-#==pull over files
-#==modify CTL file
-#==execute retrospective
-library(gmr)
-library(dplyr)
-library(reshape2)
-library(ggplot2)
-orig_wd<-getwd()
-#==repo-relative model directory (de-hardcoded from C:/Users/cody.szuwalski/Work/snow_2025_9/...).
-#==Assumes the working directory is the snow_sept repo root. An ABSOLUTE path is required here
-#==because the retro loop uses setwd() to jump into peel folders and back.
-model_dir<-normalizePath(file.path(orig_wd,"Models","25_gmacs_update_newmat_plus_group"),
-                         winslash="/",mustWork=FALSE)
-orig_drv<-c(paste0(model_dir,"/"))
-tot_it<-10
+#!/usr/bin/env Rscript
+## ============================================================================
+## 05_run_retrospective.R
+##
+## Retrospective analysis for the September 2026 EBS snow crab SAFE.
+##
+## This assessment sets federal fishery regulations. Every GMACS run launched
+## here is checked before its output is used, and every derived statistic is
+## written to CSV next to the runs so the numbers in the SAFE can be traced
+## back to a specific fit.
+##
+## TWO RETROSPECTIVE MODES
+##   standard     Peel p removes the last p years of data. Set via nyrRetro in
+##                gmacs.dat; GMACS does the peeling internally and correctly
+##                honours the crab-year convention (end year N keeps the N+1
+##                summer survey).
+##   drop_survey  As above AND the terminal survey year is withheld, answering
+##                "what would the assessment have said without this year's
+##                survey?". Built by regenerating the peel's .DAT through
+##                00_advance_model.R with survey_end = END_YEAR - p. That is
+##                the same writer that produced the accepted model, verified to
+##                reproduce it byte-for-byte -- not a bespoke row editor.
+##
+## Peel 0 is a real GMACS run in both modes, not a copy of the parent fit. In
+## standard mode it is an independent re-fit of the base model and is asserted
+## to reproduce the parent's MMB series.
+##
+## USAGE (from the snow_sept repo root)
+##   Rscript 05_run_retrospective.R [stage] [model_dir]
+##
+##   stage = all       base + diagnose + peels + collect   (default)
+##           base      fit the base model in model_dir only
+##           diagnose  measure the snow.prj spr_grow_yr effect (see section 4)
+##           peels     run the peel sweep (requires a fitted base)
+##           collect   parse existing runs, write CSVs + figures (no GMACS)
+##
+## OUTPUTS
+##   <model_dir>/retro/retro_ssb.csv          MMB by year x mode x peel
+##   <model_dir>/retro/retro_recruitment.csv  recruitment by year x mode x peel
+##   <model_dir>/retro/retro_refpoints.csv    BMSY/OFL/Fmsy/... per peel
+##   <model_dir>/retro/retro_diagnostics.csv  per-run convergence + provenance
+##   <model_dir>/retro/mohns_rho.csv          rho + Ralston's sigma per mode
+##   plots/retro_mmb.png, retro_recruitment.png,
+##   plots/retro_refpoints.png, retro_mmb_drop_survey.png
+## ============================================================================
 
-for(z in 1:length(orig_drv))
-{
-#==set up initial folder
-dir.create(paste(orig_drv[z],"/retro/",sep=''))
-dir.create(paste(orig_drv[z],"/retro/1/",sep=''))
+options(warn = 1)
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(doParallel)
+  library(foreach)
+})
 
-for(x in 1:tot_it)
-{
-  #==read in .ctl
-  ctl_file<-readLines(paste(orig_drv[z],"/gmacs.dat",sep=""))
-  take_in<-grep("Retro",ctl_file)+1
-  ctl_file[take_in] <-x
-  #=make new drive
-  work_drv<-paste(orig_drv[z],"/retro/",x,sep='')
-  dir.create(work_drv)
-  write(ctl_file,paste(work_drv,"/gmacs.dat",sep=""))
+## ---------------------------------------------------------------------------
+## 0. Configuration
+## ---------------------------------------------------------------------------
+args      <- commandArgs(trailingOnly = TRUE)
+STAGE     <- if (length(args) >= 1) tolower(args[1]) else "all"
+MODEL_REL <- if (length(args) >= 2) args[2] else "Models/26_gmacs_update_newmat_plus_group"
 
-    #=copy needed files
-  file.copy(paste(orig_drv[z],"/snow.dat",sep=""),
-           work_drv)
-  file.copy(paste(orig_drv[z],"/snow.ctl",sep=""),
-            work_drv)
-  file.copy(paste(orig_drv[z],"/snow.prj",sep=""),
-            work_drv)
-  file.copy(paste(orig_drv[z],"/gmacs.exe",sep=""),
-            work_drv)
+if (!STAGE %in% c("all", "base", "diagnose", "peels", "collect"))
+  stop("stage must be one of: all, base, diagnose, peels, collect (got '", STAGE, "')")
 
-  #==rerun assessment
-  setwd(paste(work_drv))
-  system("gmacs.exe -nohess")
-  #==do until...what exactly?
-}
-}
+REPO_ROOT <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
+if (!file.exists(file.path(REPO_ROOT, "R", "gmacs_io.R")))
+  stop("Run this from the snow_sept repo root (no R/gmacs_io.R under ", REPO_ROOT, ").")
+source(file.path(REPO_ROOT, "R", "gmacs_io.R"))
 
-setwd(orig_wd)
+MODEL_DIR <- normalizePath(file.path(REPO_ROOT, MODEL_REL), winslash = "/", mustWork = TRUE)
+RETRO_DIR <- file.path(MODEL_DIR, "retro")
+PLOT_DIR  <- file.path(REPO_ROOT, "plots")
 
-# #==dumb thing for time-varying M
-# #==need to manually fix the .CTL files for years in which there was time-varying M
-# #==manually do one of the drives, then pull the .CTL files over, provided they're not different
-# #==then rerun
-# for(z in 1:length(orig_drv))
-# {
-#   #==set up initial folder
-#   for(x in 5:tot_it)
-#   {
-#     pull_drv<-  paste("C:/Users/cody.szuwalski/Work/snow_2024_9/24_gmacs_sq_molt_func_sbpr/retro/",x,sep='')
-#     work_drv<-paste(orig_drv[z],"/retro/",x,sep='')
-#     file.copy(paste(pull_drv,"/snow.ctl",sep=""),
-#               work_drv,overwrite=TRUE)
-#     setwd(paste(work_drv))
-#     system("gmacs.exe -nohess")
-#   }
-# }
-# setwd(orig_wd)
+N_PEELS   <- 10L                      # peels 1..N_PEELS, plus the unpeeled peel 0
+MODES     <- c("standard", "drop_survey")
+GRAD_WARN <- 1e-3                     # WARN threshold, not an abort: the accepted
+                                      # May 2026 fit has max gradient 1.46e-3
+N_WORKERS <- gmacs_max_workers()      # small fixed default, NOT detectCores():
+                                      # wide fan-out hard-resets this laptop and
+                                      # corrupts the peel being written. Raise via
+                                      # $env:GMACS_MAX_WORKERS. See R/gmacs_io.R:7.
 
+## Compensate GMACS's retrospective shift of snow.prj's spr_grow_yr. See the
+## long note on set_prj_growth_year() in R/gmacs_io.R, and section 4 below,
+## which MEASURES the effect rather than assuming it.
+FIX_PRJ_GROWTH_YEAR <- TRUE
 
+RSCRIPT <- file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
 
-#===PULL gmacs DATA AND outputs
-#===over all models, combine
-#===plot
-setwd(orig_wd)
-mod_names <- c("25.1")
-orig_drv<-c(paste0(model_dir,"/"))   #==de-hardcoded; see model_dir defined near top of script
-retro_outs<-NULL
-for(z in 1:length(orig_drv))
-{
-mod_dir <- paste(orig_drv[z],"retro/",sep="")
-take_dir<-paste(mod_dir,seq(1,10),"/",sep='')
+## The template that produced this model, needed to rebuild drop-survey .DATs.
+## Verified 2026-08 to regenerate Models/26_gmacs_update_newmat_plus_group
+## byte-for-byte (.dat, .ctl, gmacs.dat, snow.prj all md5-identical).
+ADVANCE_TEMPLATE <- "Models/25_gmacs_update_newmat_plus_group"
 
-#==reference estimates
-  tmp<-readLines(paste(orig_drv,"/Gmacsall.out",sep=''))
-  st<-grep("Summary: dataframe",tmp)
-  ugh<-tmp[(st+1):(st+50)]
-  end<-grep(">EOD<",ugh)
-  ugh<-ugh[1:(end-1)]
-  ref_take_out<-NULL
-  
-  for(x in 2:length(ugh))
-    ref_take_out<-rbind(ref_take_out,as.numeric(unlist(strsplit(unlist(ugh[x]),split=" "))))
-  colnames(ref_take_out)<-unlist(strsplit(unlist(ugh[1]),split=" "))[unlist(strsplit(unlist(ugh[1]),split=" "))!='']
+dir.create(RETRO_DIR, recursive = TRUE, showWarnings = FALSE)
+dir.create(PLOT_DIR,  recursive = TRUE, showWarnings = FALSE)
 
-#==peels
-  keep_ssb<-ref_take_out[,c(1,2)]
-for(y in 1:length(take_dir))
-{
-tmp<-readLines(paste(take_dir[y],"/Gmacsall.out",sep=''))
-st<-grep("Summary: dataframe",tmp)
-ugh<-tmp[(st+1):(st+50)]
-end<-grep(">EOD<",ugh)
-ugh<-ugh[1:(end-1)]
-take_out<-NULL
+## ---------------------------------------------------------------------------
+## 1. Model identity -- read, never hardcode
+## ---------------------------------------------------------------------------
+GC       <- read_gmacs_control(MODEL_DIR)
+EXE      <- file.path(MODEL_DIR, "gmacs.exe")
+if (!file.exists(EXE)) stop("No gmacs.exe in ", MODEL_DIR)
 
-for(x in 2:length(ugh))
- take_out<-rbind(take_out,as.numeric(unlist(strsplit(unlist(ugh[x]),split=" "))))
-colnames(take_out)<-unlist(strsplit(unlist(ugh[1]),split=" "))[unlist(strsplit(unlist(ugh[1]),split=" "))!='']
+## Model end year comes from the .DAT itself.
+.dat_lines <- read_raw_lines(file.path(MODEL_DIR, GC$datafile))$lines
+END_YEAR <- as.integer(toks(.dat_lines[find_anchor(.dat_lines, "# End year")])[1])
+SYR      <- as.integer(toks(.dat_lines[find_anchor(.dat_lines, "# Start year")])[1])
+if (is.na(END_YEAR) || is.na(SYR)) stop("Could not read Start/End year from ", GC$datafile)
 
-keep_ssb<-merge(keep_ssb,take_out[,c(1,2)],all=TRUE,by='Year')
-}
-}
+## Files a run needs. Named from gmacs.dat, so this works for Models/25_gmacs
+## ("snow.dat") as well as the 26 model ("26_snow_update_newmat_plus_group.dat").
+RUN_FILES <- c(GC$datafile, GC$ctlfile, GC$prjfile, "gmacs.dat", "gmacs.exe")
 
-colnames(keep_ssb)<-c("Year",seq(2024,2014))
-melted<-melt(keep_ssb,id.var='Year')  
+cat(sprintf("\n=== 05_run_retrospective.R ===\n"))
+cat(sprintf("stage      : %s\n", STAGE))
+cat(sprintf("model      : %s\n", MODEL_REL))
+cat(sprintf("data file  : %s   (ctl %s, prj %s)\n", GC$datafile, GC$ctlfile, GC$prjfile))
+cat(sprintf("model years: %d - %d\n", SYR, END_YEAR))
+cat(sprintf("peels      : 0 - %d   modes: %s\n", N_PEELS, paste(MODES, collapse = ", ")))
+cat(sprintf("workers    : %d of %d cores\n", N_WORKERS, parallel::detectCores()))
+cat(sprintf("prj fix    : %s\n\n", FIX_PRJ_GROWTH_YEAR))
 
-perc_diff<-rep(NA,tot_it+3)
-for(x in 3:ncol(keep_ssb))
-{
- take_ind<-max(which(!is.na(keep_ssb[,x])))
- comp<-keep_ssb[take_ind,2]
- ref<-keep_ssb[take_ind,x]
- perc_diff[x]<-(comp-ref)/ref
-}
-png("plots/retro_mmb.png",height=8,width=8,res=400,units='in') 
-ggplot(melted)+
-  geom_line(aes(x=Year,y=value,group=variable,col=variable),lwd=1.2)+
-  theme_bw()+expand_limits(y=0)+
-  annotate("text", x=2010, y=400, label= paste("Mohn's rho = ",round(mean(perc_diff,na.rm=T),2)) ) +
-  guides(col=guide_legend(title="Peel"))
-dev.off()
-
-  
-
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-#==facet plots
-png("plots/retro_mmb.png",height=8,width=8,res=400,units='in')
-
-ggplot(filter(retro_outs,year>2010))+
-  geom_line(aes(x=year,y=ssb,group=peel,col=peel),lwd=1.5,alpha=0.75)+
-  theme_bw()+
-  facet_wrap(~model)+
-  geom_text(aes(x=2015,y=50,label=paste("Mohn's rho = ",round(mohnrho,2))))+
-  expand_limits(y=0)+ylab("Mature male biomass (1,000 t)")
-dev.off()
-
-#=======================================
-# calc the CIs
-cpue_df<-data.frame(cbind(M[[1]]$dSurveyData,M[[1]]$pre_cpue,rep(1,length(M[[1]]$pre_cpue))))
-colnames(cpue_df)<-c("q","year","season","fleet","sex","mature","obs","cv","uh","dunno","pred",'peel')
-ciup<-cpue_df$obs * exp(1.96*sqrt(log(1+cpue_df$cv^2)))
-cidn<-cpue_df$obs / exp(1.96*sqrt(log(1+cpue_df$cv^2)))
-cpue_df<-cbind(cpue_df,ciup,cidn)
-temp<-filter(cpue_df,sex=='1'&fleet=='4')
-
-for(x in 2:length(M))
-{
-  cpue_df<-data.frame(cbind(M[[x]]$dSurveyData,M[[x]]$pre_cpue),rep(x,length(M[[x]]$pre_cpue)))
-  colnames(cpue_df)<-c("q","year","season","fleet","sex","mature","obs","cv","uh",'dunno',"pred",'peel')
-  ciup<-cpue_df$obs * exp(1.96*sqrt(log(1+cpue_df$cv^2)))
-  cidn<-cpue_df$obs / exp(1.96*sqrt(log(1+cpue_df$cv^2)))
-  cpue_df<-cbind(cpue_df,ciup,cidn)
-  temp<-rbind(temp,filter(cpue_df,sex==1,fleet==4))
-}
-temp<-temp[-which(temp$pred==0),] 
-peel_yr<-seq(2023,2015)
-temp$peel_year<-peel_yr[temp$peel]
-library(ggplot2)
-
-png("plots/retro_ind_fit.png",height=8,width=8,res=400,units='in')
-p<-ggplot(data=filter(temp,peel<10)) +
-  geom_point(aes(x=year,y=obs))+
-  geom_line(aes(x=year,y=pred,group=peel),lwd=1) +
-  geom_pointrange(aes(x=year,y=obs,ymin=cidn, ymax=ciup))+
-  theme_bw()+theme(legend.position='none')+ylab("MMB (kt)")+
-  facet_wrap(~peel_year)
-print(p)
-dev.off()
-
-unq_peel<-unique(temp$peel)
-unq_yr<-unique(temp$year)
-max_yr<-max(unq_yr)
-
-ref_ssb<-rev(filter(temp,peel==1,year>2010,year<max_yr)$pred)
-peel_ssb<-rep(0,length(ref_ssb))
-for(x in 1:length(ref_ssb))
-  peel_ssb[x]<-filter(temp,year==(max_yr-x),peel==(10-x))$pred
-
-mean((peel_ssb-ref_ssb)/ref_ssb)
-
-in_name<-NULL
-in_yr<-NULL
-in_val<-NULL
-in_peel<-NULL
-
-for(x in 1:length(mod_names))
-{
- in_name<-c(in_name,rep('ssb',length(M[[x]]$mod_yrs)),rep('rec',length(M[[x]]$mod_yrs)))
- in_peel<-c(in_peel,rep(mod_names[x],2*length(M[[x]]$mod_yrs)))
- in_val<-c(in_val,M[[x]]$ssb,unlist(M[[x]]$recruits[1,]))
- in_yr<-c(in_yr,M[[x]]$mod_yrs,M[[x]]$mod_yrs)
-} 
-
-out_data<-data.frame(quantity=in_name,peel=in_peel,value=in_val,year=in_yr)
-write.csv(out_data,"opilio_tseries.csv")
-
-B35<-NULL
-for(x in 1:length(mod_names))
- B35<-c(B35,M[[x]]$spr_bmsy)
-
-mod_names_2 <- seq(2018,2010)
-.MODELDIR2 = c("./retro/2018_s/","./retro/2017_s/",
-              "./retro/2016_s/","./retro/2015_s/",
-              "./retro/2014_s/","./retro/2013_s/",
-              "./retro/2012_s/","./retro/2011_s/","./retro/2010_s/")
-
-fn       <- paste0(.MODELDIR2, "gmacs")
-M2        <- lapply(fn, read_admb) #need .prj file to run gmacs and need .rep file here
-names(M2) <- mod_names_2
-
-B35_d<-NULL
-for(x in 1:length(mod_names))
-  B35_d<-c(B35_d,M2[[x]]$spr_bmsy)
-
-BMSY<-data.frame(BMSY=c(B35,B35_d),peel=c(mod_names,mod_names_2),
-                 survey=c(rep("whole",length(mod_names)),rep("drop",length(mod_names_2))))
-write.csv(BMSY,"opilio_bmsy.csv")
-
-in_name<-NULL
-in_yr<-NULL
-in_val<-NULL
-in_peel<-NULL
-
-for(x in 1:length(mod_names_2))
-{
-  in_name<-c(in_name,rep('ssb',length(M2[[x]]$mod_yrs)),rep('rec',length(M2[[x]]$mod_yrs)))
-  in_peel<-c(in_peel,rep(mod_names_2[x],2*length(M2[[x]]$mod_yrs)))
-  in_val<-c(in_val,M2[[x]]$ssb,unlist(M2[[x]]$recruits[1,]))
-  in_yr<-c(in_yr,M2[[x]]$mod_yrs,M2[[x]]$mod_yrs)
-} 
-
-out_data<-data.frame(quantity=in_name,peel=in_peel,value=in_val,year=in_yr)
-write.csv(out_data,"opilio_tseries_drop.csv")
-
-
-
-OFL<-rep(NA,length(mod_names))
-OFL2<-rep(NA,length(mod_names))
-
-for(x in 1:length(OFL))
-{
-  OFL[x]<-M[[x]]$spr_cofl
-  OFL2[x]<-M2[[x]]$spr_cofl
+## ---------------------------------------------------------------------------
+## 2. Run + verify helpers
+## ---------------------------------------------------------------------------
+## Run gmacs.exe with `dir` as the working directory. Returns status, elapsed
+## seconds, and the captured console output (also written to run.log).
+run_gmacs <- function(dir, extra_args = character(0)) {
+  exe <- normalizePath(file.path(dir, "gmacs.exe"), winslash = "\\", mustWork = TRUE)
+  old <- setwd(dir); on.exit(setwd(old), add = TRUE)
+  t0  <- Sys.time()
+  out <- suppressWarnings(system2(exe, args = extra_args, stdout = TRUE, stderr = TRUE))
+  st  <- attr(out, "status"); if (is.null(st)) st <- 0L
+  el  <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
+  writeLines(c(sprintf("# gmacs.exe %s", paste(extra_args, collapse = " ")),
+               sprintf("# exit status %d, %.1f s", st, el),
+               out), "run.log")
+  list(status = st, elapsed = el, out = out)
 }
 
-png("plots/retro_OFL.png",height=4.5,width=8,res=400,units='in')
-plot(OFL~as.numeric(mod_names+1),type='l',lwd=2,las=1,xlab="Year",ylim=c(0,250),ylab="OFL (1,000t)")
-lines(OFL2~as.numeric(mod_names+1),lty=2,col=2,lwd=2)
-legend('bottomleft',bty='n',col=c(1,2),lty=c(1,2),lwd=2,
-       legend=c("With last year of survey","Without last year of survey"))
-dev.off()
+## Every check that must hold before a run's output is allowed into the
+## analysis. Returns a one-row data.frame; `ok` FALSE means do not use it.
+verify_run <- function(dir, label, expect_end_year, started_at, run) {
+  fail <- character(0); warn <- character(0)
 
-ofl_diff<-(OFL2-OFL)/OFL
-mean(ofl_diff)
-median(ofl_diff)
+  if (run$status != 0L) fail <- c(fail, sprintf("exit status %d", run$status))
 
-boxplot(ofl_diff*100,las=1,frame=F)
-abline(h=0,lty=2)
-mtext(side=2,line=2.2,"Percent change in OFL")
- df<-data.frame(Change=ofl_diff*100,stock="Opilio")
+  ## GMACS can exit 0 on some failure paths, so the log is inspected directly.
+  bad <- grep("STOPPING|Index out of bounds|array bound|Error|error in",
+              run$out, value = TRUE, ignore.case = FALSE)
+  if (length(bad)) fail <- c(fail, sprintf("log: %s", bad[1]))
 
-p <- ggplot(data = df, aes(y = Change, x = stock)) + 
-  geom_boxplot(aes(middle = mean(Change)))
-
-print(p)
-
-#==martin's figure
-retro_ssb<-rep(NA,length(mod_names))
-retro_ssb_no<-rep(NA,length(mod_names))
-
-for(x in 1:length(mod_names))
-{
-  retro_ssb[x]<-M[[x]]$ssb[length(M[[x]]$ssb)]
-  retro_ssb_no[x]<-M2[[x]]$ssb[length(M[[x]]$ssb)]
+  ga <- file.path(dir, "Gmacsall.out")
+  if (!file.exists(ga)) {
+    fail <- c(fail, "no Gmacsall.out")
+  } else if (file.info(ga)$mtime < started_at) {
+    fail <- c(fail, "Gmacsall.out not rewritten by this run (stale output)")
   }
 
-png("plots/retro_term_yr_mmb.png",height=4.5,width=8,res=400,units='in')
-plot(M[[1]]$ssb~M[[1]]$mod_yrs,type='b',ylim=c(0,320),xlim=c(2011,2018),
-     las=1,lwd=2,ylab="MMB (1,000t)",xlab="Year")
-lines(retro_ssb~mod_names,lty=1,col=2,lwd=2,type='b')
-lines(retro_ssb_no~mod_names,lty=1,col=3,lwd=2,type='b')
+  s <- NULL; rp <- NULL; par <- list(npar = NA_integer_, nll = NA_real_, max_grad = NA_real_)
+  echo <- list(end_year = NA_integer_, last_survey_year = NA_integer_)
+  if (!length(fail)) {
+    s    <- try(read_gmacsall_summary(ga), silent = TRUE)
+    rp   <- try(read_gmacsall_refpoints(ga), silent = TRUE)
+    par  <- read_par_header(dir)
+    echo <- read_gmacs_echo(dir)
+    if (inherits(s, "try-error")) fail <- c(fail, "unparseable summary block")
+    if (inherits(rp, "try-error")) warn <- c(warn, "no reference points parsed")
+  }
 
-legend('topright',bty='n',col=c(1,2,3),lty=1,lwd=2,legend=c("Most recent assessment","Standard retrospective",
-                                                "Drop terminal survey retrospective"))
-dev.off()
+  term <- if (!is.null(s) && !inherits(s, "try-error")) max(s$Year) else NA_integer_
+  if (!is.na(term) && term != expect_end_year)
+    fail <- c(fail, sprintf("terminal year %d, expected %d", term, expect_end_year))
+  if (!is.na(echo$end_year) && echo$end_year != expect_end_year)
+    fail <- c(fail, sprintf("gmacs echo end year %d, expected %d", echo$end_year, expect_end_year))
 
-ref_ssb<-rev(M[[1]]$ssb[(length(M[[1]]$ssb)-length(mod_names)+1):length(M[[1]]$ssb)])
-mean((retro_ssb-ref_ssb)/ref_ssb)
-mean((retro_ssb_no-ref_ssb)/ref_ssb,na.rm=T)
+  if (!is.na(par$max_grad) && par$max_grad > GRAD_WARN)
+    warn <- c(warn, sprintf("max gradient %.3g > %.0e", par$max_grad, GRAD_WARN))
 
-#==ralston's sigma
-
-sqrt((1/(length(ref_ssb)-1))*sum((log(retro_ssb)-log(ref_ssb))^2))
-sqrt((1/(length(ref_ssb)-1))*sum((log(retro_ssb_no)-log(ref_ssb))^2))
-
-sqrt(sum(log(retro_ssb_no)-log(ref_ssb))/(length(ref_ssb)-1))
-
-#==martin's figure
-retro_q<-rep(NA,length(mod_names))
-retro_q_no<-rep(NA,length(mod_names))
-
-retro_m<-rep(NA,length(mod_names))
-retro_m_no<-rep(NA,length(mod_names))
-
-for(x in 1:length(mod_names))
-{
-  retro_q[x]<-M[[x]]$survey_q[4]
-  retro_q_no[x]<-M2[[x]]$survey_q[4]
-  
-  retro_m[x]<-unique(c(M[[x]]$M))[1]
-  retro_m_no[x]<-unique(c(M2[[x]]$M))[1]
+  data.frame(
+    label            = label,
+    ok               = length(fail) == 0L,
+    terminal_year    = term,
+    echo_end_year    = echo$end_year,
+    last_survey_year = echo$last_survey_year,
+    npar             = par$npar,
+    nll              = par$nll,
+    max_grad         = par$max_grad,
+    converged        = !is.na(par$max_grad) && par$max_grad <= GRAD_WARN,
+    elapsed_sec      = round(run$elapsed, 1),
+    problems         = paste(fail, collapse = "; "),
+    warnings         = paste(warn, collapse = "; "),
+    stringsAsFactors = FALSE
+  )
 }
 
-png("plots/retro_q_m.png",height=4.5,width=8,res=400,units='in')
+## Build one peel's run directory.
+##   mode  "standard" keeps the full .DAT; "drop_survey" regenerates it with
+##         survey_end = END_YEAR - peel.
+prepare_peel <- function(mode, peel, dir, fix_prj = FIX_PRJ_GROWTH_YEAR) {
+  if (dir.exists(dir)) unlink(dir, recursive = TRUE, force = TRUE)  # never reuse a stale peel
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
 
-plot(retro_q~mod_names,ylim=c(0,1),type='l',las=1,pch=15,col=3,lty=2,ylab='',xlab='')
-lines(retro_q_no~mod_names,col=3,pch=15,lty=1)
-
-lines(retro_m~mod_names,col=4,pch=16,lty=2,type='l')
-lines(retro_m_no~mod_names,col=4,pch=16,lty=1)
-
-mtext(side=1,"Year",line=2.5)
-legend('bottom',bty='n',col=c(3,4),lty=c(2,1),legend=c("Terminal survey include","Terminal survey excluded"))
-
-dev.off()
-
-
-lines(retro_m~mod_names,type='b',col=1)
-lines(retro_m_no~mod_names,type='b',col=2)
-projyr<-c(mod_names+1,mod_names_2+1)
-outs<-data.frame(Spp="Opilio",projYear=projyr,retro=c(rep('retr',length(mod_names)),rep('survRed_retr',length(mod_names))),
-           peel=projyr-max(projyr),SSB=c(retro_ssb,retro_ssb_no),OFL=c(OFL,OFL2))
-#write.csv(outs,"opilio_retro.csv")
-
-
-png("plots/retro_mmb_2.png",height=8,width=8,res=400,units='in')
-par(mfrow=c(2,1),mar=c(.1,.1,.1,.1),oma=c(4,4,1,1))
-plot(M[[1]]$ssb~M[[1]]$mod_yrs,type='l',ylim=c(0,max(M[[1]]$ssb,M2[[1]]$ssb)),las=1,lwd=2,ylab="MMB (1,000t)",xlab="Year",xaxt='n')
-for(x in 2:length(mod_names))
-  lines(M[[x]]$ssb~M[[x]]$mod_yrs,lty=1,col=x,lwd=2)
-legend('topright',bty='n',legend=c("Terminal survey included",
-                                   paste("Mohn's rho = ",
-                                         round(mean((retro_ssb-ref_ssb)/ref_ssb),2))))
-
-mean((retro_ssb-ref_ssb)/ref_ssb)
-mean((retro_ssb_no-ref_ssb)/ref_ssb)
-
-
-plot(M2[[1]]$ssb~M2[[1]]$mod_yrs,type='l',ylim=c(0,max(M[[1]]$ssb,M2[[1]]$ssb)),las=1,lwd=2,ylab="MMB (1,000t)",xlab="Year")
-for(x in 2:length(mod_names))
-  lines(M2[[x]]$ssb~M2[[x]]$mod_yrs,lty=1,col=x,lwd=2)
-legend('topright',bty='n',legend=c("Terminal survey excluded",
-                                   paste("Mohn's rho = ",
-                                         round(mean((retro_ssb_no-ref_ssb)/ref_ssb,na.rm=T),2))))
-mtext(side=2,outer=T,"MMB (1,000t)",line=2.5)
-dev.off()
-
-#==run all retrospective folders
-library(gmr)
-library(doParallel)
-library(parallel)
-library(foreach)
-
-# Detect the number of available cores and create cluster
-cl <- parallel::makeCluster(detectCores())
-doParallel::registerDoParallel(cl)
-#==LEGACY 2023 exploratory block (parallel retro re-run + Tier-4 OFL pull). Repointed to the
-#==current model_dir; verify peel folders exist before running. Not part of the standard 2026 flow.
-orig_drv<-c(paste0(model_dir,"/"))
-tot_it<-100
-orig_wd<-getwd()
-foreach(x = 1:10)%dopar%
-  {
-    work_drv<-paste(orig_drv,"/retro/",x,sep='')
-    setwd(work_drv)
-    system("gmacs.exe -nohess")
+  if (mode == "drop_survey") {
+    stage_dir <- file.path(dir, "_stage")
+    st <- system2(RSCRIPT,
+                  args = shQuote(c(file.path(REPO_ROOT, "00_advance_model.R"),
+                                   file.path(REPO_ROOT, ADVANCE_TEMPLATE),
+                                   stage_dir, as.character(END_YEAR), GC$datafile,
+                                   "TRUE", REPO_ROOT,
+                                   as.character(END_YEAR - peel))),
+                  stdout = file.path(dir, "advance.log"), stderr = file.path(dir, "advance.log"))
+    if (st != 0L)
+      stop(sprintf("00_advance_model.R failed for %s peel %d (see %s)",
+                   mode, peel, file.path(dir, "advance.log")))
+    ## keep only what a run needs; drop the template's stale ADMB artefacts
+    for (f in c(GC$datafile, GC$ctlfile, GC$prjfile))
+      file.copy(file.path(stage_dir, f), file.path(dir, f), overwrite = TRUE)
+    unlink(stage_dir, recursive = TRUE, force = TRUE)
+    file.copy(file.path(MODEL_DIR, "gmacs.exe"), file.path(dir, "gmacs.exe"), overwrite = TRUE)
+  } else {
+    for (f in RUN_FILES) {
+      ok <- file.copy(file.path(MODEL_DIR, f), file.path(dir, f), overwrite = TRUE)
+      if (!ok) stop(sprintf("failed to copy %s into %s", f, dir))
+    }
   }
-   setwd(orig_wd)  
-   
-   #==pull the tier 4 OFL from each
-   #===PULL gmacs DATA AND outputs
-   mod_dir <- paste0(model_dir,"/retro/")   #==de-hardcoded (legacy 2023 block)
-   take_dir<-paste(mod_dir,seq(1,10),"/",sep='')
-   
-   fn       <- paste0(take_dir, "gmacs")
-   K        <- lapply(fn, read_admb) #need .prj file to run gmacs and need .rep file here
 
-   OFL<-rep(NA,length(take_dir))
+  ## gmacs.dat carries the peel count. Written from the parsed parent so every
+  ## other byte (including the 3-field jitter line) is preserved.
+  write_gmacs_control(GC, dir, n_peel = peel)
 
-   for(x in 1:length(OFL))
-     OFL[x]<-K[[x]]$spr_cofl
+  ## Compensate GMACS's spr_grow_yr shift so it lands back on the base value.
+  if (fix_prj && peel > 0L)
+    set_prj_growth_year(file.path(dir, GC$prjfile), peel, syr = SYR, nyr = END_YEAR)
 
-   
-   
-#=========================================
-# historical biases
-#===========================
-library(readxl)
+  for (f in RUN_FILES)
+    if (!file.exists(file.path(dir, f)))
+      stop(sprintf("%s missing from prepared peel dir %s", f, dir))
+  invisible(dir)
+}
 
-dat<-read.csv('data/historical/historical_mmb_at_survey_by_assessment.csv',check.names=F)
-pl_dat<-melt(dat,id.vars=c("Year"))
-survey_ess<-ggplot(pl_dat)+
-  geom_line(aes(x=Year,y=value,col=variable,group=variable),lwd=1.2)+
-  theme_bw()+ylab("Biomass (1,000 t)")+
-  labs(color="Assessment")+
-  ggtitle("Morphometrically mature biomass at survey, subject to selectivity")
+peel_dir <- function(mode, peel) file.path(RETRO_DIR, mode, as.character(peel))
 
-dat<-read.csv('data/historical/historical_mmb_mating_by_assessment.csv',check.names=F)
-pl_dat<-melt(dat,id.vars=c("Year"))
-mating_ess<-ggplot(pl_dat)+
-  geom_line(aes(x=Year,y=value,col=variable,group=variable),lwd=1.2)+
-  theme_bw()+ylab("Biomass (1,000 t)")+
-  labs(color="Assessment")+
-  ggtitle("Morphometrically mature biomass at mating, not subject to selectivity")
+## ---------------------------------------------------------------------------
+## 3. Stage: base -- fit the model itself
+## ---------------------------------------------------------------------------
+if (STAGE %in% c("all", "base")) {
+  cat("--- STAGE base: fitting the model in place ---\n")
 
-df_normalized <- pl_dat %>%
-  group_by(variable) %>%
-  mutate(normalized_value = value / max(value,na.rm=T))
+  ## The committed outputs in this folder may be stale copies of an earlier
+  ## model's run (they were, as of 2026-08). Back them up once, then refit.
+  bk <- file.path(MODEL_DIR, "_pre_run_backup")
+  if (!dir.exists(bk)) {
+    dir.create(bk, showWarnings = FALSE)
+    for (f in c("Gmacsall.out", "gmacs.par", "gmacs.rep", "gmacs.std",
+                "gmacs_files_in.dat", "gmacs_in.dat", "Gmacsall.std"))
+      if (file.exists(file.path(MODEL_DIR, f)))
+        file.copy(file.path(MODEL_DIR, f), file.path(bk, f), overwrite = FALSE)
+    cat(sprintf("  pre-run outputs backed up to %s\n", basename(bk)))
+  }
 
-normie<-ggplot(df_normalized)+
-  geom_line(aes(x=Year,y=normalized_value,group=variable,col=variable),lwd=1.2)+
-  theme_bw()+ylab("Normalized MMB")+
-  labs(color="Assessment")+
-  ggtitle("Normalized morphometrically mature biomass at mating, not subject to selectivity")
+  pre_md5 <- tools::md5sum(file.path(MODEL_DIR, "Gmacsall.out"))
+  t0 <- Sys.time()
+  r  <- run_gmacs(MODEL_DIR)                       # WITH the Hessian
+  v  <- verify_run(MODEL_DIR, "base", END_YEAR, t0, r)
 
+  cat(sprintf("  exit %d, %.1f s, terminal year %s, npar %s, nll %s, max grad %s\n",
+              r$status, r$elapsed, v$terminal_year, v$npar,
+              format(v$nll), format(v$max_grad)))
+  cat(sprintf("  survey data reaches %s (expect %d under the crab-year convention)\n",
+              v$last_survey_year, END_YEAR + 1L))
+  if (nzchar(v$warnings)) cat(sprintf("  WARNING: %s\n", v$warnings))
+  if (!v$ok) stop("Base model run failed: ", v$problems)
+  if (identical(unname(pre_md5), unname(tools::md5sum(file.path(MODEL_DIR, "Gmacsall.out")))))
+    stop("Gmacsall.out is unchanged after the run -- the fit did not actually execute.")
 
-png("plots/historical_mating_mmb_est.png",height=10,width=8,res=400,units='in')
-survey_ess / mating_ess / normie + plot_layout(guides='collect')
+  write.csv(v, file.path(RETRO_DIR, "base_run.csv"), row.names = FALSE)
+  cat("  base fit OK\n\n")
+}
+
+## ---------------------------------------------------------------------------
+## 4. Stage: diagnose -- measure the snow.prj spr_grow_yr effect
+## ---------------------------------------------------------------------------
+## The model-folder gmacsbase.TPL (2.20.32b) shows spr_grow_yr being shifted
+## below the model start year for every peel, which would corrupt the peel's
+## reference points. But that TPL is NOT the source of gmacs.exe (2.20.34), so
+## the defect is measured here rather than assumed: peel 1 is run twice,
+## identical except for the compensation, and BMSY/OFL are compared.
+if (STAGE %in% c("all", "diagnose")) {
+  cat("--- STAGE diagnose: snow.prj spr_grow_yr sensitivity (peel 1) ---\n")
+  diag_rows <- list()
+  for (fx in c(FALSE, TRUE)) {
+    d <- file.path(RETRO_DIR, "_diagnostic", if (fx) "prjfix_on" else "prjfix_off")
+    prepare_peel("standard", 1L, d, fix_prj = fx)
+    t0 <- Sys.time(); r <- run_gmacs(d, "-nohess")
+    v  <- verify_run(d, if (fx) "prjfix_on" else "prjfix_off", END_YEAR - 1L, t0, r)
+    rp <- if (v$ok) read_gmacsall_refpoints(file.path(d, "Gmacsall.out")) else NULL
+    diag_rows[[length(diag_rows) + 1L]] <- data.frame(
+      spr_grow_yr_compensated = fx,
+      ok       = v$ok,
+      nll      = v$nll,
+      max_grad = v$max_grad,
+      BMSY     = if (is.null(rp)) NA_real_ else refpoint(rp, "BMSY"),
+      OFL_tot  = if (is.null(rp)) NA_real_ else refpoint(rp, "OFL(tot)"),
+      B_BMSY   = if (is.null(rp)) NA_real_ else refpoint(rp, "Bcurr/BMSY"),
+      problems = v$problems, stringsAsFactors = FALSE)
+  }
+  dg <- do.call(rbind, diag_rows)
+  print(dg, row.names = FALSE)
+  write.csv(dg, file.path(RETRO_DIR, "prj_growth_year_diagnostic.csv"), row.names = FALSE)
+
+  if (all(dg$ok)) {
+    rel <- function(a, b) if (is.na(a) || is.na(b) || b == 0) NA_real_ else (a - b) / b
+    cat(sprintf("  BMSY differs by %.4f%%, OFL by %.4f%% (compensated vs not)\n",
+                100 * rel(dg$BMSY[2], dg$BMSY[1]), 100 * rel(dg$OFL_tot[2], dg$OFL_tot[1])))
+    cat("  -> if ~0, the executable is not affected and the compensation is a no-op;\n")
+    cat("     if non-zero, uncompensated peel reference points are unreliable.\n")
+  } else {
+    cat("  NOTE: a diagnostic run failed; see prj_growth_year_diagnostic.csv\n")
+  }
+  cat("\n")
+}
+
+## ---------------------------------------------------------------------------
+## 5. Stage: peels -- run the sweep
+## ---------------------------------------------------------------------------
+if (STAGE %in% c("all", "peels")) {
+  cat("--- STAGE peels: preparing run directories ---\n")
+  jobs <- do.call(rbind, lapply(MODES, function(m)
+    data.frame(mode = m, peel = 0:N_PEELS, stringsAsFactors = FALSE)))
+  jobs$dir <- mapply(peel_dir, jobs$mode, jobs$peel)
+  jobs$expect_end_year <- END_YEAR - jobs$peel
+
+  for (i in seq_len(nrow(jobs))) {
+    prepare_peel(jobs$mode[i], jobs$peel[i], jobs$dir[i])
+    cat(sprintf("  %-12s peel %2d -> %s\n", jobs$mode[i], jobs$peel[i],
+                file.path(basename(dirname(jobs$dir[i])), basename(jobs$dir[i]))))
+  }
+
+  cat(sprintf("\n--- STAGE peels: running %d GMACS fits on %d workers ---\n",
+              nrow(jobs), N_WORKERS))
+  cl <- parallel::makeCluster(N_WORKERS)
+  on.exit(try(parallel::stopCluster(cl), silent = TRUE), add = TRUE)
+  doParallel::registerDoParallel(cl)
+
+  res <- foreach(i = seq_len(nrow(jobs)), .combine = rbind,
+                 .packages = character(0)) %dopar% {
+    source(file.path(REPO_ROOT, "R", "gmacs_io.R"))
+    t0 <- Sys.time()
+    r  <- run_gmacs(jobs$dir[i], "-nohess")
+    v  <- verify_run(jobs$dir[i], sprintf("%s/%d", jobs$mode[i], jobs$peel[i]),
+                     jobs$expect_end_year[i], t0, r)
+    cbind(mode = jobs$mode[i], peel = jobs$peel[i], v)
+  }
+  parallel::stopCluster(cl)
+
+  res <- res[order(res$mode, res$peel), ]
+  write.csv(res, file.path(RETRO_DIR, "retro_diagnostics.csv"), row.names = FALSE)
+  print(res[, c("mode", "peel", "ok", "terminal_year", "last_survey_year",
+                "nll", "max_grad", "converged", "elapsed_sec")], row.names = FALSE)
+
+  if (any(!res$ok)) {
+    bad <- res[!res$ok, ]
+    stop(sprintf("%d peel run(s) failed:\n%s", nrow(bad),
+                 paste(sprintf("  %s peel %s: %s", bad$mode, bad$peel, bad$problems),
+                       collapse = "\n")))
+  }
+  nc <- res[!res$converged, ]
+  if (nrow(nc))
+    cat(sprintf("\n  WARNING: %d run(s) above the %.0e gradient threshold: %s\n",
+                nrow(nc), GRAD_WARN,
+                paste(sprintf("%s/%s (%.3g)", nc$mode, nc$peel, nc$max_grad), collapse = ", ")))
+  cat("\n")
+}
+
+## ---------------------------------------------------------------------------
+## 6. Stage: collect -- parse, compute rho, write CSVs and figures
+## ---------------------------------------------------------------------------
+if (!STAGE %in% c("all", "collect")) {
+  cat("Done (stage '", STAGE, "').\n", sep = "")
+  quit(save = "no", status = 0L)
+}
+
+cat("--- STAGE collect: parsing runs ---\n")
+
+read_peel <- function(mode, peel) {
+  ga <- file.path(peel_dir(mode, peel), "Gmacsall.out")
+  if (!file.exists(ga)) return(NULL)
+  s  <- read_gmacsall_summary(ga)
+  data.frame(mode = mode, peel = peel, Year = s$Year,
+             ssb = s$SSB, recruit_male = s$Recruit_male,
+             stringsAsFactors = FALSE)
+}
+
+series <- do.call(rbind, Filter(Negate(is.null),
+  unlist(lapply(MODES, function(m) lapply(0:N_PEELS, function(p) read_peel(m, p))),
+         recursive = FALSE)))
+if (is.null(series) || !nrow(series))
+  stop("No peel output found under ", RETRO_DIR, " -- run the 'peels' stage first.")
+
+## Peel-0 identity: the standard peel 0 is an independent re-fit of the base
+## model and must reproduce the parent folder's MMB series.
+base_parent <- read_gmacsall_summary(file.path(MODEL_DIR, "Gmacsall.out"))
+p0 <- series[series$mode == "standard" & series$peel == 0L, ]
+if (nrow(p0)) {
+  m <- merge(p0[, c("Year", "ssb")], base_parent[, c("Year", "SSB")], by = "Year")
+  reldiff <- max(abs(m$ssb - m$SSB) / pmax(abs(m$SSB), 1e-12))
+  cat(sprintf("  peel-0 vs parent fit: max relative MMB difference %.3g over %d years\n",
+              reldiff, nrow(m)))
+  if (nrow(m) != nrow(base_parent))
+    warning("peel 0 and the parent fit do not span the same years")
+  if (reldiff > 1e-6)
+    warning(sprintf("peel 0 does not reproduce the parent fit (max rel diff %.3g). ",
+                    reldiff),
+            "The parent Gmacsall.out may predate the current inputs -- re-run stage 'base'.")
+}
+
+## Reference points per peel
+refs <- do.call(rbind, Filter(Negate(is.null), unlist(lapply(MODES, function(m)
+  lapply(0:N_PEELS, function(p) {
+    ga <- file.path(peel_dir(m, p), "Gmacsall.out")
+    if (!file.exists(ga)) return(NULL)
+    rp <- try(read_gmacsall_refpoints(ga), silent = TRUE)
+    if (inherits(rp, "try-error")) return(NULL)
+    data.frame(mode = m, peel = p, terminal_year = END_YEAR - p,
+               BMSY      = refpoint(rp, "BMSY"),
+               B_BMSY    = refpoint(rp, "Bcurr/BMSY"),
+               OFL_tot   = refpoint(rp, "OFL(tot)"),
+               Fmsy      = refpoint(rp, "Fmsy (1)"),
+               Fofl      = refpoint(rp, "Fofl (1)"),
+               OFL_ret   = refpoint(rp, "Ofl (1)"),
+               stringsAsFactors = FALSE)
+  })), recursive = FALSE)))
+
+## ---------------------------------------------------------------------------
+## 7. Mohn's rho
+## ---------------------------------------------------------------------------
+## Mohn's rho, as used for NPFMC crab assessments:
+##
+##     rho = (1/P) * sum_p  ( X[T_p, peel p] - X[T_p, base] ) / X[T_p, base]
+##
+## where T_p = END_YEAR - p is peel p's terminal year and `base` is the
+## unpeeled fit (peel 0). A POSITIVE rho means the peels sit ABOVE the base
+## fit, i.e. the assessment revises terminal biomass DOWNWARD as data are
+## added -- retrospective over-estimation.
+##
+## NOTE ON THE PREVIOUS SCRIPT: the version of 05_run_retrospective.R inherited
+## from the 2023/2025 working sessions computed (base - peel)/peel, which
+## inverts both the sign and the denominator. Any rho reported from it would
+## have had the wrong sign and the wrong magnitude.
+##
+## Also reported: Ralston's sigma, the log-scale RMSE of the same terminal-year
+## pairs, which the old script computed at line 320 and which does not depend
+## on the sign convention.
+rho_table <- function(series, value_col) {
+  out <- list()
+  for (m in unique(series$mode)) {
+    d0 <- series[series$mode == m & series$peel == 0L, ]
+    ## drop_survey peels are compared against the FULL base fit (standard peel
+    ## 0), matching the intent of the old "drop terminal survey" figure.
+    ref <- if (m == "drop_survey")
+      series[series$mode == "standard" & series$peel == 0L, ] else d0
+    if (!nrow(ref)) next
+
+    rel <- vapply(1:N_PEELS, function(p) {
+      d <- series[series$mode == m & series$peel == p, ]
+      if (!nrow(d)) return(NA_real_)
+      Tp <- max(d$Year)
+      xb <- ref[[value_col]][ref$Year == Tp]
+      xp <- d[[value_col]][d$Year == Tp]
+      if (!length(xb) || !length(xp) || xb == 0) return(NA_real_)
+      (xp - xb) / xb
+    }, numeric(1))
+
+    lg <- vapply(1:N_PEELS, function(p) {
+      d <- series[series$mode == m & series$peel == p, ]
+      if (!nrow(d)) return(NA_real_)
+      Tp <- max(d$Year)
+      xb <- ref[[value_col]][ref$Year == Tp]; xp <- d[[value_col]][d$Year == Tp]
+      if (!length(xb) || !length(xp) || xb <= 0 || xp <= 0) return(NA_real_)
+      log(xp) - log(xb)
+    }, numeric(1))
+
+    n <- sum(!is.na(rel))
+    out[[length(out) + 1L]] <- data.frame(
+      quantity        = value_col,
+      mode            = m,
+      n_peels         = n,
+      mohns_rho       = mean(rel, na.rm = TRUE),
+      ralstons_sigma  = if (n > 1L) sqrt(sum(lg^2, na.rm = TRUE) / (n - 1L)) else NA_real_,
+      min_rel_diff    = min(rel, na.rm = TRUE),
+      max_rel_diff    = max(rel, na.rm = TRUE),
+      stringsAsFactors = FALSE)
+  }
+  do.call(rbind, out)
+}
+
+peel_rel <- do.call(rbind, lapply(unique(series$mode), function(m) {
+  ref <- if (m == "drop_survey")
+    series[series$mode == "standard" & series$peel == 0L, ] else
+    series[series$mode == m & series$peel == 0L, ]
+  do.call(rbind, lapply(1:N_PEELS, function(p) {
+    d <- series[series$mode == m & series$peel == p, ]
+    if (!nrow(d)) return(NULL)
+    Tp <- max(d$Year)
+    xb <- ref$ssb[ref$Year == Tp]; xp <- d$ssb[d$Year == Tp]
+    rb <- ref$recruit_male[ref$Year == Tp]; rp2 <- d$recruit_male[d$Year == Tp]
+    if (!length(xb) || !length(xp)) return(NULL)
+    data.frame(mode = m, peel = p, terminal_year = Tp,
+               base_mmb = xb, peel_mmb = xp, rel_diff_mmb = (xp - xb) / xb,
+               rel_diff_recruit = if (length(rb) && length(rp2) && rb != 0) (rp2 - rb) / rb else NA_real_,
+               stringsAsFactors = FALSE)
+  }))
+}))
+
+rho <- rbind(rho_table(series, "ssb"), rho_table(series, "recruit_male"))
+rho$quantity[rho$quantity == "ssb"]          <- "mature_male_biomass"
+rho$quantity[rho$quantity == "recruit_male"] <- "recruitment_male"
+
+cat("\n  Mohn's rho  [ (peel - base) / base, at each peel's terminal year ]\n")
+print(rho, row.names = FALSE, digits = 4)
+cat("\n  Rule of thumb (Hurtado-Ferro et al. 2015 ICES JMS 72:99-110):\n")
+cat("  rho outside [-0.22, 0.30] for a short-lived stock, or [-0.15, 0.20] for a\n")
+cat("  long-lived one, indicates a retrospective pattern worth reporting.\n\n")
+
+## ---------------------------------------------------------------------------
+## 8. Write outputs
+## ---------------------------------------------------------------------------
+write.csv(series[series$mode == "standard", c("mode","peel","Year","ssb","recruit_male")],
+          file.path(RETRO_DIR, "retro_ssb.csv"), row.names = FALSE)
+write.csv(series, file.path(RETRO_DIR, "retro_series_all.csv"), row.names = FALSE)
+write.csv(series[, c("mode","peel","Year","recruit_male")],
+          file.path(RETRO_DIR, "retro_recruitment.csv"), row.names = FALSE)
+if (!is.null(refs)) write.csv(refs, file.path(RETRO_DIR, "retro_refpoints.csv"), row.names = FALSE)
+write.csv(rho,      file.path(RETRO_DIR, "mohns_rho.csv"),        row.names = FALSE)
+write.csv(peel_rel, file.path(RETRO_DIR, "retro_peel_relative.csv"), row.names = FALSE)
+
+## ---------------------------------------------------------------------------
+## 9. Figures
+## ---------------------------------------------------------------------------
+series$peel_label <- factor(END_YEAR - series$peel,
+                            levels = sort(unique(END_YEAR - series$peel), decreasing = TRUE))
+
+rho_lab <- function(m, q) {
+  r <- rho$mohns_rho[rho$mode == m & rho$quantity == q]
+  if (!length(r)) "" else sprintf("Mohn's rho = %.3f", r)
+}
+
+peel_plot <- function(mode, ycol, ylab, title, subtitle) {
+  d <- series[series$mode == mode, ]
+  ggplot(d, aes(x = Year, y = .data[[ycol]], colour = peel_label, group = peel)) +
+    geom_line(linewidth = 0.9) +
+    geom_point(data = do.call(rbind, lapply(split(d, d$peel), function(z) z[which.max(z$Year), ])),
+               size = 1.8) +
+    scale_colour_viridis_d(name = "Terminal year", option = "D", direction = -1) +
+    expand_limits(y = 0) +
+    labs(x = "Year", y = ylab, title = title, subtitle = subtitle) +
+    theme_bw(base_size = 11)
+}
+
+png(file.path(PLOT_DIR, "retro_mmb.png"), height = 6, width = 8, res = 400, units = "in")
+print(peel_plot("standard", "ssb", "Mature male biomass (1,000 t)",
+                sprintf("Retrospective analysis, %s", basename(MODEL_DIR)),
+                sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "mature_male_biomass"))))
 dev.off()
- 
 
-df_normalized <- pl_dat %>%
-  group_by(variable) %>%
-  mutate(normalized_value = value / max(value,na.rm=T))
+png(file.path(PLOT_DIR, "retro_recruitment.png"), height = 6, width = 8, res = 400, units = "in")
+print(peel_plot("standard", "recruit_male", "Male recruitment (millions)",
+                sprintf("Recruitment retrospective, %s", basename(MODEL_DIR)),
+                sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "recruitment_male"))))
+dev.off()
 
-ggplot(df_normalized)+
-  geom_line(aes(x=Year,y=normalized_value,group=variable,col=variable),lwd=1.2)+
-  theme_bw()+ylab("Normalized MMB")
+if ("drop_survey" %in% series$mode) {
+  png(file.path(PLOT_DIR, "retro_mmb_drop_survey.png"), height = 6, width = 8, res = 400, units = "in")
+  print(peel_plot("drop_survey", "ssb", "Mature male biomass (1,000 t)",
+                  "Retrospective with the terminal survey year withheld",
+                  sprintf("Peels 0-%d, compared with the full base fit.  %s",
+                          N_PEELS, rho_lab("drop_survey", "mature_male_biomass"))))
+  dev.off()
+}
+
+## Terminal-year MMB: base series with each peel's terminal estimate on top --
+## the clearest read of whether the pattern is directional.
+png(file.path(PLOT_DIR, "retro_terminal_mmb.png"), height = 5, width = 8, res = 400, units = "in")
+base_std <- series[series$mode == "standard" & series$peel == 0L, ]
+term_pts <- peel_rel
+print(
+  ggplot() +
+    geom_line(data = base_std, aes(Year, ssb), linewidth = 1.1) +
+    geom_line(data = term_pts, aes(terminal_year, peel_mmb, colour = mode), linewidth = 0.9) +
+    geom_point(data = term_pts, aes(terminal_year, peel_mmb, colour = mode), size = 2) +
+    scale_colour_brewer(name = "Retrospective", palette = "Set1") +
+    expand_limits(y = 0) +
+    labs(x = "Year", y = "Mature male biomass (1,000 t)",
+         title = "Terminal-year MMB from each peel vs the base fit (black)") +
+    theme_bw(base_size = 11)
+)
+dev.off()
+
+if (!is.null(refs) && nrow(refs)) {
+  rl <- reshape(refs[, c("mode","terminal_year","BMSY","OFL_tot","B_BMSY")],
+                direction = "long", varying = c("BMSY","OFL_tot","B_BMSY"),
+                v.names = "value", timevar = "quantity",
+                times = c("BMSY (1,000 t)","OFL total (1,000 t)","B / BMSY"),
+                idvar = c("mode","terminal_year"))
+  png(file.path(PLOT_DIR, "retro_refpoints.png"), height = 7, width = 8, res = 400, units = "in")
+  print(
+    ggplot(rl, aes(terminal_year, value, colour = mode)) +
+      geom_line(linewidth = 0.9) + geom_point(size = 2) +
+      facet_wrap(~quantity, ncol = 1, scales = "free_y") +
+      scale_colour_brewer(name = "Retrospective", palette = "Set1") +
+      expand_limits(y = 0) +
+      labs(x = "Terminal year of the peel", y = NULL,
+           title = "Management quantities by retrospective peel") +
+      theme_bw(base_size = 11)
+  )
+  dev.off()
+}
+
+cat(sprintf("  wrote %s\n", file.path("plots", c("retro_mmb.png", "retro_recruitment.png",
+      "retro_mmb_drop_survey.png", "retro_terminal_mmb.png", "retro_refpoints.png"))))
+cat(sprintf("  wrote %s\n", file.path(MODEL_REL, "retro",
+      c("retro_ssb.csv","retro_recruitment.csv","retro_refpoints.csv",
+        "retro_peel_relative.csv","mohns_rho.csv","retro_diagnostics.csv"))))
+cat("\nDone.\n")
