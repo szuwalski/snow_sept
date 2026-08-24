@@ -164,13 +164,25 @@ hygiene.
   priority; not done yet because it means changing the `system2()` invocation, which is on the
   path that produces the numbers (rule 3).
 
-  **A reset did recur, 2026-08-21**, during `06`'s 100-run sweep. But note the cap is per-session
-  and the hardware is not: `06` was at its 4 workers *and Grant was running two models by hand*,
-  so ~6 `gmacs.exe` processes were pinned at once. So this is not evidence that 4 is unsafe on its
-  own — it is evidence that **the cap needs to be global, not per-process-tree**. Until something
-  enforces that, anyone starting a GMACS run should check whether another is already going.
-  Damage: 18 of 44 jitter directories were left half-written; 26 survived and were reused.
-  The sweep was resumed at `--cores 2`.
+  **Two resets recurred on 2026-08-21**, both during `06`'s 100-run jitter sweep.
+
+  - *First:* `06` at 4 workers **plus two models Grant was running by hand** — ~6 `gmacs.exe`
+    pinned at once. Confounded, so not evidence about 4 on its own. 18 of 44 run directories were
+    left half-written.
+  - *Second:* `06` at 4 workers with **nothing else running**. Clean conditions, still reset.
+    10 of 44 directories damaged.
+
+  So **4 is not safe on this machine** and `gmacs_max_workers()`'s default of 4 should drop to 2.
+  Not changed here because it is shared with `05_run_retrospective.R`, whose peel timings were set
+  against 4 — raise it with Grant rather than editing unilaterally. The jitter sweep completed at
+  `--cores 2`.
+
+  The separate point still stands: the cap is **per-session and the hardware is not**. Two agent
+  sessions plus a manual run each pass their own check independently. A global guard (a lockfile,
+  or counting live `gmacs.exe` before launching) is the real fix.
+
+  Untried mitigation, in order of cheapness: below-normal process priority for `gmacs.exe`; a
+  fixed inter-launch delay so workers don't all hit the optimiser's hottest phase together.
 
 - **Crash-truncated output files parse.** The reset above produced `Gmacsall.out` files that stop
   mid-block and read fine for hundreds of lines. `06_run_jitter.R`'s resume guard now requires the
