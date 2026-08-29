@@ -5,9 +5,11 @@
 # (Rendering from inside Positron/RStudio works without the RSTUDIO_PANDOC line, since the IDE
 #  sets it automatically.)
 
-# --- locate pandoc (Positron bundle -> system PATH -> error) ---
-pandoc_dir <- Sys.getenv("RSTUDIO_PANDOC")
-if (!nzchar(pandoc_dir) || !rmarkdown::pandoc_available()) {
+# --- locate pandoc (system PATH -> Positron bundle -> error) ---
+# The assessment moved to macOS in August 2026 (docs/MACOS_GMACS.md), where pandoc
+# is on PATH from Homebrew and rmarkdown finds it unaided. The Positron lookup
+# below is the Windows fallback and is only consulted if PATH does not have it.
+if (!rmarkdown::pandoc_available()) {
   candidate <- file.path(Sys.getenv("LOCALAPPDATA"),
                          "Programs/Positron/resources/app/quarto/bin/tools")
   if (file.exists(file.path(candidate, "pandoc.exe"))) {
@@ -16,7 +18,8 @@ if (!nzchar(pandoc_dir) || !rmarkdown::pandoc_available()) {
 }
 stopifnot("pandoc not found - open in Positron or set RSTUDIO_PANDOC" = rmarkdown::pandoc_available())
 cat("Using pandoc", as.character(rmarkdown::pandoc_version()),
-    "from", Sys.getenv("RSTUDIO_PANDOC"), "\n")
+    "from", if (nzchar(Sys.getenv("RSTUDIO_PANDOC"))) Sys.getenv("RSTUDIO_PANDOC")
+            else dirname(Sys.which("pandoc")), "\n")
 
 # --- render (PDF is the SAFE standard; the Rmd YAML also defines Word output) ---
 rmarkdown::render(

@@ -45,7 +45,7 @@ This repo produces the September EBS snow crab SAFE. It sets federal OFL/ABC.
     On this machine (Precision 5690 / Core Ultra 9 185H) a wide fan-out draws more sustained power
     than the chassis can shed and the machine **hard-resets mid-run**, corrupting the peel or
     jitter directory being written. Worker counts come from `gmacs_max_workers()`
-    (`R/gmacs_io.R:7`), default **4**. Never substitute `detectCores()`. To raise it for one
+    (`R/gmacs_io.R`), default **4**. Never substitute `detectCores()`. To raise it for one
     session: `$env:GMACS_MAX_WORKERS = 8`.
 
 ---
@@ -54,6 +54,11 @@ This repo produces the September EBS snow crab SAFE. It sets federal OFL/ABC.
 
 `00_advance_model.R` runs **third**, despite the number. It consumes 01/02's output.
 
+**Jitter (`05`) runs before the retrospective (`06`)** — they were renumbered on 2026-08-27 to make
+that order follow the numbers. The jitter can find a better optimum and *promote* it into the model
+directory, which invalidates any retrospective computed against the previous fit. Run the other way
+round, an hour of peels is thrown away the moment a promotion lands.
+
 | # | Script | Does |
 |---|---|---|
 | 1 | `01_prep_fishery_data.R` | ADFG removals + NORPAC → `data/derived/` |
@@ -61,7 +66,7 @@ This repo produces the September EBS snow crab SAFE. It sets federal OFL/ABC.
 | 3 | `00_advance_model.R` | writes `data/derived/` into a model `.DAT`/`.CTL` |
 | 4 | *(GMACS)* | run `gmacs.exe` in the model dir, to convergence |
 | 5 | `03_build_results_object.R` | model dirs → `Models/rda_ModelsResLst.RData` |
-| 6 | `04`–`07` | numbers-at-length, retrospective (+`05b`), jitter, Tier 4 |
+| 6 | `04`–`07` | numbers-at-length, **jitter, then retrospective** (+`06b`), Tier 4 |
 | 7 | `08_render_report.R` | `SAFE_snow_gmacs.Rmd` → PDF |
 
 `R/` holds the shared function libraries (`gmacs_io.R`, `gmacs_jitter.R`). Nothing there runs on
@@ -100,7 +105,7 @@ body is split by numbered section rules. Copy the shape from `R/gmacs_io.R` or `
 
 Convert older `#--` / `#==` banners only in files you're already editing (rule 9).
 
-**Match the file you're in.** `01`/`02`/`04`/`05` are dplyr + `%>%`. `00`/`03`/`06`/`07`/`R/` are
+**Match the file you're in.** `01`/`02`/`04`/`06` are dplyr + `%>%`. `00`/`03`/`05`/`07`/`R/` are
 pure base R. Don't mix idioms within a file. No `data.table`, no native `|>` in `.R` files.
 
 **Other conventions, already established — follow them:**
@@ -148,7 +153,7 @@ nat_m <- 0.27
 ```
 
 This terse style applies to code comments and to project docs. **It does not apply to SAFE
-narrative prose** — match the register of `Reports/2025 snow.pdf`, which is what CPT and SSC expect.
+narrative prose** — match the register of `Reports/2025-09_SAFE_snow_crab.pdf`, which is what CPT and SSC expect.
 
 ---
 
@@ -184,26 +189,70 @@ Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACK
 
 - **Reference points need the Hessian.** `-nohess` skips ADMB's sd phase, so BMSY/Fmsy/Fofl/OFL
   come back as exactly `0.0` — not missing, *zero*. Verified 2026-08-21 against
-  `Models/26_gmacs_update_newmat_plus_group/Gmacsall.out`: base fit BMSY 149.51794249,
-  OFL(tot) 86.95426329; a `-nohess` peel reports 0. A run that used `-nohess` must never reach
-  `retro_refpoints.csv` or a SAFE figure.
-- **Never rewrite `spr_grow_yr` in `snow.prj`.** A one-byte change (1982→1983) kills GMACS with
-  "Memory allocation error" while reading the control file. The folder `gmacsbase.TPL` is 2.20.32b
-  but the exe is 2.20.34 and does not behave like it (measured 2026-08-21).
+  `Models/26_gmacs_update_newmat_plus_group/Gmacsall.out`; a `-nohess` peel reports 0. A run that
+  used `-nohess` must never reach `retro_refpoints.csv` or a SAFE figure.
+- **The 26 model moved to macOS and was then re-fit from a jitter winner, 2026-08-27.**
+  The assessment runs on the Mac build (`gmacs`, arm64, GMACS 2.20.34) — see
+  `docs/MACOS_GMACS.md`. **Current accepted fit** (promoted from `jitter/088`, seed 20260909;
+  provenance in `jitter/PROMOTION.md`), npar 412:
+
+  | nll | max\|grad\| | BMSY | OFL(tot) | Bcurr/BMSY | terminal MMB |
+  |---|---|---|---|---|---|
+  | -23546.3457934123 | 0.000931 | 144.97170891 | 85.64948279 | 1.32035026 | 141.52834 |
+
+  This fit **meets** the 1e-3 gradient criterion and has a well-conditioned Hessian (smallest
+  eigenvalue 34.6, condition 1.4e06). `gmacs.pin` is present and legitimate — it is the winner's
+  parameter vector, and `jitter/PROMOTION.md` is what documents it. Do not delete it.
+
+  Two superseded fits, both cold starts stuck in an inferior local optimum where `M_pars_est[15]`
+  runs away to its bound (see backlog item 5b) — **do not treat either as evidence this directory
+  is stale**: Windows nll -23545.5363970914 / BMSY 149.51794249 / MMB 144.27194, and macOS
+  nll -23542.7677063715 / BMSY 149.67883570 / MMB 147.08343 (kept in `jitter/base_prepromotion/`).
+  The two builds are numerically identical given the same parameter vector.
+- **Peels have no reference points — this is GMACS, not the pipeline.** `gmacsbase.TPL` 2.20.34
+  gates both call sites on the peel count:
+  `if (CalcRefPoints!=0 && nyrRetroNo==0) calc_spr_reference_points2(1);` (`:5478`, `:13625`; the
+  only ungated call, `:11779`, is in `write_eval`, the `-mceval` path). So every run with
+  `nyrRetro > 0` returns all 18 derived quantities as exactly **0 in value**, not merely
+  zero-variance. Verified 2026-08-27 against the 2.20.34 source in `GMACs/GMACS_tpl-cpp_code/`,
+  and against the runs: the unpeeled base reports non-positive sdreport variance for exactly 6
+  variables (`Fmsy(3,4)`, `Fofl(3,4)`, `Ofl(3,4)` — fleets that do not exist) while every peel
+  reports 19 and zeroes the lot. **This was never a `-nohess` problem** — the peels run *with* the
+  Hessian. The retrospective therefore reports MMB and recruitment only, and there is no
+  `retro_refpoints.csv`. Applies to the 2025 SAFE too.
+- **`spr_grow_yr` in `snow.prj`: the 2026-08-21 note was wrong on both counts** (corrected
+  2026-08-27, with the real source in hand rather than inferred from a crash). The out-of-bounds
+  shift **does** exist in 2.20.34 — `gmacsbase.TPL:4612` is
+  `spr_grow_yr = spr_grow_yr - nyrRetroNo;`, and the bounds checks at `:4609-4610` run *before* it
+  with nothing re-checking after; `snow.prj` sets 1982 = `syr`, so peel *p* asks for growth in
+  1982 − *p*. And compensating does **not** crash: peel 5 re-run with `spr_grow_yr = 1987` exited
+  134 (benign) with a bit-identical nll. Exit 1 is simply what `:4609-4610` return on a bounds
+  failure. Still leave `snow.prj` alone and keep `FIX_PRJ_GROWTH_YEAR <- FALSE` — not because
+  compensating breaks anything, but because it changes nothing: the quantities `spr_grow_yr` feeds
+  are never computed for a peel.
 - `README.md` still documents the hand-paste `.DAT` workflow that `00_advance_model.R` replaced,
   and omits `00` entirely. Trust `00`, not the README.
 - Two figure filenames are written by two different places each — last writer wins, silently.
+- **A freshly built model dir already contains the TEMPLATE's results.** `00_advance_model.R`
+  regenerates `out_dir` by copying `template_dir`, which brings the template's `gmacs.par`,
+  `gmacs.std`, `Gmacsall.out`, `gmacs.rep` and `Gmacsall.std` with it. Nothing marks them stale.
+  On 2026-08-27 a build that had **failed at runtime** showed a complete, plausible fit (407 par,
+  nll -19222.4892880162) that was the template's July fit, not the new model's. **Check
+  `gmacs.par`'s mtime against the run before believing any number from a new model dir.** This is
+  almost certainly how the stale-copy incident below happened. Backlog item 1e.
 - The Rmd defends against missing models by substituting `NA`/`0`, so a stale model directory
   yields a plausible-looking table instead of an error. Check what actually loaded.
   **This has already happened once.** Until 2026-08-21 `Models/26_gmacs_update_newmat_plus_group/`
   held a byte-identical copy of the May 25-baseline run — terminal year 2024, `gmacs_files_in.dat`
-  naming the *25* `.dat` — and reported BMSY 177.60767282. The genuine first fit of the 26 model
-  (terminal 2025, survey to 2026, npar 412, nll -23545.5364) gives **149.51794249**, a 19%
-  difference in the quantity the OFL is built on. The stale values are preserved in
+  naming the *25* `.dat` — and reported BMSY 177.60767282. A genuine fit of the 26 model
+  (terminal 2025, survey to 2026, npar 412) gives BMSY ≈ **149.5–149.7** depending on the build
+  and starting point (see the macOS entry above), a 19% difference in the quantity the OFL is
+  built on. It is the ~178 vs ~150 gap that identifies a stale directory, not the third decimal.
+  The stale values are preserved in
   `_pre_run_backup/`. Before trusting any model directory, check `Year_range` in `Gmacsall.out` and
   the datafile named in `gmacs_files_in.dat` — a `.dat` filename from the wrong cycle is the tell.
 - `07_calc_tier4.R` and `02_prep_survey_data.R` both pull crabpack with a hardcoded year range.
   They must be advanced together, by hand.
 - A hard reset during `05`/`06` leaves a **half-written** peel/jitter directory that still looks
-  plausible. After any crash, re-run with `--force` (06) or delete the affected `retro/<n>` /
+  plausible. After any crash, re-run with `--force` (05) or delete the affected `retro/<n>` /
   `jitter/<nnn>` dir rather than resuming onto it.

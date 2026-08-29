@@ -1,13 +1,15 @@
 ## ============================================================================
 ## R/gmacs_jitter.R
 ##
-## Helpers for the GMACS jitter analysis. Sourced by 06_run_jitter.R.
+## Helpers for the GMACS jitter analysis. Sourced by 05_run_jitter.R.
 ## Nothing in this file runs on source(); it only defines functions.
 ##
 ## Depends on R/gmacs_io.R (owned by the retrospective work) for:
 ##   read_raw_lines, write_raw_lines, toks, find_anchor, read_gmacs_control,
 ##   read_gmacsall_summary, read_gmacsall_refpoints, refpoint,
-##   read_par_header, read_gmacs_echo
+##   read_par_header, read_gmacs_echo,
+##   is_windows, gmacs_exe_name, gmacs_exe_call, is_benign_gmacs_exit,
+##   GMACS_FP_TEARDOWN_MSGS, purge_gmacs_scratch, GMACS_SCRATCH_PATTERN
 ## Source that file FIRST. This file deliberately adds nothing to it.
 ##
 ## ---------------------------------------------------------------------------
@@ -71,7 +73,7 @@ gmacs_exe_version <- function(model_dir) {
 }
 
 ## Identity of the executable itself, for the reproducibility manifest.
-gmacs_exe_info <- function(model_dir, exe = "gmacs.exe") {
+gmacs_exe_info <- function(model_dir, exe = gmacs_exe_name()) {
   path <- file.path(model_dir, exe)
   if (!file.exists(path)) stop("No ", exe, " in ", model_dir)
   fi <- file.info(path)
@@ -166,19 +168,30 @@ read_dat_year_range <- function(dat_path) {
 ## rather than failing if it cannot be determined -- a missing disk reading
 ## should not block a run.
 disk_free_gb <- function(path) {
-  drive <- sub(":.*$", "", normalizePath(path, winslash = "/", mustWork = FALSE))
-  out <- tryCatch(
-    suppressWarnings(system2("powershell",
-                             c("-NoProfile", "-Command",
-                               sprintf("(Get-PSDrive %s).Free", drive)),
-                             stdout = TRUE, stderr = FALSE)),
-    error = function(e) character(0))
-  v <- suppressWarnings(as.numeric(out[nzchar(trimws(out))][1]))
+  p <- normalizePath(path, winslash = "/", mustWork = FALSE)
+  if (is_windows()) {
+    drive <- sub(":.*$", "", p)
+    out <- tryCatch(
+      suppressWarnings(system2("powershell",
+                               c("-NoProfile", "-Command",
+                                 sprintf("(Get-PSDrive %s).Free", drive)),
+                               stdout = TRUE, stderr = FALSE)),
+      error = function(e) character(0))
+    v <- suppressWarnings(as.numeric(out[nzchar(trimws(out))][1])) / 1024^3
+  } else {
+    drive <- p
+    ## df -Pk: POSIX output, 1K blocks. Field 4 of the data row is available.
+    out <- tryCatch(
+      suppressWarnings(system2("df", c("-Pk", shQuote(p)), stdout = TRUE, stderr = FALSE)),
+      error = function(e) character(0))
+    v <- if (length(out) < 2L) NA_real_
+         else suppressWarnings(as.numeric(strsplit(trimws(out[2]), "[[:space:]]+")[[1]][4])) / 1024^2
+  }
   if (is.na(v)) {
-    warning("Could not determine free disk space on drive ", drive, ".")
+    warning("Could not determine free disk space on ", drive, ".")
     return(NA_real_)
   }
-  v / 1024^3
+  v
 }
 
 ## ADMB reads <program>.pin automatically whenever it exists in the run
@@ -261,9 +274,9 @@ copy_checked <- function(from, to, what = basename(from)) {
   invisible(TRUE)
 }
 
-## The executable is ~8.9 MB; 100 copies is ~890 MB of pure duplication. On NTFS
-## a hard link is instantaneous and costs nothing. Falls back to a real copy on
-## any filesystem that refuses.
+## The executable is 8.9 MB on Windows / 3.5 MB on macOS; 100 copies is pure
+## duplication. On NTFS and on APFS a hard link is instantaneous and costs
+## nothing. Falls back to a real copy on any filesystem that refuses.
 ##
 ## The exe is placed IN the run directory rather than called by absolute path
 ## because ADMB derives its output file names from argv[0].
@@ -271,7 +284,7 @@ link_or_copy_exe <- function(from, to) {
   if (file.exists(to)) return(invisible("existing"))
   ok <- suppressWarnings(file.link(from, to))
   if (isTRUE(ok)) return(invisible("link"))
-  copy_checked(from, to, "gmacs.exe")
+  copy_checked(from, to, basename(to))
   invisible("copy")
 }
 
@@ -284,7 +297,7 @@ prepare_run_dir <- function(gc, dest) {
   for (nm in c(gc$datafile, gc$ctlfile, gc$prjfile, "gmacs.dat"))
     copy_checked(file.path(gc$dir, nm), file.path(dest, nm), nm)
 
-  link_or_copy_exe(file.path(gc$dir, "gmacs.exe"), file.path(dest, "gmacs.exe"))
+  link_or_copy_exe(file.path(gc$dir, gmacs_exe_name()), file.path(dest, gmacs_exe_name()))
 
   ## Clear every output of any previous attempt in this directory.
   ##
@@ -325,8 +338,14 @@ prepare_run_dir <- function(gc, dest) {
 GMACS_ERROR_MARKERS <- c("STOPPING", "Error", "error occurred", "cannot be opened",
                          "Fatal", "abnormal", "ad_exit")
 
-run_gmacs <- function(run_dir, args = character(0), exe = "gmacs.exe",
-                      log = "gmacs_run.log") {
+## purge_gmacs_scratch() and GMACS_SCRATCH_PATTERN moved to R/gmacs_io.R on
+## 2026-08-27 so that 05 and 06 share one definition. See section 9 there.
+
+## `exe` is resolved through gmacs_exe_call() so that on Unix it carries the
+## explicit "./". A bare "gmacs" is looked up on PATH, not in the working
+## directory, and system2() would report failure having run nothing at all.
+run_gmacs <- function(run_dir, args = character(0), exe = gmacs_exe_call(),
+                      log = "gmacs_run.log", purge_scratch = TRUE) {
   old <- setwd(run_dir)
   on.exit(setwd(old), add = TRUE)
 
@@ -337,14 +356,23 @@ run_gmacs <- function(run_dir, args = character(0), exe = "gmacs.exe",
     error = function(e) { attr(e, "gmacs_failed") <- TRUE; 127L })
   elapsed <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
 
+  ## After the process has exited, never during -- see purge_gmacs_scratch().
+  if (isTRUE(purge_scratch)) purge_gmacs_scratch(".")
+
   txt <- character(0)
   for (f in c(log, paste0(log, ".err")))
     if (file.exists(f)) txt <- c(txt, readLines(f, warn = FALSE))
   hits <- unique(unlist(lapply(GMACS_ERROR_MARKERS, function(m) grep(m, txt, value = TRUE, fixed = TRUE))))
 
+  ## The macOS build aborts at teardown after writing every output file. Strict
+  ## test, and always FALSE on Windows -- see is_benign_gmacs_exit(). Only the
+  ## three known FP messages are excused; any other marker still fails the run.
+  benign <- is_benign_gmacs_exit(status, txt)
+  if (benign) hits <- hits[!trimws(hits) %in% GMACS_FP_TEARDOWN_MSGS]
+
   list(status  = as.integer(status),
        elapsed = elapsed,
-       ok      = identical(as.integer(status), 0L) && length(hits) == 0L,
+       ok      = (identical(as.integer(status), 0L) || benign) && length(hits) == 0L,
        errors  = if (length(hits)) utils::head(hits, 5L) else character(0))
 }
 

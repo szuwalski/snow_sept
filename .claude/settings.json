@@ -5,6 +5,8 @@
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
       "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/**)",
 
+      "Bash",
+
       "Bash(Rscript:*)",
       "Bash(C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe:*)",
       "Bash(\"C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe\":*)",
@@ -54,10 +56,16 @@
       "Edit(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)",
       "Write(//c/Users/grant.adams/GitHub/AFSC assessments/snow_sept/data/adfg_removals/**)",
 
+      "Edit(Reports/**)",
+      "Write(Reports/**)",
+      "Edit(archive_2025/**)",
+      "Write(archive_2025/**)",
+      "Edit(data/adfg_removals/**)",
+      "Write(data/adfg_removals/**)",
+
       "Bash(git push:*)",
       "Bash(git reset --hard:*)",
-      "Bash(git clean:*)",
-      "Bash(rm:*)"
+      "Bash(git clean:*)"
     ]
   }
 }

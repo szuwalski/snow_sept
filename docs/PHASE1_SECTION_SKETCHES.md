@@ -3,7 +3,7 @@
 **Companion to** `SEPT2026_SNOW_CRAB_BUILD_PLAN.md` (v3). These are **draft R Markdown chunks** for the data-independent Phase-1 work: port the missing sections from the GitHub Sept-2025 final into the working copy (converted to the working copy's `reslst`/`model_defs` idiom) and scaffold the new SSC-required sections.
 
 **Conventions used below**
-- Model references use the placeholders **`ACCEPTED_TIER3`** (= Model 25.2c = `25_gmacs_update_newmat_plus_group`) and **`REFERENCE`** (= rolled-forward 2025 accepted). Wire these to the real `model_defs`/case names **only after** the `0-models.R` audit (plan §5 prerequisite). Do not hard-code case strings until the audit confirms them.
+- Model references use the placeholders **`ACCEPTED_TIER3`** (= Model 25.2e (new data) = `26_gmacs_update_newmat_plus_group`) and **`REFERENCE`** (= rolled-forward 2025 accepted). Wire these to the real `model_defs`/case names **only after** the `0-models.R` audit (plan §5 prerequisite). Do not hard-code case strings until the audit confirms them.
 - Management quantities reuse the working copy's existing `extract_mgmt_quantities()` helper (the `stepchange` chunk), **not** GitHub's inline `Gmacsall.out` parsing and **not** the legacy gmr `M[[]]` idiom.
 - Chunks that depend on runs that don't exist yet (male-only, data-through-2019, final 2026, Tier-4 output) are marked `eval=FALSE` **# PHASE 2** so the document still knits during Phase 1. Flip to `eval=TRUE` when the run lands.
 - `[[TODO]]` = author decision or data needed. `[[VERIFY]]` = confirm against source before trusting.
@@ -78,7 +78,7 @@ rebuilding plan (see Rebuilding Analysis and Update).
 
 4. **Changes in assessment results:** [[PHASE 2 — populate from the final runs]]
    The Tier 4 OFL is `[[value]]` kt and ABC `[[value]]` kt. The developing Tier 3
-   model (Model 25.2c) is presented for review but is not the basis of the 2026
+   model (Model 25.2e (new data)) is presented for review but is not the basis of the 2026
    specification.
 ```
 
@@ -135,7 +135,7 @@ REMA-smoothed survey biomass. The **recommended currency is morphometrically mat
 male biomass** — consistent with the October 2024 SSC recommendation that the
 standardized crab Tier 4 fallback use *all mature male biomass*. For comparison, the
 OFL is also reported for the **≥95 mm** and **>101 mm** size ranges (as in the 2025
-Tier 4), and the developing Tier 3 model (Model 25.2c) is reported below.
+Tier 4), and the developing Tier 3 model (Model 25.2e (new data)) is reported below.
 ```
 
 ```{r ofl-basis-tier4, echo=FALSE, eval=FALSE}
@@ -149,9 +149,12 @@ tier4 <- readRDS("Models/tier4_results.rds")   # [[VERIFY output path/object]]
 ```
 
 ```{r ofl-basis-tier3, echo=FALSE, eval=FALSE}
-## PHASE 2 — Tier 3 (Model 25.2c), presented for context, both currencies.
+## PHASE 2 — Tier 3 (Model 25.2e (new data)), presented for context, both currencies.
 ## Reuse extract_mgmt_quantities() from the stepchange chunk rather than re-parsing.
-t3 <- extract_mgmt_quantities(model_defs[["ACCEPTED_TIER3"]], "Model 25.2c")
+## `accepted_model` is defined in the Rmd setup chunk and now resolves to Model 25.2e (new data).
+## Do NOT leave the literal "ACCEPTED_TIER3" here -- it is not a key in model_defs
+## and would error the moment this chunk is flipped to eval=TRUE.
+t3 <- extract_mgmt_quantities(model_defs[[accepted_model]], "Model 25.2e (new data)")
 # ...pander() BMSY / status / FOFL / OFL...
 ```
 
@@ -278,7 +281,7 @@ assessment model at this time (per the May 2026 CPT/SSC); hybrid-related uncerta
 is reflected in the risk table and ABC buffer (Appendix B), and hybrid abundance and
 distribution continue to be monitored in the NOAA survey technical memo.
 
-The developing Tier 3 model (Model 25.2c) and a male-only sensitivity are presented
+The developing Tier 3 model (Model 25.2e (new data)) and a male-only sensitivity are presented
 for review; the male-only run is not proposed for specification unless selected by
 the CPT in September. Priorities toward the 2027 Tier 3 are the targeted
 simplifications and convergence diagnostics described in Section F.
@@ -377,9 +380,10 @@ Replaces the working copy's hybrid-heavy `C` section. Written to read like the a
 The following are presented this year:
 
  * Tier 4: a calculation of the OFL from REMA-smoothed survey biomass, brought forward as the basis for the 2026 harvest specification.
- * 25.2c: the 2025 accepted model updated to GMACS 2.20.34 [[VERIFY version]] with the corrected total-male size composition, the plus group expanded to include all crab greater than 135 mm carapace width, and the new maturity workflow. This is the developing Tier 3 model.
- * 25.2c, males only: a sensitivity that removes the female data and dynamics from 25.2c.
- * 25.2c, data through 2019: 25.2c refit with the terminal year set to 2019.
+ * 25.2e (new data): the 2025 accepted model updated to GMACS 2.20.34 [[VERIFY version]] with the corrected total-male size composition, the plus group expanded to include all crab greater than 135 mm carapace width, and the new maturity workflow, advanced to end year 2025. This is the developing Tier 3 model and the author-recommended model. It is the configuration the CPT accepted in May 2026 as Model 25.2c; the September cycle is renumbered 26.1 (settled 2026-08-28).
+ * 26.2, males only: a sensitivity that removes the female data and dynamics from 25.2e (new data).
+ * 26.3, data through 2019: 25.2e (new data) refit with the terminal year set to 2019.
+ * 25.2e: 25.2c with the size-composition bin convention changed so a crab on a 5 mm cutoff goes to the upper bin, and a growth-data transcription error corrected (a 26.3 mm crab's increment 73 mm read as 7.3 mm).
 
 The key assumptions of the Tier 3 model include:
 
@@ -395,7 +399,7 @@ The key assumptions of the Tier 3 model include:
 
  * total and retained fishery selectivity are estimated logistic curves
 
- * all non-directed bycatch (e.g. snow crab caught in the Tanner crab fishery or crab caught in the non-pelagic trawl fisheries) is lumped into a single 'fishery' for which a single selectivity is estimated
+ * all non-directed bycatch (e.g. snow crab caught in the Tanner crab fishery or crab caught in the non-pelagic trawl fisheries) is lumped into a single 'fishery' for which a single selectivity is estimated; these removals are recorded for both sexes combined, so in the male-only sensitivity they are fit by the male population alone and the bycatch fishing mortality estimated for males is correspondingly inflated (the affected removals average 0.48 kt against a mean retained catch of 37.1 kt, and the fit to the series is essentially unchanged)
 
  * recruitment is estimated separately for females and males and allocated to the first three size bins; the male-only sensitivity estimates male recruitment only
 
@@ -449,7 +453,7 @@ assessment. The October 2024 SSC standardization specifies the best estimate of 
 mortality from the Tier 3 model; the prior median is retained here because the Tier 3
 model estimates time-varying M with additional mortality in 2018 and 2019, and the prior
 median provides a single stable proxy consistent with the base-level mature-male M.
-[[VERIFY the base-level (non-event-year) mature-male M in Model 25.2c is close to 0.27,
+[[VERIFY the base-level (non-event-year) mature-male M in Model 25.2e (new data) is close to 0.27,
 so the departure from the literal standardization text is defensible to the SSC.]] The
 recommended calculation uses morphometrically mature male
 biomass (Section C); it is repeated for male biomass greater than 95 mm and greater than
@@ -526,11 +530,11 @@ Insert at the **top** of Section B (the document lists most-recent first; the ex
 
 ***2026(5) CPT.** For the September 2026 meeting, bring forward three model runs: a Tier 4 analysis, Model 25.2c (the composition and plus-group corrections with the new maturity workflow), and Model 25.2c with only males included.*
 
-All three are presented. The Tier 4 calculation is the basis for the 2026 harvest specification (Section G). Model 25.2c is presented as the developing Tier 3 model and the male-only run as a sensitivity (Section F). The male-only run is not proposed for specification unless the CPT concludes it is the best available option in September.
+All three are presented. The Tier 4 calculation is the basis for the 2026 harvest specification (Section G). The model the CPT accepted in May as Model 25.2c, advanced to end year 2025, is presented as the developing Tier 3 model and is designated **Model 25.2e (new data)** in this document; the male-only run of it is **Model 26.1** and is presented as a sensitivity (Section F). The male-only run is not proposed for specification unless the CPT concludes it is the best available option in September.
 
 ***2026(5) CPT.** All future Tier 3 models must include the corrections to the total-male size composition and the plus group, and the new maturity workflow.*
 
-Model 25.2c includes all three corrections, as do all Tier 3 configurations presented here.
+Model 25.2e (new data), which builds on the configuration the CPT accepted in May as 25.2c, includes all three corrections, as do all Tier 3 configurations presented here.
 
 ***2026(5) CPT.** Provide a model run with data only through 2019 to test whether the convergence problems stem from estimating recruitment following the population crash and the missing 2020 survey.*
 
@@ -638,7 +642,7 @@ F is applied with no control-rule reduction, and status is used for the overfish
 determination rather than to scale F. The recommended currency is morphometrically mature
 male biomass; the OFL is also reported for male biomass greater than 95 mm and greater
 than 101 mm carapace width (Table \@ref(tab:tier4)). The developing Tier 3 model (Model
-25.2c) is summarized in Section G for comparison.
+26.1) is summarized in Section G for comparison.
 
 The recommended 2026 OFL is `r round(ofl_2026, 2)` kt, at a stock status of
 `r round(status_2026, 2)` relative to the B_MSY proxy.
@@ -730,7 +734,7 @@ risk <- data.frame(
                "Assessment", "Population dynamics",
                "Environmental / ecosystem", "Fishery performance"),
   Level = c(paste0(round(100 * hist_buffer), "% buffer"),
-            "[[Level n]]", "[[Level n]]", "[[Level n]]", "[[Level n]]"),
+            "[[Level 1?]]", "Level 1", "Level 1", "Level 1"),   # ESP scores pop-dyn/eco/fishery = Level 1 (Normal); Assessment row is author judgment
   Consideration = c(
     paste0("Average buffer of the previous five assessments (",
            paste0(round(100 * hist_buffer), "%"),
@@ -740,15 +744,27 @@ risk <- data.frame(
     paste0("The Tier 3 model's convergence and bimodality are largely addressed by ",
            "specifying on the Tier 4 fallback this year; to avoid double-counting, only ",
            "residual current-year assessment uncertainty is scored here."),
-    paste0("Recruitment is uncertain following the 2018–19 collapse and the missing ",
-           "2020 survey; the stock is overfished and under rebuilding."),
-    paste0("Marine-heatwave mortality remains a concern; ecosystem indicators are drawn ",
-           "from the snow crab ESP, categorized this cycle with the recruitment DSEM ",
-           "approach (replacing Bayesian Adaptive Sampling)."),
-    paste0("The directed fishery was closed 2022–23 with a small fishery since; ",
-           "hybrids are retained under the snow-crab IFQ and cannot yet be separated. ",
-           "Hybrid-related uncertainty is carried here rather than in the model, and its ",
-           "direction is not predetermined — it could raise or lower the buffer.")
+    paste0("ESP population-dynamics indicators are favorable in 2026 (Level 1): juvenile ",
+           "energetic condition remains elevated above lab-derived starvation thresholds, ",
+           "occupied temperatures were sub-zero (favorable for survival and recruitment), and ",
+           "record-high mature female abundance with ~97% full clutches indicates high ",
+           "reproductive potential despite low large-male abundance. DSEM-supported recruitment ",
+           "drivers (sea ice, energetic condition, cold-water habitat, occupied temperature) are ",
+           "all favorable (ESP, Fedewa et al. 2026). The stock remains overfished and under ",
+           "rebuilding, which is captured by the status and tier rather than an added buffer."),
+    paste0("ESP/ESR ecosystem indicators are favorable in 2026 (Level 1): cool thermal ",
+           "conditions with an extensive summer cold pool and above-average spring sea ice, ",
+           "favorable feeding conditions for pelagic and benthic stages, and low competition for ",
+           "prey (competition for space remains high). Indicators were categorized this cycle ",
+           "with the recruitment DSEM approach, replacing Bayesian Adaptive Sampling ",
+           "(ESP, Fedewa et al. 2026; ESR, Siddon 2026 in press)."),
+    paste0("ESP fishery indicators are near normal in 2026 (Level 1): retained CPUE declined ",
+           "(219 to 147 crab per potlift, below the long-term average) while effort rose; the ",
+           "fishing distribution shifted south; about 50% of surveyed skippers reported over 10% ",
+           "more industry-preferred males and about 47% noted more hybrid crab, with confidence ",
+           "in sorting (ESP, Fedewa et al. 2026; ABSC Skipper Survey). Hybrid catch is retained ",
+           "under the snow-crab IFQ and cannot yet be separated; hybrid-related uncertainty is ",
+           "carried here rather than in the model, and its direction is not predetermined.")
   )
 )
 flextable::flextable(risk) |>
@@ -764,7 +780,9 @@ flextable::flextable(risk) |>
 ### 16d. Recommended buffer + wiring note
 
 ```markdown
-The recommended buffer for 2026 is `r paste0(round(100 * (1 - ABC_buffer)), "%")`.
+The recommended buffer for 2026 is `r paste0(round(100 * (1 - ABC_buffer)), "%")`. The ESP
+scores all current-year (Tier 2) categories at Level 1 (Normal), so no additional current-year
+buffer is indicated; the buffer therefore rests on the Tier-1 historical value.
 [[DECISION: `ABC_buffer` (set in the global config, currently 0.8 = 20%) is the single
 applied buffer that feeds the ABC in the Executive Summary, the management table, and
 Section H. The Tier-1 historical buffer computed above is
@@ -780,29 +798,177 @@ average here. Any Tier-2 adjustment is applied by author judgment, not by formul
 
 ## 17. `# Projections` (scaffold — closes the "Projections section" the drafts reference)
 
-Referenced by §6 (Rebuilding trajectory), §8 (Status determination Q3), and §14 (all-crab row 412: "projections over a range of F"). Inherently Phase 2 — projections come from the GMACS projection module of the **developing Tier 3 model (25.2c)**, not from Tier 4. Port the GitHub base's projection machinery (`do_proj`/`proj_dir`/`mcoutPROJSSB.REP`, currently `do_proj=0` in the working copy) and run it across a range of F.
+Referenced by §6 (Rebuilding trajectory), §8 (Status determination Q3), and §14 (all-crab row 412: "projections over a range of F"). Inherently Phase 2 — projections come from the GMACS projection module of the **developing Tier 3 model (26.1)**, not from Tier 4. Port the GitHub base's projection machinery (`do_proj`/`proj_dir`/`mcoutPROJSSB.REP`, currently `do_proj=0` in the working copy) and run it across a range of F.
 
 **Interpretation caveat to state in the prose:** the 2026 specification is Tier 4, but the standard forward projections (for the overfished/approaching determination and the rebuilding trajectory) are produced by the Tier 3 model. Present them as model-based context, and note that Tier-4 status (§8 Q1/Q2) is determined from the survey-based `status_2026`, not from these projections.
 
 ```markdown
 # Projections
 
-Projections were produced with the developing Tier 3 model (Model 25.2c) to characterize
+Projections were produced with the developing Tier 3 model (Model 25.2e (new data)) to characterize
 the stock's trajectory under a range of fishing mortality rates (per the May 2026 CPT
 request). The 2026 harvest specification is set under Tier 4 (Section G); these
 projections provide model-based context for the rebuilding outlook and the
 approaching-overfished determination, and are not the basis of the specification.
 ```
 
-```{r projections-Frange, echo=FALSE, eval=FALSE, fig.cap="Projected MMB (Model 25.2c) under a range of fixed F, with F=0 and F=F_OFL highlighted."}
+```{r projections-Frange, echo=FALSE, eval=FALSE, fig.cap="Projected MMB (Model 25.2e (new data)) under a range of fixed F, with F=0 and F=F_OFL highlighted."}
 ## PHASE 2 — port the GitHub do_proj block (proj_dir -> mcoutPROJSSB.REP), then loop
 ## over an F grid (e.g. seq(0, F_OFL, length.out = k) plus F=0 and F=F_OFL).
 ## Outputs feed: §6 rebuilding trajectory, §8 status-determination Q3.
-## [[VERIFY the .PROJ workflow / projection file paths for 25.2c in the repo.]]
-## F_OFL_t3 is the Tier-3 (Model 25.2c) F_OFL from the projection module — NOT the
-## Tier-4 target F (0.27). [[define F_OFL_t3 from the 25.2c projection output.]]
+## [[VERIFY the .PROJ workflow / projection file paths for 26.1 in the repo.]]
+## F_OFL_t3 is the Tier-3 (Model 25.2e (new data)) F_OFL from the projection module — NOT the
+## Tier-4 target F (0.27). [[define F_OFL_t3 from the 26.1 projection output.]]
 F_grid <- c(0, seq(0, F_OFL_t3, length.out = 6), F_OFL_t3)   # F=0 and F_OFL highlighted
 # ...run projection per F, collect median projected MMB by year...
 ```
 
 **Guideline note:** the AFSC groundfish 7-scenario spmR set is **not** used for crab (plan §4 [N/A]); this range-of-F projection plus the F=0 and F=F_OFL cases covers the crab overfished/approaching tests.
+
+---
+
+## 18. `# Appendix C. Description of the assessment model` (equations)
+
+Data-independent. **These equations were reconciled against the R reimplementation of the assessment (`gmacs_model_r.R` in the `snow_crab` repo), which reproduces the ADMB objective function** for `25_gmacs_update_plus_group`. Model 25.2c shares this structure, differing only in the maturity-ogive input ($\Theta$) and the corrected composition data — so these equations apply to the September model. `[[add formal GMACS citation]]`. Equations render in PDF; check the Word (officedown) output renders the `aligned` blocks acceptably and simplify any that do not.
+
+```markdown
+# Appendix C. Description of the assessment model
+
+The assessment is implemented in the Generalized Model for Assessing Crustacean Stocks
+(GMACS), an integrated, size-structured model fit by maximum likelihood in AD Model
+Builder. This appendix gives the population dynamics and observation model as configured
+for eastern Bering Sea snow crab; the complete GMACS specification is in the GMACS
+documentation (GMACS-project). Notation is defined in Table C-1.
+
+## C.1 Structure and seasonal sequence
+
+The model tracks numbers of crab $N_{s,m,y,\ell}$ by sex $s$ (male, female), maturity
+state $m$ (immature, mature), year $y$, and carapace-width class $\ell$. Size classes span
+27.5–132.5 mm in 5-mm bins ($n_\ell = 22$; the terminal class is a plus group). The crab
+year is divided into three seasons, and a fixed fraction $\kappa = (0.62, 0.01, 0.37)$ of
+annual natural mortality is applied in each. Events occur in the following order: in season
+1 the summer survey is observed and season-1 natural mortality is applied; in season 2 the
+fisheries operate (continuous fishing mortality) with season-2 natural mortality; in season
+3 season-3 natural mortality is applied, immature crab molt and grow (with terminal molt to
+maturity), and recruitment enters. Spawning biomass, growth, and recruitment are evaluated
+in season 3.
+
+## C.2 Recruitment
+
+Total annual recruitment enters as immature crab:
+$$ R_y = 2\,\bar{R}\,e^{\varepsilon_y}, \qquad \varepsilon_y \sim N(0,\sigma_R^2) $$
+and is split between sexes each year through a logistic parameter:
+$$ \pi_y = \frac{1}{1+e^{-\zeta_y}}, \qquad R^{m}_y = \pi_y R_y, \quad R^{f}_y = (1-\pi_y)R_y $$
+Recruits are distributed over the first three size classes with proportions $p_\ell$ from a
+gamma distribution (parameters $r_a, r_b$), normalized to sum to one. The year-specific
+sex-ratio parameters $\zeta_y$ are the parameters the SSC recommends fixing at $\pi = 0.5$
+(Section F).
+
+## C.3 Growth and terminal molt
+
+All immature crab molt each year; mature crab do not molt or grow (terminal molt). The molt
+increment is a declining linear function of pre-molt width $x_{\ell'}$, so mean post-molt
+width is
+$$ \bar{\ell}\,(x_{\ell'}) = x_{\ell'} + \big(\alpha_s - \beta_s\,x_{\ell'}\big) $$
+Post-molt size follows a gamma distribution with scale $g_s$ and shape
+$\bar{\ell}/g_s$, integrated over the size bins to give the (upper-triangular) growth-
+transition matrix $\mathbf{G}_s$ with elements $G_{s,\ell'\to\ell}$. The parameters
+$(\alpha_s,\beta_s,g_s)$ are estimated by sex and fit to the molt-increment data.
+
+At its molt, an immature crab of post-molt size $\ell$ undergoes terminal molt to maturity
+with probability $\Theta_{s,y,\ell}$, the year- and size-varying probability of terminal
+molt supplied as input (the new maturity workflow; Section C).
+
+## C.4 Natural mortality
+
+Mature natural mortality is estimated by sex, $M^{mat}_{s}$; immature mortality is a
+log-scale offset, $M^{imm}_{s} = M^{mat}_{s}\,e^{o_s}$. Year-specific deviations apply in
+the block years $b \in \{2018, 2019, 2020\}$:
+$$ M_{s,m,y} = M_{s,m}\,\exp(\delta_{s,m,y}), \qquad \delta_{s,m,y}=0 \text{ unless } y \in b $$
+$M^{mat}_{s}$ is subject to an informative prior based on an assumed longevity of 20 years
+(Section D). (The 2018 and 2019 mortality events are emphasized in the main text; the model
+defines a 2020 block as well.)
+
+## C.5 Fishing mortality, selectivity, and removals
+
+Fishing mortality for fleet $f$ (directed pot; trawl bycatch) is
+$F_{f,y} = \exp(\bar{F}_f + \phi_{f,y})$, with a sex offset for the pot fishery. Fishery and
+retention selectivities are logistic in size,
+$$ S_{f,s}(\ell) = \frac{1}{1+\exp\!\big(-(x_\ell-\mu_{f,s})/\sigma_{f,s}\big)}, \qquad \mu=e^{\theta_1},\ \sigma=e^{\theta_2} $$
+Survey selectivity is estimated as a free value per size class within era (1982–1988;
+1989–present) and sex, $S^{surv}_{s}(\ell)=\exp(\eta_{s,\ell})$, subject to a smoothness
+penalty and to normal priors from the BSFRF selectivity experiments (Section E). All
+non-directed bycatch is combined into a single trawl fishery.
+
+Pot-fishery vulnerability combines capture selectivity, retention $r(\ell)$, and the pot
+discard-mortality rate $\xi_{pot}=0.3$; trawl vulnerability applies the trawl discard-
+mortality rate $\xi_{trawl}=1.0$:
+$$ V^{pot}_{s}(\ell)=S^{pot}_{s}(\ell)\big[r(\ell)+(1-r(\ell))\,\xi_{pot}\big], \qquad V^{trawl}_{s}(\ell)=S^{trawl}_{s}(\ell)\,\xi_{trawl} $$
+Season-2 total mortality and Baranov catch-at-size are
+$$ Z_{s,m,y,\ell}=\kappa_2 M_{s,m,y}+\sum_f F_{f,y}V_{f,s}(\ell), \qquad
+C_{f,s,m,y,\ell}=\frac{F_{f,y}\,S_{f,s}(\ell)}{Z_{s,m,y,\ell}}\big(1-e^{-Z_{s,m,y,\ell}}\big)N_{s,m,y,\ell} $$
+Retained catch uses $S^{pot}_s r$; pot discards use $S^{pot}_s(1-r)$.
+
+## C.6 Numbers-at-length update
+
+Let $\tilde{N}$ denote season-3 survivors (after all three seasons of natural mortality and
+season-2 fishing). Surviving immature crab molt via $\mathbf{G}_s$ and either mature (via
+$\Theta$) or remain immature; surviving mature crab are carried forward at size:
+$$
+\begin{aligned}
+N^{imm}_{s,y+1,\ell} &= \sum_{\ell'} G_{s,\ell'\to\ell}\,\big(1-\Theta_{s,y,\ell}\big)\,\tilde{N}^{imm}_{s,y,\ell'} \;+\; R^{s}_{y+1}\,p_\ell \\[1ex]
+N^{mat}_{s,y+1,\ell} &= \tilde{N}^{mat}_{s,y,\ell} \;+\; \sum_{\ell'} G_{s,\ell'\to\ell}\,\Theta_{s,y,\ell}\,\tilde{N}^{imm}_{s,y,\ell'}
+\end{aligned}
+$$
+Numbers-at-size in the first year (1982) are estimated for each sex $\times$ maturity group
+under a smoothness penalty; this initialization is one target of the simplification runs
+discussed in Section F.
+
+## C.7 Observation model
+
+Weight-at-size $w_{s,\ell}$ is specified by sex (allometric). Predicted survey biomass
+applies survey selectivity to the season-1 snapshot:
+$$ \hat{I}_{y} = \sum_{\ell} S^{surv}_{s}(\ell)\,N_{s,m,y,\ell}\,w_{s,\ell} $$
+Predicted fleet catch biomass is $\hat{C}_{f,y}=\sum_{s,m,\ell} C_{f,s,m,y,\ell}\,w_{s,\ell}$.
+Predicted size compositions are the corresponding survey or catch numbers-at-size
+normalized within each data block.
+
+## C.8 Objective function
+
+Parameters are estimated by minimizing the total negative log-likelihood, the sum of:
+
+- **Index** (lognormal): $\tfrac{1}{2}(\log(I_y/\hat I_y)/s_y)^2 + \log s_y$, with
+  $s_y^2=\log(1+cv_y^2)+\log(1+cv_{\text{add}}^2)$ and $cv_{\text{add}}\approx 10^{-4}$.
+- **Catch** (lognormal): as above with $s=\sqrt{\log(1+cv^2)}$.
+- **Size compositions**: the robust (Fournier) approximation to the multinomial, evaluated
+  at the input sample sizes; no compositional reweighting is applied.
+- **Growth** (lognormal): on the observed vs. predicted molt increment $\alpha_s-\beta_s x$.
+- **Recruitment** (autoregressive): with $r_1=\varepsilon_1+\sigma_R^2/2$ and
+  $r_y=\varepsilon_y-\rho\,\varepsilon_{y-1}+\sigma_R^2/2$, evaluated under a normal density
+  with standard deviation $\sigma_R$; plus a normal prior on the logit sex-ratio deviations.
+- **Penalties**: recruitment first-difference smoothness (weight 1), recruitment sex-ratio
+  (weight 3), survey-selectivity smoothness (weight 3), and initial-numbers smoothness
+  (weight 5).
+- **Parameter priors**: on $\log\bar R$, initial numbers, growth, $M$, and selectivity.
+
+Table C-1. Notation. `[[render as a table]]`
+
+| Symbol | Definition |
+|---|---|
+| $s, m, y, \ell$ | sex; maturity state; year; carapace-width class (22 classes, 27.5–132.5 mm) |
+| $N_{s,m,y,\ell}$ | numbers at size; $\tilde N$ = season-3 survivors |
+| $\kappa=(0.62,0.01,0.37)$ | fraction of annual $M$ applied in seasons 1–3 |
+| $R_y,\ \bar R,\ \varepsilon_y,\ \rho$ | total recruitment; mean; deviation; AR(1) coefficient |
+| $\pi_y,\ \zeta_y$ | recruitment fraction male; its logit parameter (per year) |
+| $p_\ell,\ (r_a,r_b)$ | recruit size distribution (gamma, first 3 classes) |
+| $\alpha_s,\beta_s,g_s$ | growth increment intercept, slope; gamma scale |
+| $G_{s,\ell'\to\ell}$ | growth-transition probability |
+| $\Theta_{s,y,\ell}$ | probability of terminal molt at size (input) |
+| $M^{mat}_s,\ o_s,\ \delta_{s,m,y}$ | mature $M$; immature log-offset; block deviation (2018–2020) |
+| $F_{f,y},\ S_{f,s}(\ell),\ r(\ell)$ | fishing mortality; selectivity; retention |
+| $\xi_{pot}=0.3,\ \xi_{trawl}=1.0$ | discard-mortality rates |
+| $V_{f,s}(\ell),\ Z$ | vulnerability; total mortality |
+| $S^{surv}_s(\ell),\ w_{s,\ell}$ | survey selectivity; weight-at-size |
+```
+
+**Handoff/outline note:** this is **Appendix C**. Add it to the canonical outline after Appendix B, and add `# Appendix C. Description of the assessment model` as a Phase-1 (data-independent) drafting task. It complements — does not replace — the narrative Model description in Section F. Provenance: equations reconciled against `snow_crab/gmacs_model_r.R` (reproduces the ADMB objective for `25_gmacs_update_plus_group`).

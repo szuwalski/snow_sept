@@ -60,7 +60,7 @@ Par_No Est_No Paramter Estimate Standard_Error
 67 58 Initial_logN_for_sex_female_mature_mature_newshell_class_13 8.56191 0.445804
 68 59 Initial_logN_for_sex_female_mature_mature_newshell_class_14 8.48793 0.508841
 69 60 Initial_logN_for_sex_female_mature_mature_newshell_class_15 8.37707 0.536159
-70 61 Initial_logN_for_sex_female_mature_mature_newshell_class_16 8.17711 0.52392
+70 61 Initial_logN_for_sex_female_mature_mature_newshell_class_16 8.17711 0.523919
 71 62 Initial_logN_for_sex_female_mature_mature_newshell_class_17 7.91938 0.496939
 72 63 Initial_logN_for_sex_female_mature_mature_newshell_class_18 7.65631 0.479312
 73 64 Initial_logN_for_sex_female_mature_mature_newshell_class_19 7.40362 0.468445
@@ -193,7 +193,7 @@ Par_No Est_No Paramter Estimate Standard_Error
 213 191 Sel_NMFS_Trawl_1989_female_base_class_21 -0.080527 0.0840556
 215 192 Ret_Pot_Fishery_male_base_Logistic_mean 4.59842 0.00167361
 216 193 Ret_Pot_Fishery_male_base_Logistic_cv 0.232832 0.1077
-217 194 Log_fbar_Pot_Fishery 0.0615752 0.0735347
+217 194 Log_fbar_Pot_Fishery 0.0615751 0.0735347
 218 195 Log_fbar_Trawl_Bycatch -4.79225 0.0978441
 221 196 Log_fdev_Pot_Fishery_year_1982_season_2 -1.50538 0.129564
 222 197 Log_fdev_Pot_Fishery_year_1983_season_2 -1.81813 0.0891295
@@ -322,13 +322,13 @@ Par_No Est_No Paramter Estimate Standard_Error
 348 320 Log_fdov_Pot_Fishery_year_2021_season_2 -4.20752 0.178863
 349 321 Log_fdov_Pot_Fishery_year_2024_season_2 -4.24514 0.161661
 394 322 Rec_dev_est_1982 0.114532 0.209933
-395 323 Rec_dev_est_1983 0.110097 0.172939
+395 323 Rec_dev_est_1983 0.110097 0.17294
 396 324 Rec_dev_est_1984 1.2483 0.13678
 397 325 Rec_dev_est_1985 1.74473 0.145822
 398 326 Rec_dev_est_1986 1.06036 0.240192
 399 327 Rec_dev_est_1987 0.16944 0.310076
 400 328 Rec_dev_est_1988 -0.489875 0.220202
-401 329 Rec_dev_est_1989 -0.821902 0.206809
+401 329 Rec_dev_est_1989 -0.821903 0.206809
 402 330 Rec_dev_est_1990 0.693598 0.117523
 403 331 Rec_dev_est_1991 0.753962 0.118433
 404 332 Rec_dev_est_1992 -0.311559 0.17724
@@ -345,8 +345,8 @@ Par_No Est_No Paramter Estimate Standard_Error
 415 343 Rec_dev_est_2003 -0.605781 0.179341
 416 344 Rec_dev_est_2004 0.0820392 0.133606
 417 345 Rec_dev_est_2005 -0.852205 0.199412
-418 346 Rec_dev_est_2006 -1.64991 0.199307
-419 347 Rec_dev_est_2007 -0.00484719 0.128212
+418 346 Rec_dev_est_2006 -1.64991 0.199306
+419 347 Rec_dev_est_2007 -0.00484717 0.128212
 420 348 Rec_dev_est_2008 0.919074 0.138424
 421 349 Rec_dev_est_2009 -0.67326 0.257556
 422 350 Rec_dev_est_2010 -0.669488 0.20516
@@ -369,7 +369,7 @@ Par_No Est_No Paramter Estimate Standard_Error
 439 367 Logit_rec_prop_est_1984 -0.038071 0.235212
 440 368 Logit_rec_prop_est_1985 -0.881167 0.227401
 441 369 Logit_rec_prop_est_1986 -3.76682 0.675749
-442 370 Logit_rec_prop_est_1987 0.0250402 0.676493
+442 370 Logit_rec_prop_est_1987 0.0250408 0.676493
 443 371 Logit_rec_prop_est_1988 -0.459182 0.52793
 444 372 Logit_rec_prop_est_1989 0.674238 0.695187
 445 373 Logit_rec_prop_est_1990 1.81088 0.309589
@@ -401,7 +401,7 @@ Par_No Est_No Paramter Estimate Standard_Error
 471 399 Logit_rec_prop_est_2016 -3.27591 0.571577
 472 400 Logit_rec_prop_est_2017 -2.86476 0.768929
 473 401 Logit_rec_prop_est_2018 -1.94368 0.831549
-474 402 Logit_rec_prop_est_2019 3.26065 0.939799
+474 402 Logit_rec_prop_est_2019 3.26065 0.939801
 475 403 Logit_rec_prop_est_2020 0.417309 0.265523
 476 404 Logit_rec_prop_est_2021 0.99812 0.286664
 477 405 Logit_rec_prop_est_2022 0.35988 0.232869

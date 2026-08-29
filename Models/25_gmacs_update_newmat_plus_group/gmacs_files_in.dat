@@ -3,7 +3,7 @@
 # datafile
 25_snow_update_newmat_plus_group.dat
 # controlfile
-25_snow_update_newmat_plus_group.ctl
+snow.ctl
 # projectfile
 snow.prj
 # weightunit
@@ -13,7 +13,7 @@ Millions
 # StockName
 EBS_Snow_crab
 # IsPin
-0
+1
 # IsJittered
 0
 # sdJitter

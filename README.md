@@ -18,9 +18,9 @@ SAFE_snow_gmacs.Rmd          # the SAFE report (bookdown::pdf_document2). Loads 
 01_prep_fishery_data.R       # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
 02_prep_survey_data.R        # crabpack survey PULL -> size comps, maturity, growth (data/derived/)
 03_build_results_object.R    # reads the model dirs -> writes Models/rda_ModelsResLst.RData
-04_plot_numbers_at_length.R  # numbers-at-length figures
-05_run_retrospective.R       # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
-06_run_jitter.R              # jitter analysis (parallel)
+04_plot_recruitment_comparison.R  # survey vs model recruitment
+06_run_retrospective.R       # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
+05_run_jitter.R              # jitter analysis (parallel)
 07_calc_tier4.R              # Tier-4 / REMA calculation
 08_render_report.R           # renders the SAFE to PDF (wires in Positron's pandoc)
 
@@ -70,7 +70,8 @@ $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
 & $RS 02_prep_survey_data.R         # crabpack pull + rebuild survey size-comp / maturity / growth inputs
 #   -> hand-paste the data/derived/ outputs into the model .DAT, then run gmacs.exe in the model dir
 & $RS 03_build_results_object.R     # rebuild Models/rda_ModelsResLst.RData
-& $RS 04_plot_numbers_at_length.R; & $RS 05_run_retrospective.R; & $RS 06_run_jitter.R; & $RS 07_calc_tier4.R
+& $RS 04_plot_recruitment_comparison.R; & $RS 05_run_jitter.R; & $RS 06_run_retrospective.R; & $RS 07_calc_tier4.R
+#   jitter BEFORE retrospective: a promotion changes the fit and invalidates any peels run first
 & $RS 08_render_report.R            # render SAFE_snow_gmacs.Rmd -> PDF
 ```
 

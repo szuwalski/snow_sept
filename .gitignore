@@ -28,7 +28,7 @@ SAFE_snow_gmacs_cache/
 # Note: the SAFE PDF itself is NOT ignored (final deliverable is committed on purpose).
 # ADMB run logs / .rep / .std inside model dirs are kept (needed to rebuild the results object).
 
-# --- retrospective peel runs (05_run_retrospective.R) ---
+# --- retrospective peel runs (06_run_retrospective.R) ---
 # Each peel is a full ADMB run directory (~20 MB: admodel.*, gmacs.cor, rep1,
 # checkfile, simdata). 22 peels is ~450 MB of regenerable binaries. The parsed
 # RESULTS are kept -- the *.csv summaries below are what the SAFE reads.
@@ -36,7 +36,7 @@ Models/*/retro/*/*/
 !Models/*/retro/*.csv
 Models/*/_pre_run_backup/
 
-# --- jitter runs (06_run_jitter.R) ---
+# --- jitter runs (05_run_jitter.R) ---
 # Same shape: each of the 100 runs is a full ADMB run directory (~20 MB with the
 # Hessian). The parsed RESULTS are kept -- jitter_results.csv here and
 # Models/rda_jitter.RData are what the SAFE reads. PROMOTION.md is kept because
@@ -45,6 +45,12 @@ Models/*/jitter/*/
 !Models/*/jitter/*.csv
 !Models/*/jitter/PROMOTION.md
 
+# --- knit byproducts written beside the Rmd ---
+SAFE_snow_gmacs.log
+SAFE_snow_gmacs.tex
+SAFE_snow_gmacs.docx
+SAFE_snow_gmacs.pdf.log
+
 # transient script outputs (07 Tier-4 + 05 retro diagnostics written to cwd; stray R device)
 /obs_exp_dat.csv
 /rema_outs.csv
@@ -52,3 +58,7 @@ Models/*/jitter/*/
 /opilio_bmsy.csv
 /opilio_tseries_drop.csv
 Rplots.pdf
+# tot_likes_t_<date>.csv used to land here too; the knit now writes it to
+# data/diagnostics/likelihood_components_<date>.csv instead.
+/tot_likes_t_*.csv
+*.tmp

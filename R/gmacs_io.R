@@ -3,7 +3,7 @@
 ##
 ## Shared, side-effect-free readers/writers for GMACS (ADMB) model files.
 ## Sourced by 00_advance_model.R (writes the model .DAT/.CTL) and by
-## 05_run_retrospective.R (drives retrospective peels).
+## 06_run_retrospective.R (drives retrospective peels).
 ##
 ## Nothing in this file runs on source(); it only defines functions.
 ##
@@ -145,7 +145,7 @@ read_gmacs_control <- function(model_dir) {
 ##           3-field layout "IsJittered IsPin sdJitter" this executable expects;
 ##           see read_gmacs_control). Writing a 2-token string into a 3-token
 ##           slot shifts every subsequent field in the file -- which is exactly
-##           what the pre-2026 06_run_jitter.R did with its `"1 0.1"`.
+##           what the pre-2026 05_run_jitter.R did with its `"1 0.1"`.
 ## Every other byte of the file is preserved.
 write_gmacs_control <- function(gc, out_dir, n_peel = NULL, jitter = NULL) {
   obj <- gc$obj
@@ -200,7 +200,7 @@ write_gmacs_control <- function(gc, out_dir, n_peel = NULL, jitter = NULL) {
 ## and is NOT the source of gmacs.exe, which reports 2.20.34 (** AEP **,
 ## 2026-01-15) and contains an IsPin field the folder TPL does not have. So the
 ## above describes a version adjacent to the executable, not the executable.
-## 05_run_retrospective.R therefore MEASURES the effect (runs one peel with and
+## 06_run_retrospective.R therefore MEASURES the effect (runs one peel with and
 ## without this compensation and compares BMSY/OFL) instead of assuming it.
 ##
 ## COMPENSATION: write spr_grow_yr = base + n_peel so GMACS's own subtraction
@@ -244,7 +244,7 @@ set_prj_growth_year <- function(prj_path, n_peel, syr = 1982L, nyr = NULL) {
 ## ---------------------------------------------------------------------------
 ## Shared block reader: returns the character lines between a unique block
 ## header and the next ">EOD<" terminator. No fixed line window -- the original
-## 05_run_retrospective.R used tmp[(st+1):(st+50)], which silently truncates
+## 06_run_retrospective.R used tmp[(st+1):(st+50)], which silently truncates
 ## once the model gains years.
 .gmacsall_block <- function(lines, header) {
   st <- which(trimws(lines) == header)
@@ -381,4 +381,152 @@ gmacs_max_workers <- function(default = 4L) {
   n <- if (is.na(v) || v < 1L) as.integer(default) else v
   ## Never exceed the machine: detectCores() is the ceiling, not the target.
   max(1L, min(n, parallel::detectCores()))
+}
+
+## ---------------------------------------------------------------------------
+## 8. Executable naming and exit conventions, per platform
+## ---------------------------------------------------------------------------
+## The model dirs carry BOTH binaries: gmacs.exe (Windows, the one that produced
+## every fit currently in Models/) and gmacs (macOS arm64, built 2026-08 from
+## GMACs/GMACS_tpl-cpp_code via compile_gmacs_mac.sh). Same GMACS version,
+## 2.20.34 ** AEP **. They do NOT give the same answer -- see the divergence
+## note below -- so the platform must never be guessed.
+is_windows <- function() .Platform$OS.type == "windows"
+
+gmacs_exe_name <- function() if (is_windows()) "gmacs.exe" else "gmacs"
+
+## ADMB derives its output file names from argv[0], so the executable is always
+## invoked from INSIDE the run directory. On Unix a bare "gmacs" would be looked
+## up on PATH, not in the working directory, and system2() would silently run
+## nothing at all -- hence the explicit "./".
+gmacs_exe_call <- function(name = gmacs_exe_name())
+  if (is_windows()) name else file.path(".", name)
+
+## The macOS ADMB debug build (admb -g, matching make_win.bat) reports the
+## floating-point exception flags it accumulated, then aborts with status 134 --
+## AFTER the model has finished and written every output file. Measured
+## 2026-08-24 on the 26 model: run completes in 8m32s, gmacs.std / gmacs.rep /
+## gmacs.rep1 / personal.rep / checkfile.rep / Gmacsall.std all have line counts
+## identical to the Windows run, and the sdreport quantities are populated.
+##
+## These three messages are therefore benign teardown noise, NOT a failed fit.
+## Any OTHER "Error" line is a real failure and must still fail the run.
+GMACS_FP_TEARDOWN_MSGS <- c("Error: Detected division by zero.",
+                            "Error: Detected invalid argument.",
+                            "Error: Detected underflow.")
+
+## GMACS prints this only after the optimiser and the sd phase have both run.
+GMACS_FINISH_MARKER <- "--Number of function evaluations:"
+
+## TRUE when a non-zero exit is only the macOS teardown abort described above.
+## Deliberately strict: the finish banner must be present AND every error line
+## in the log must be one of the three known messages.
+is_benign_gmacs_exit <- function(status, out) {
+  if (is_windows() || identical(as.integer(status), 0L)) return(FALSE)
+  if (!any(grepl(GMACS_FINISH_MARKER, out, fixed = TRUE))) return(FALSE)
+  errs <- grep("Error", out, value = TRUE, fixed = TRUE)
+  length(errs) > 0L && all(trimws(errs) %in% GMACS_FP_TEARDOWN_MSGS)
+}
+
+## ---------------------------------------------------------------------------
+## 9. ADMB scratch files
+## ---------------------------------------------------------------------------
+## ADMB leaves cmpdiff.tmp behind, and for this model it is 620 MB -- a finished
+## run directory is 637 MB, of which only ~17 MB is real output. Left in place
+## that is ~62 GB across a 100-run jitter and ~14 GB across a 22-run peel sweep,
+## none of it ever read again.
+##
+## Safe to delete once the process has exited: these files are regenerated by
+## every run and are never inputs. prepare_run_dir() in R/gmacs_jitter.R already
+## treats them as disposable when it stages a directory; both drivers now also
+## purge them as each run finishes, so the space comes back immediately instead
+## of accumulating across a sweep.
+##
+## Lives here rather than in R/gmacs_jitter.R so 05 and 06 share one definition
+## (2026-08-27, per Grant).
+GMACS_SCRATCH_PATTERN <- "[.]tmp$"
+
+purge_gmacs_scratch <- function(run_dir) {
+  f <- list.files(run_dir, pattern = GMACS_SCRATCH_PATTERN, full.names = TRUE)
+  if (length(f)) unlink(f)
+  invisible(length(f))
+}
+
+## ---------------------------------------------------------------------------
+## 10. Seeding a retrospective peel from the accepted fit
+## ---------------------------------------------------------------------------
+## Split a GMACS .par/.pin into named blocks. Line 1 is the run header; the rest
+## alternates "# name:" with that block's values, which may wrap over lines.
+read_par_blocks <- function(path) {
+  L <- readLines(path, warn = FALSE)
+  h <- grep("^#", L)
+  ## Drop the run header ONLY when it is actually there. A .par written by ADMB
+  ## opens with "# Number of parameters = ..."; a .pin we write ourselves does
+  ## not, and dropping its first line unconditionally would swallow the first
+  ## parameter block and shift every later one by one position.
+  h <- h[!grepl("^#[[:space:]]*Number of parameters", L[h])]
+  out <- vector("list", length(h))
+  nm  <- sub("^#[[:space:]]*", "", L[h])
+  for (i in seq_along(h)) {
+    from <- h[i] + 1L
+    to   <- if (i < length(h)) h[i + 1L] - 1L else length(L)
+    v <- if (to >= from) toks(paste(L[from:to], collapse = " ")) else character(0)
+    out[[i]] <- v
+  }
+  names(out) <- nm
+  out
+}
+
+## Build a peel's gmacs.pin from the accepted fit's gmacs.par.
+##
+## A peel estimates FEWER parameters than its parent (412, then 407, 402 ... 366),
+## because year-indexed blocks lose their most recent entries. ADMB reads a .pin
+## POSITIONALLY, so handing a peel the parent's full-length vector would misalign
+## every block after the first short one -- and the optimiser would still
+## converge somewhere, silently, which is the failure mode this repo fears most.
+##
+## Five blocks shrink: rec_dev_est, logit_rec_prop_est, log_fdev[1], log_fdev[2],
+## log_fdov[1]. Two of them do NOT shrink by the peel depth: the directed fishery
+## was closed in crab years 2022 and 2023 (they are absent from
+## data/derived/directed_catch.csv), so those years never carried an F deviation
+## and removing them removes no parameter. Peel 5 drops five years but only three
+## log_fdev[1] entries (42 -> 39).
+##
+## So the lengths are never inferred here. Each block is truncated to the length
+## GMACS ITSELF used for that peel, read from `shape_par` -- a .par written by an
+## earlier unpinned run of the same peel and mode. Leading elements are kept:
+## the blocks are chronological and peeling removes the most recent years.
+##
+## Verified 2026-08-27 against all 22 cold-start peels of the 26 model.
+write_peel_pin <- function(base_par, shape_par, dest_pin) {
+  b <- read_par_blocks(base_par)
+  s <- read_par_blocks(shape_par)
+
+  if (!identical(names(b), names(s)))
+    stop("Parameter blocks differ between\n  ", base_par, "\nand\n  ", shape_par,
+         "\nThese must be the same model. Blocks only in the fit: ",
+         paste(setdiff(names(b), names(s)), collapse = ", "),
+         "; only in the shape: ", paste(setdiff(names(s), names(b)), collapse = ", "))
+
+  out <- sprintf("# gmacs.pin written by write_peel_pin() from %s, shaped by %s",
+                 basename(base_par), basename(shape_par))
+  for (nm in names(b)) {
+    want <- length(s[[nm]])
+    have <- length(b[[nm]])
+    if (want > have)
+      stop(sprintf("Block '%s' needs %d values but the accepted fit has only %d. ",
+                   nm, want, have),
+           "The shape file is not a peel of this fit.")
+    out <- c(out, paste0("# ", nm), paste(utils::head(b[[nm]], want), collapse = " "))
+  }
+  writeLines(out, dest_pin)
+
+  ## ADMB errors on a total-count mismatch, but check here so the failure names
+  ## the block rather than surfacing as an opaque ADMB abort mid-sweep.
+  n_out <- sum(vapply(read_par_blocks(dest_pin), length, integer(1)))
+  n_exp <- sum(vapply(s, length, integer(1)))
+  if (!identical(n_out, n_exp))
+    stop(sprintf("Wrote %d values to %s but the peel expects %d.",
+                 n_out, dest_pin, n_exp))
+  invisible(n_out)
 }

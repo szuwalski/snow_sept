@@ -32,8 +32,11 @@ wasn't found — report it rather than guessing another path.
 ## After rendering
 
 - Report every knit warning. Silent `NA` substitution shows up here first.
-- Note that the knit drops `tot_likes_t_<date>.csv` in the repo root
-  (`SAFE_snow_gmacs.Rmd:979`) and it is not gitignored — see `docs/CLEANUP_BACKLOG.md` item 10.
-- **Cross-check the numbers**: OFL and ABC must be identical in the Executive Summary management
-  table, the OFL basis, the ABC basis, Section G, and Appendix B. They all read the same shared
-  scalars, so any disagreement means something recomputed a value locally.
+- The knit writes a likelihood-component dump to
+  `data/diagnostics/likelihood_components_<date>.csv`, one per knit date. That is deliberate —
+  it exists so components can be diffed between renders. It used to land in the repo root as
+  `tot_likes_t_<date>.csv`; fixed 2026-08-29.
+- **Cross-check the numbers**: OFL and ABC must be identical in the Executive Summary, the OFL
+  basis (Section F), the ABC basis (Section G) and the rebuilding section (Section H). They all
+  read the same shared scalars, so any disagreement means something recomputed a value locally.
+  Note the section lettering was normalised to the checklist's A–K on 2026-08-29.

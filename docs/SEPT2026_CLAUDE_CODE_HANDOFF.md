@@ -56,6 +56,7 @@ The working copy and the GitHub base use different section letters; the sketches
 # S. Figures
 # Appendix A. Ecosystem and Socioeconomic Profile (reference)
 # Appendix B. Risk table         (§16)
+# Appendix C. Description of the assessment model — equations  (§18)
 ```
 
 **Structural change — demote Results:** the working-copy base has `# G. Results` as a **top-level** section. Under this outline Results is a `## Results` subsection of `# F. Analytic approach`, and `G` becomes the OFL section. **Demote** `# G. Results` → `## Results` under F before relettering, or you will end up with two `# G.` headings.
@@ -76,7 +77,7 @@ The working copy and the GitHub base use different section letters; the sketches
    - `# A. Summary of Major Changes` (§2)
    - `# Executive summary` items 1–7. Use §3 for items 1–4; **use §15b/c/d as the authoritative drafts for items 5–7 and delete §3's item-5/6/7 duplicates** (they are earlier and less complete — e.g. §3's static "20%" would contradict §15d's dynamic buffer, and §3's `mgmt-table` chunk is superseded by §15b). Item 5 management table: rewire the terminal `2025/2026` row to the Tier-4 scalars per §15b (do **not** use `proj_mmb_under_ofl`, a Tier-3 projection that is undefined for Tier 4). Morphometric table is primary; ≥95 mm becomes a comparison.
    - `## History of modeling approaches` under F (§4).
-4. **New sections** (draft from sketches): `### Convergence and diagnostics` (§5), `### Tier 4` under G (§13), `# H. Calculation of the ABC` (prose consuming `abc_2026`) **plus its `## Author recommendations` subsection (§7) — REPLACE the working copy's existing pro-hybrid recommendation (base line ~726: "a snow crab only and snow crab + hybrid … models be adopted") with the flipped §7 text (Tier 4 basis; no hybrids)**, `# I. Rebuilding analysis and update` incl. yield-per-recruit (§6), `# J. Status determination` (§8), `# K. Flimit` (§9), `# L. Projections` (§17), `# O. Acknowledgements` + `# P. Auxiliary Files` (§10), `# Appendix B. Risk table` (§16).
+4. **New sections** (draft from sketches): `### Convergence and diagnostics` (§5), `### Tier 4` under G (§13), `# H. Calculation of the ABC` (prose consuming `abc_2026`) **plus its `## Author recommendations` subsection (§7) — REPLACE the working copy's existing pro-hybrid recommendation (base line ~726: "a snow crab only and snow crab + hybrid … models be adopted") with the flipped §7 text (Tier 4 basis; no hybrids)**, `# I. Rebuilding analysis and update` incl. yield-per-recruit (§6), `# J. Status determination` (§8), `# K. Flimit` (§9), `# L. Projections` (§17), `# O. Acknowledgements` + `# P. Auxiliary Files` (§10), `# Appendix B. Risk table` (§16), `# Appendix C. Description of the assessment model` (§18, equations — complements the Section F narrative).
 5. **Section B** (§14): insert the 2026 CPT/SSC responses at the top of B; keep the existing 2024–25 responses below.
 6. **Section C** (§12): replace the working copy's hybrid-heavy scenarios with the four-run set (Tier 4 / 25.2c / 25.2c male-only / data-through-2019); keep the §11 hybrid audit-trail note.
 7. **Remove hybrids** (mechanical checklist in §11 / plan): delete scenarios 25.3a–d, the `hybrid` fleet-relabel branches (~working copy lines 124–131), hybrid columns in data/fit figures, and the `01_update_catch_data_hybrids.R` path. **Keep** the underlying hybrid data files. Replace with the §11 note.
@@ -91,20 +92,8 @@ Many new chunks depend on runs that don't exist yet. Keep the document knitting:
 
 ---
 
-## STEP 4 — Phase 2 (data pipeline DONE 2026-08; models built, need RUNNING)
-The old blockers are **RESOLVED**: the 2026 summer-survey crabpack pull runs (`02`), the GMACS exe is present, and `01`/`02` now write clean `data/derived/*` (6 tidy files) that **`00_advance_model.R`** transcribes into the model `.DAT`/`.CTL` — no more hand-paste (see the `snow-sept-2026-model-pipeline` project memory).
-
-**Already built (End year 2025, GMACS-valid — but NOT yet run to convergence):**
-- `Models/26_gmacs_update_newmat_plus_group` — the recommended 25.2c advanced to End year 2025 (right=FALSE binning, growth-typo fix, 2026 data). Terminal MMB 114.576.
-- **Two methodology sensitivities** on the accepted 2025 endpoint: `25_gmacs_rightFALSE` (size-comp binning switched right=TRUE→FALSE alone) and `25_gmacs_rightFALSE_growthfix` (adds the growth-typo fix on top).
-
-⚠️ Those three new dirs currently hold **STALE run artifacts** copied from the template (they show the *accepted* model's results) and have **no committed `gmacs.exe`**. Before running, refresh each with `Rscript 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix]` (it copies a runnable dir), then run GMACS.
-
-**Still to build:** the **male-only** and **data-through-2019** variants of 25.2c.
-
-**Run the pipeline** — for each model dir: GMACS to convergence → `03_build_results_object.R` (advance `model_defs` to add the 2026 case + the sensitivity cases) → `05` retrospective → `06` jitter → `07_tier_4.R` → projections → `08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify `07_tier_4.R`'s output matches the sketches' interface (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); adapt **only** the `tier4-setup` chunk if columns differ. Repopulate every management quantity from the real runs.
-
-**Report the two methodology sensitivities in `# A. Summary of Major Changes`** — each isolates one change's effect vs the accepted May model: (1) the size-comp edge convention (right=TRUE→FALSE, "a crab on a 5-mm cutoff goes to the upper bin" — the previous survey convention; this is why terminal MMB is 114.6 and not the rejected right=TRUE value 107.5), and (2) the growth-data fix (a 26.3 mm crab's molt increment `73`→`7.3`, a `.DAT` transcription typo confirmed against the specimen master).
+## STEP 4 — Phase 2 (blocked on the 2026 summer-survey crabpack pull + Cody's GMACS exe)
+Build the runs that **do not exist yet** — the May final model advanced to End year 2025, plus the **male-only** and **data-through-2019** variants (only `25_gmacs` and `25_gmacs_update_newmat_plus_group` are in `Models/` today). Then run the pipeline: `01`/`02` → build `.DAT` → GMACS → `03_build_results_object.R` → `05` jitter → `06` retrospective → `07_tier_4.R` → projections → `08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify the `07_tier_4.R` output object matches the interface the sketches assume (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); if the columns differ, adapt **only** the `tier4-setup` chunk. Repopulate every management quantity from the real runs.
 
 ## STEP 5 — Verification / acceptance criteria
 - Document knits cleanly at the end of Phase 1 (placeholders allowed) and Phase 2 (real numbers).

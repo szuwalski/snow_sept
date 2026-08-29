@@ -18,7 +18,8 @@
 #                                         (male + female, mature + immature; rows sum 1)
 #   data/derived/survey_indices.csv       year, sex, maturity, biomass (kt), cv
 #   data/derived/male_maturity_ogive.csv  year, m27.5..m132.5  (prob terminal molt)
-#   plots/size_bins_comp_Kodiak_m.png, maturity_facet.png,
+#   plots/size_bins_comp_Kodiak_m.png, size_bins_comp_Kodiak_f.png,
+#   plots/maturity_facet.png,
 #   plots/maturity_facet_all.png, plots/imm_v_mat.png
 #
 # PREREQUISITES
@@ -156,6 +157,26 @@ ap <- ap + geom_density_ridges(aes(x = SIZE_1MM, y = YEAR, height = tot_n,
 png("plots/size_bins_comp_Kodiak_m.png", height = 9, width = 6, res = 400, units = 'in')
 (p | ap) + plot_layout(widths = c(2.5, 1))
 dev.off()
+
+# ---- 3b. Survey recruitment index -------------------------------------------
+# Male abundance in the 45-55 mm window: the size at which snow crab recruit to
+# the survey, and the observational counterpart to the model's estimated
+# recruitment. Written for 04_plot_recruitment_comparison.R.
+#
+# Lives in data/survey/ beside survey_large_male_index_derived.csv, NOT in
+# data/derived/ -- that directory is the six-file model contract read by
+# 00_advance_model.R, and nothing here feeds the model.
+#
+# right = FALSE throughout this repo, so the window is [45, 55) mm. The retired
+# 04_plot_numbers_at_length.R used `>45 & <55`, which dropped both edges; the
+# closed-open form matches the binning convention used everywhere else.
+survey_recruit <- male_snow %>%
+  filter(SIZE_1MM >= 45, SIZE_1MM < 55) %>%
+  group_by(YEAR) %>%
+  summarize(recruit_abundance = sum(ABUNDANCE), .groups = "drop") %>%
+  rename(year = YEAR)
+
+write.csv(survey_recruit, "data/survey/survey_recruit_index_derived.csv", row.names = FALSE)
 
 # Quick interactive diagnostic (abundance by shell text over time); not saved.
 yarp <- male_snow %>%
@@ -367,6 +388,7 @@ nas_to_comp22 <- function(nas) {                     # nas: YEAR, SIZE_1MM, ABUN
              check.names = FALSE)
 }
 fem_comp <- list()
+fem_nas  <- list()                                   # 1-mm numbers-at-size, kept for 6c
 for (fm in c("mature_female", "immature_female")) {
   fnas <- crabpack::calc_bioabund(crab_data = specimen_data, species = "SNOW", region = "EBS",
                                   crab_category   = fm,
@@ -375,7 +397,40 @@ for (fm in c("mature_female", "immature_female")) {
   fem_comp[[fm]] <- cbind(sex = "female",
                           maturity = ifelse(fm == "mature_female", "mature", "immature"),
                           nas_to_comp22(fnas))
+  fem_nas[[fm]]  <- fnas
 }
+
+# ---- 6c. Diagnostic figure: FEMALE numbers-at-size ridges --------------------
+# Companion to the male ridges in 3a, and the only figure that survived the
+# retirement of 04_plot_numbers_at_length.R (2026-08-27, per Grant). That script
+# read data/survey/EBSCrab_Abundance_Biomass_female.csv, which no longer exists;
+# this draws the same view from the crabpack pull already made above, so it
+# cannot go stale against a hand-placed export. It also removes the duplicate
+# writer of size_bins_comp_Kodiak_m.png (CLEANUP_BACKLOG item 4) -- 02 is now
+# the only script that writes either Kodiak figure.
+#
+# Mature and immature are pooled: this is the observed female size structure,
+# the same quantity the retired script plotted. xlim 25-75 mm follows it too --
+# female snow crab rarely exceed 75 mm CW, so the upper tail is empty, not cut.
+fem_natl_viz <- dplyr::bind_rows(fem_nas) %>%
+  group_by(YEAR, SIZE_1MM) %>%
+  summarize(tot_n = sum(ABUNDANCE), .groups = "drop")
+
+pf <- ggplot(dat = fem_natl_viz)
+pf <- pf + geom_density_ridges(aes(x = SIZE_1MM, y = YEAR, height = tot_n,
+                                   group = YEAR,
+                                   fill = stat(y), alpha = .9999), stat = "identity", scale = 5, fill = '#F8766D') +
+  theme_bw() +
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90)) +
+  labs(x = "Carapace width (mm)") +
+  xlim(25, 75)
+
+png("plots/size_bins_comp_Kodiak_f.png", height = 9, width = 6, res = 400, units = 'in')
+print(pf)
+dev.off()
 
 # ---- consolidated survey size comps -> survey_size_comps.csv -----------------
 # year, sex, maturity, m27.5..m132.5  (rows sum to 1); male + female, mat + imm.

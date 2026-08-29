@@ -1,0 +1,1 @@
+datafile=26_snow_data2019.dat md5=593365a6c0561858c24253304bd6f119 end_year=2019

@@ -7,7 +7,7 @@ staying faithful to the September 2025 SAFE format/content/style.
   `source("0-models.R")`, results from `Models/rda_ModelsResLst.RData`. Portable, already renders.
 - **Port source** = `archive_2025/SAFE_snow_gmacs_2025_reference.Rmd` (archived old Sept 2025 Rmd) — has the
   September-only sections but on the old sourced-gmr architecture (`.get_catch_df`, `read_admb`, …).
-- **Format reference** = `Reports/2025 snow.pdf` (+ `2025 appendix.pdf`, `2025 snow esp.pdf`).
+- **Format reference** = `Reports/2025-09_SAFE_snow_crab.pdf` (+ `2025-09_SAFE_snow_crab_appendix.pdf`, `2025-09_ESP_snow_crab.pdf`).
 
 Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · ➕ missing, must port in · ⛔ blocked on 2026 data/results
 
@@ -28,13 +28,13 @@ Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · �
 | G. Calculation of the OFL (Tier 3, Tier 4) | ✅ (F) | 🔁 final single-model OFL; Tier-4/REMA from `07_calc_tier4.R` ⛔ |
 | Calculation of the ABC + Author recommendations | ✅ (G) | 🔁 buffer 0.8; final ABC ⛔ |
 | Data gaps and research priorities | ✅ (H) | 🔁 refresh for 2026 |
-| Ecosystem considerations | ➕ | Port in (May folds minimal; Sept has full section) — ESP: `Reports/2025 snow esp.pdf` |
+| Ecosystem considerations | ➕ | Port in (May folds minimal; Sept has full section) — ESP: `Reports/2025-09_ESP_snow_crab.pdf` |
 | Supplemental information | ✅ (I) | 🔁 |
 | References | ✅ (J) | 🔁 merge reference lists |
 | Tables | ✅ (K) | 🔁 update; add Sept-only tables (management, status determination) ⛔ |
 | **Projections** | 🔁 stub in base (chunk ~L170–240, `do_proj`/`make_proj_fig` switches) | Wire up; needs converged model + MCMC draw ⛔ |
-| **Retrospective analysis** | ➕ | Port; run `05_run_retrospective.R` (10 peels) ⛔ |
-| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `06_run_jitter.R` (100 runs) ⛔ |
+| **Retrospective analysis** | ➕ | Port; run `06_run_retrospective.R` (10 peels) ⛔ |
+| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `05_run_jitter.R` (100 runs) ⛔ |
 | Figures appendix (size comps, maturity, CPUE, BSFRF, etc.) | partial | 🔁 many `include_graphics("plots/*.png")`; regenerate PNGs ⛔ |
 
 ---
