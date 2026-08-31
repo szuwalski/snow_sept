@@ -1,0 +1,235 @@
+"model","parameter","class","n_optima","min","max","range","share_pct"
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_1","male",31,-3.49780961,-3.13169182,0.36611779,20.1476561580861
+"26_gmacs_male_only","Rec_dev_est_2019","shared (recruitment devs)",31,-1.68841911,-1.44869381,0.2397253,13.1922103998116
+"26_gmacs_male_only","Rec_dev_est_2020","shared (recruitment devs)",31,0.63394861,0.7535428,0.11959419,6.58133170372522
+"26_gmacs_male_only","Rec_dev_est_2022","shared (recruitment devs)",31,1.55614725,1.59989412,0.0437468700000001,2.4074134577085
+"26_gmacs_male_only","Rec_dev_est_2001","shared (recruitment devs)",31,0.56737012,0.61059543,0.0432253100000001,2.37871173429371
+"26_gmacs_male_only","Rec_dev_est_2021","shared (recruitment devs)",31,0.99413433,1.03258464,0.0384503100000001,2.11594095182269
+"26_gmacs_male_only","Rec_dev_est_2003","shared (recruitment devs)",31,0.27316329,0.3112806,0.03811731,2.09761578521267
+"26_gmacs_male_only","Rec_dev_est_2018","shared (recruitment devs)",31,-1.27013456,-1.23306655,0.03706801,2.03987224970547
+"26_gmacs_male_only","Rec_dev_est_2000","shared (recruitment devs)",31,-1.5763793,-1.53968684,0.03669246,2.01920553402862
+"26_gmacs_male_only","Rec_dev_est_2002","shared (recruitment devs)",31,0.34124878,0.37512641,0.03387763,1.86430394625419
+"26_gmacs_male_only","Rec_dev_est_2005","shared (recruitment devs)",31,-0.8075634,-0.77478879,0.03277461,1.80360417065603
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_2","male",31,-2.63124903,-2.6034946,0.0277544300000003,1.52734100275126
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2025_season_2","shared (fishing mortality)",31,1.44369449,1.46730495,0.02361046,1.29929613585356
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2025_season_2","shared (fishing mortality)",31,-0.6921901,-0.66890375,0.02328635,1.28146019065844
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2019_season_2","shared (fishing mortality)",31,0.79929354,0.81866295,0.01936941,1.06590890506849
+"26_gmacs_male_only","Rec_dev_est_2023","shared (recruitment devs)",31,0.11953352,0.13818327,0.01864975,1.0263056335893
+"26_gmacs_male_only","Rec_dev_est_2025","shared (recruitment devs)",31,-0.19527809,-0.17736792,0.01791017,0.98560615394534
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2019_season_2","shared (fishing mortality)",31,0.75848141,0.77427439,0.01579298,0.869096065371555
+"26_gmacs_male_only","Rec_dev_est_1999","shared (recruitment devs)",31,-1.11442204,-1.09868289,0.0157391499999999,0.866133771922251
+"26_gmacs_male_only","Rec_dev_est_2024","shared (recruitment devs)",31,-0.30635676,-0.29063996,0.0157168,0.864903839568702
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_4","male",31,-1.28284423,-1.26794932,0.01489491,0.819674796970771
+"26_gmacs_male_only","Rec_dev_est_2013","shared (recruitment devs)",31,-0.30509213,-0.29054443,0.0145477,0.800567646524329
+"26_gmacs_male_only","M_male_mature_block_group_1_block_1","male",31,0.50746101,0.52186735,0.01440634,0.792788530752578
+"26_gmacs_male_only","Rec_dev_est_1987","shared (recruitment devs)",31,0.39058721,0.40451745,0.01393024,0.766588495247981
+"26_gmacs_male_only","Rec_dev_est_2004","shared (recruitment devs)",31,0.70290966,0.71619492,0.01328526,0.731094903776115
+"26_gmacs_male_only","Rec_dev_est_1995","shared (recruitment devs)",31,-1.17939953,-1.16692659,0.0124729399999999,0.686392503353731
+"26_gmacs_male_only","M_male_immature_block_group_1_block_2","male",31,2.85396148,2.86640215,0.0124406699999997,0.684616668138991
+"26_gmacs_male_only","Rec_dev_est_2011","shared (recruitment devs)",31,-1.00939426,-0.99796513,0.0114291300000001,0.628951085458231
+"26_gmacs_male_only","Rec_dev_est_2012","shared (recruitment devs)",31,-0.3552847,-0.34411638,0.01116832,0.614598572834923
+"26_gmacs_male_only","Rec_dev_est_2009","shared (recruitment devs)",31,-1.06356799,-1.05274317,0.0108248199999998,0.595695585656108
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2018_season_2","shared (fishing mortality)",31,1.68722229,1.69750089,0.0102785999999999,0.565636809362642
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2007_season_2","shared (fishing mortality)",31,0.45310177,0.46313819,0.01003642,0.552309515519959
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2007_season_2","shared (fishing mortality)",31,0.16601062,0.17571809,0.00970747,0.534207222557898
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2023_season_2","shared (fishing mortality)",31,0.55593187,0.56523849,0.00930662000000004,0.512148234462925
+"26_gmacs_male_only","Rec_dev_est_1994","shared (recruitment devs)",31,-1.15965197,-1.15039871,0.00925326000000015,0.509211805362898
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2018_season_2","shared (fishing mortality)",31,1.05844414,1.06737866,0.00893451999999995,0.491671374115806
+"26_gmacs_male_only","Rec_dev_est_1996","shared (recruitment devs)",31,-0.76955596,-0.76082789,0.00872807000000009,0.480310321122904
+"26_gmacs_male_only","Rec_dev_est_2016","shared (recruitment devs)",31,-0.56006738,-0.55136776,0.00869962000000002,0.478744702534146
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2022_season_2","shared (fishing mortality)",31,-0.07559716,-0.06690337,0.00869378999999999,0.478423874542144
+"26_gmacs_male_only","Rec_dev_est_1991","shared (recruitment devs)",31,1.29459668,1.30318989,0.00859321000000013,0.4728889037985
+"26_gmacs_male_only","Rec_dev_est_1992","shared (recruitment devs)",31,-0.74848627,-0.74046109,0.00802517999999997,0.44162991163786
+"26_gmacs_male_only","Rec_dev_est_1985","shared (recruitment devs)",31,1.27976929,1.28771117,0.00794187999999996,0.437045868458836
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_17","male",31,11.26828989,11.27614108,0.00785119000000023,0.432055149660464
+"26_gmacs_male_only","Rec_dev_est_1998","shared (recruitment devs)",31,-0.3429856,-0.33532549,0.00766011,0.421539915919182
+"26_gmacs_male_only","Ret_Pot_Fishery_male_base_Logistic_cv","male",31,0.28602002,0.29332281,0.00730279,0.401876406810796
+"26_gmacs_male_only","Rec_dev_est_2007","shared (recruitment devs)",31,0.28465148,0.29169754,0.00704605999999997,0.387748418751362
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_16","male",31,11.79888753,11.80592025,0.00703271999999977,0.387014311476343
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2008_season_2","shared (fishing mortality)",31,-0.18142946,-0.17446764,0.00696181999999998,0.383112646873801
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2020_season_2","shared (fishing mortality)",31,1.23690415,1.24384086,0.00693670999999996,0.381730830256449
+"26_gmacs_male_only","Rec_dev_est_1993","shared (recruitment devs)",31,-0.93794853,-0.93109434,0.00685418999999998,0.377189710891108
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2008_season_2","shared (fishing mortality)",31,-0.08726779,-0.08041468,0.00685311,0.37713027791832
+"26_gmacs_male_only","Rec_dev_est_1984","shared (recruitment devs)",31,1.75673886,1.76338544,0.00664657999999996,0.36576482248298
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_18","male",31,10.2839553,10.29049325,0.00653795000000024,0.359786855969942
+"26_gmacs_male_only","Log(Rbar)","shared (other)",31,12.99894949,13.00535278,0.0064032900000015,0.352376444751677
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2005_season_2","shared (fishing mortality)",31,-0.76495717,-0.75877948,0.00617769000000001,0.339961557102284
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2021_season_2","shared (fishing mortality)",31,-0.52929253,-0.52323471,0.00605781999999999,0.333365047427979
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2005_season_2","shared (fishing mortality)",31,-0.02228361,-0.01640547,0.00587814,0.323477161732818
+"26_gmacs_male_only","Rec_dev_est_1983","shared (recruitment devs)",31,1.00109241,1.0068126,0.0057201899999999,0.314785089462384
+"26_gmacs_male_only","Rec_dev_est_2008","shared (recruitment devs)",31,0.33345166,0.33915373,0.00570207,0.313787936252259
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2020_season_2","shared (fishing mortality)",31,1.27038416,1.27580995,0.00542578999999987,0.298584101324274
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_19","male",31,9.21378935,9.21909512,0.00530576999999965,0.291979337070404
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2003_season_2","shared (fishing mortality)",31,0.15463587,0.1596655,0.00502962999999998,0.276783206416694
+"26_gmacs_male_only","Rec_dev_est_2014","shared (recruitment devs)",31,1.94751037,1.95250613,0.0049957599999999,0.274919322353383
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_20","male",31,8.18147573,8.18591029,0.00443455999999998,0.244036188715117
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2004_season_2","shared (fishing mortality)",31,0.17555478,0.17996549,0.00441071000000001,0.242723710566023
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2009_season_2","shared (fishing mortality)",31,-0.58759368,-0.58319914,0.00439454000000006,0.241833866890098
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_14","male",31,10.68588325,10.69005656,0.00417331000000054,0.229659462658488
+"26_gmacs_male_only","Rec_dev_est_2010","shared (recruitment devs)",31,-1.03448375,-1.03032359,0.00416015999999986,0.228935811184211
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_5","male",31,-1.12068214,-1.11663889,0.00404325000000005,0.222502191879784
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2009_season_2","shared (fishing mortality)",31,0.25115702,0.25514638,0.00398936,0.219536596598658
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2003_season_2","shared (fishing mortality)",31,-0.2677339,-0.26377757,0.00395633000000001,0.217718938180854
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1982_season_2","shared (fishing mortality)",31,0.0329845,0.03691963,0.00393513,0.216552290937212
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_13","male",31,10.95498553,10.95871837,0.00373283999999963,0.205420164950582
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_21","male",31,7.34178256,7.34548845,0.00370588999999999,0.203937092157388
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_3","male",31,-1.79358273,-1.78989091,0.00369182000000001,0.203162812595218
+"26_gmacs_male_only","Log_fbar_Trawl_Bycatch","shared (fishing mortality)",31,-4.58434402,-4.58066395,0.0036800699999997,0.202516203863466
+"26_gmacs_male_only","Rec_dev_est_1997","shared (recruitment devs)",31,-0.69231021,-0.68863474,0.00367547000000001,0.202263063423826
+"26_gmacs_male_only","Rec_dev_est_1986","shared (recruitment devs)",31,-0.44881677,-0.4452105,0.00360626999999997,0.198454950722882
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_22","male",31,6.9295817,6.9331286,0.00354689999999991,0.19518778813538
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2002_season_2","shared (fishing mortality)",31,0.13582058,0.13929229,0.00347171000000002,0.191050042557586
+"26_gmacs_male_only","Rec_dev_est_1988","shared (recruitment devs)",31,-0.27285396,-0.26940331,0.00345065,0.189891099588194
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2004_season_2","shared (fishing mortality)",31,-0.42909198,-0.42566701,0.00342496999999997,0.188477915568537
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_1","male",31,13.74145276,13.74485659,0.00340382999999989,0.187314570156713
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2024_season_2","shared (fishing mortality)",31,0.47192563,0.47530486,0.00337923000000001,0.185960819109854
+"26_gmacs_male_only","Rec_dev_est_1990","shared (recruitment devs)",31,1.76594721,1.76927308,0.00332587000000006,0.183024390009824
+"26_gmacs_male_only","Rec_dev_est_2015","shared (recruitment devs)",31,0.40420468,0.40748454,0.00327986000000002,0.180492435307939
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_13","male",31,10.77846003,10.78172913,0.00326910000000069,0.179900306801298
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2017_season_2","shared (fishing mortality)",31,0.62676442,0.62987923,0.00311481000000002,0.171409646271951
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_16","male",31,-0.88844906,-0.88536061,0.00308845000000002,0.16995904149165
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1982_season_2","shared (fishing mortality)",31,-1.57081148,-1.5678043,0.00300718,0.165486710289258
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_22","male",31,5.32042609,5.32337128,0.00294519000000015,0.162075367712223
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_21","male",31,5.42085617,5.42374863,0.00289245999999999,0.159173607846309
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_20","male",31,5.6147016,5.61748038,0.00277877999999987,0.15291773715493
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1983_season_2","shared (fishing mortality)",31,0.01062058,0.01328653,0.00266595,0.14670864241437
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1996_season_2","shared (fishing mortality)",31,1.36787105,1.37053267,0.00266162000000003,0.146470360217911
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_19","male",31,5.89482222,5.8974429,0.00262067999999971,0.144217410304938
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_1","male",31,-2.52440241,-2.52179681,0.00260559999999987,0.143387549907112
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_17","male",31,-0.73643431,-0.7338753,0.00255901000000003,0.140823677497628
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2024_season_2","shared (fishing mortality)",31,-0.97729527,-0.97481994,0.00247533,0.136218722717066
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1993_season_2","shared (fishing mortality)",31,0.89574367,0.89821891,0.00247523999999999,0.136213769969333
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_14","male",31,9.89849019,9.90094047,0.00245027999999969,0.134840207931521
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_18","male",31,6.27525682,6.27769086,0.0024340399999998,0.133946512118474
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_12","male",31,11.27175291,11.27416054,0.00240763000000044,0.13249315581169
+"26_gmacs_male_only","Sel_Pot_Fishery_male_base_Logistic_cv","male",31,1.71970025,1.72203486,0.0023346099999999,0.128474826484742
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1995_season_2","shared (fishing mortality)",31,1.6395895,1.64190349,0.00231398999999999,0.127340096948715
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_12","male",31,10.64686317,10.649172,0.00230883000000048,0.127056139412083
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2002_season_2","shared (fishing mortality)",31,0.33776445,0.34005008,0.00228562999999998,0.125779431107693
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_17","male",31,6.79880652,6.80104234,0.00223582000000011,0.123038360390448
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_15","male",31,10.75785335,10.76002201,0.0021686600000006,0.119342509971468
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_18","male",31,-0.6310403,-0.62888938,0.00215091999999995,0.118366268362839
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_16","male",31,7.54245853,7.54452361,0.0020650799999995,0.113642447636675
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_15","male",31,8.57197067,8.57393138,0.00196070999999876,0.107898911182917
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1983_season_2","shared (fishing mortality)",31,-1.81456328,-1.81261797,0.00194530999999998,0.107051441015434
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1994_season_2","shared (fishing mortality)",31,0.29339244,0.29532525,0.00193281000000001,0.10636355938593
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1993_season_2","shared (fishing mortality)",31,1.49278475,1.49471385,0.00192909999999991,0.106159396118287
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2001_season_2","shared (fishing mortality)",31,0.18662717,0.1885047,0.00187752999999999,0.103321471667605
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2006_season_2","shared (fishing mortality)",31,0.66227019,0.66412931,0.00185911999999999,0.10230835960367
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2021_season_2","shared (fishing mortality)",31,0.90434965,0.90620664,0.00185698999999995,0.102191144573999
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_9","male",31,11.90193568,11.9037819,0.0018462200000009,0.10159846576207
+"26_gmacs_male_only","M_male_mature_block_group_1_block_2","male",31,1.15259916,1.15441003,0.00181086999999991,0.0996531365137747
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1996_season_2","shared (fishing mortality)",31,0.53041372,0.53213592,0.00172220000000001,0.0947735793867213
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2006_season_2","shared (fishing mortality)",31,-0.23957444,-0.2378709,0.00170354,0.0937467096901956
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2000_season_2","shared (fishing mortality)",31,-0.3937919,-0.39218877,0.00160312999999995,0.0882210941367027
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1995_season_2","shared (fishing mortality)",31,0.5786392,0.58023884,0.00159964000000001,0.0880290375857482
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1998_season_2","shared (fishing mortality)",31,1.22138511,1.22295626,0.00157114999999997,0.0864612177757771
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2010_season_2","shared (fishing mortality)",31,-0.57282888,-0.57125943,0.00156944999999997,0.0863676658741648
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1984_season_2","shared (fishing mortality)",31,-0.20073758,-0.19919903,0.00153855,0.0846672224860292
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1998_season_2","shared (fishing mortality)",31,0.91407652,0.91552056,0.00144404000000009,0.0794662870616706
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_11","male",31,11.52519893,11.52662392,0.00142499000000029,0.0784179554583156
+"26_gmacs_male_only","Rec_dev_est_2017","shared (recruitment devs)",31,-1.1503842,-1.1489939,0.00139029999999996,0.076508946360094
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2012_season_2","shared (fishing mortality)",31,-0.20026158,-0.19892558,0.001336,0.0735207885615257
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_8","male",31,11.95791185,11.95920583,0.00129397999999981,0.0712084056757698
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2000_season_2","shared (fishing mortality)",31,0.48149394,0.48275059,0.00125664999999997,0.0691541159774243
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_8","male",31,-0.75398024,-0.75275983,0.00122040999999995,0.0671598095571614
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2011_season_2","shared (fishing mortality)",31,-0.74941081,-0.74820553,0.00120527999999998,0.0663271976328096
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1984_season_2","shared (fishing mortality)",31,-1.17315139,-1.17197131,0.00118007999999992,0.0649404282677237
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_11","male",31,10.74667715,10.74783986,0.00116270999999912,0.0639845479553195
+"26_gmacs_male_only","Alpha_male","male",31,0.06446024,0.06559934,0.0011391,0.0626852771335584
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2010_season_2","shared (fishing mortality)",31,-0.85621977,-0.85508213,0.00113764000000005,0.0626049325592347
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_1","male",31,9.16428995,9.165425,0.00113505000000025,0.0624624034856121
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_16","male",31,-0.33332845,-0.33221387,0.00111457999999998,0.0613359285291192
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_2","male",31,-2.14385294,-2.14280277,0.00105017000000007,0.0577914120686097
+"26_gmacs_male_only","Rec_dev_est_1982","shared (recruitment devs)",31,0.61743997,0.61846923,0.00102926000000003,0.056640723678771
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1985_season_2","shared (fishing mortality)",31,-0.42488472,-0.42386064,0.00102407999999998,0.0563556655315013
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_22","male",31,-0.22790681,-0.22688775,0.00101905999999999,0.0560794122690923
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1992_season_2","shared (fishing mortality)",31,1.56349982,1.56450538,0.00100555999999985,0.055336500109219
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1997_season_2","shared (fishing mortality)",31,0.56996427,0.57095494,0.000990669999999971,0.0545170955121589
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_10","male",31,11.38727878,11.38824662,0.000967839999999498,0.0532607485040044
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1991_season_2","shared (fishing mortality)",31,0.22692992,0.22789217,0.000962249999999998,0.0529531278393172
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_19","male",31,-0.44200699,-0.44106454,0.000942449999999984,0.05186352333818
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_12","male",31,-0.81133953,-0.81041475,0.000924780000000069,0.050891133866716
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_2","male",31,9.18259829,9.18352016,0.00092187000000088,0.0507309950234118
+"26_gmacs_male_only","Log_fbar_Pot_Fishery","shared (fishing mortality)",31,0.20832485,0.20921893,0.000894079999999992,0.0492016965846468
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_3","male",31,-1.8174246,-1.81653329,0.00089131000000009,0.0490492620155538
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1985_season_2","shared (fishing mortality)",31,-0.83784136,-0.83699698,0.000844379999999978,0.046466679225733
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2013_season_2","shared (fishing mortality)",31,0.20271099,0.20351808,0.000807089999999983,0.044414590748593
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_13","male",31,-0.78812518,-0.78731911,0.000806069999999992,0.0443584596076259
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_7","male",31,12.23714642,12.23793316,0.000786740000000563,0.0432947194557904
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2016_season_2","shared (fishing mortality)",31,0.5985769,0.59933881,0.000761910000000032,0.0419283113869119
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_10","male",31,11.56431634,11.56506837,0.000752030000001014,0.0413846097470049
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1986_season_2","shared (fishing mortality)",31,-9.41214806,-9.41140534,0.000742719999999863,0.040872275509286
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_6","male",31,12.54820187,12.54892663,0.000724760000000657,0.0398839271840565
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2001_season_2","shared (fishing mortality)",31,0.487363,0.4880724,0.000709400000000027,0.0390386582376857
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_3","male",31,9.24304342,9.2437448,0.00070138000000064,0.0385973133842289
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_15","male",31,-0.55801136,-0.55732548,0.000685879999999917,0.0377443401636025
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_4","male",31,-1.18571228,-1.18502938,0.000682899999999931,0.0375803491831292
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2017_season_2","shared (fishing mortality)",31,0.44741655,0.44805855,0.000641999999999976,0.0353296004913904
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1994_season_2","shared (fishing mortality)",31,1.14571064,1.14632823,0.000617590000000057,0.0339863052452969
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1991_season_2","shared (fishing mortality)",31,1.98440767,1.98501232,0.000604650000000095,0.0332742101824352
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1992_season_2","shared (fishing mortality)",31,0.69584325,0.69641977,0.000576519999999969,0.0317262013633895
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_4","male",31,9.41712183,9.41769379,0.00057196000000026,0.031475262144962
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1986_season_2","shared (fishing mortality)",31,-0.73984296,-0.73928419,0.000558770000000042,0.030749409449496
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_5","male",31,-1.24416516,-1.24361278,0.000552380000000019,0.0303977643604916
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_2","male",31,13.34267287,13.34320045,0.000527579999999972,0.0290330072075506
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_3","male",31,12.74100059,12.74151955,0.000518959999999069,0.028558644035794
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2014_season_2","shared (fishing mortality)",31,1.78099632,1.78150072,0.000504399999999849,0.0277573995137892
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_6","male",31,-1.1260578,-1.12557236,0.000485440000000059,0.0267140206581671
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2015_season_2","shared (fishing mortality)",31,3.035081,3.0355623,0.000481300000000129,0.0264861942624788
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_8","male",31,11.44638832,11.44685927,0.000470949999998638,0.0259166282731664
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_17","male",31,-0.23362251,-0.23315339,0.000469120000000017,0.0258159224026827
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_22","male",31,-0.04499972,-0.0445334,0.000466319999999999,0.0256618369176725
+"26_gmacs_male_only","Rec_dev_est_1989","shared (recruitment devs)",31,-0.34912044,-0.34866223,0.000458209999999959,0.0252155393164473
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_21","male",31,-0.19135127,-0.19089993,0.000451339999999995,0.0248374795728731
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1987_season_2","shared (fishing mortality)",31,-5.3381407,-5.33769085,0.000449849999999863,0.0247554840826289
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_20","male",31,-0.289365,-0.28891519,0.000449809999999995,0.0247532828614217
+"26_gmacs_male_only","Sel_Trawl_Bycatch_male_base_Logistic_cv","male",31,2.39761216,2.39804863,0.000436469999999911,0.024019175586409
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_5","male",31,12.44086864,12.44130328,0.000434639999999931,0.0239184697158505
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_7","male",31,11.20215322,11.20257435,0.000421130000001213,0.0231750072507518
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_9","male",31,11.53969177,11.54010606,0.00041429000000015,0.022798598423028
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_6","male",31,10.64751718,10.64790693,0.000389750000000078,0.0214481492079792
+"26_gmacs_male_only","Sel_Pot_Fishery_male_base_Logistic_mean","male",31,4.68458212,4.68495538,0.000373259999999931,0.0205406957623278
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_14","male",31,-0.69338073,-0.69301606,0.000364669999999956,0.0200679835065331
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_7","male",31,-0.92309814,-0.9227466,0.000351540000000039,0.0193454326429053
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_immature_newshell_class_4","male",31,12.80893963,12.80927565,0.000336020000000659,0.0184913588117457
+"26_gmacs_male_only","Initial_logN_for_sex_male_mature_mature_newshell_class_5","male",31,9.97771938,9.97803549,0.000316109999999981,0.0173957009522323
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1999_season_2","shared (fishing mortality)",31,-0.28802614,-0.28771282,0.000313320000000006,0.0172421657725281
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_2016_season_2","shared (fishing mortality)",31,-0.57740396,-0.57709744,0.000306520000000088,0.0168679581660818
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_15","male",31,-0.77511047,-0.77481912,0.000291350000000024,0.0160331450205106
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2014_season_2","shared (fishing mortality)",31,1.06252758,1.06281244,0.000284860000000053,0.0156759968784731
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_19","male",31,-0.13417432,-0.13389129,0.000283030000000017,0.0155752910079116
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1989_season_2","shared (fishing mortality)",31,-0.43969713,-0.43941489,0.000282239999999989,0.0155318168889253
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_20","male",31,-0.09684831,-0.09658663,0.00026168,0.0144003891847156
+"26_gmacs_male_only","Sel_Trawl_Bycatch_male_base_Logistic_mean","male",31,4.82729212,4.8275454,0.000253279999999911,0.0139381327296831
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_7","male",31,-0.81801612,-0.81779212,0.000224000000000002,0.0123268388007349
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2012_season_2","shared (fishing mortality)",31,0.24621523,0.24642445,0.000209219999999982,0.0115134875620068
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1990_season_2","shared (fishing mortality)",31,-0.6352693,-0.63506127,0.000208030000000026,0.0114480012308803
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2013_season_2","shared (fishing mortality)",31,0.61488322,0.61509063,0.000207410000000019,0.0114138823020564
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_9","male",31,-0.85512612,-0.85493527,0.000190849999999965,0.0105025767192848
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_8","male",31,-0.9223247,-0.92213412,0.000190580000000051,0.0104877184760923
+"26_gmacs_male_only","Rec_dev_est_2006","shared (recruitment devs)",31,-1.0747532,-1.07456303,0.00019016999999999,0.0104651559586411
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1988_season_2","shared (fishing mortality)",31,-0.42760519,-0.42742274,0.000182450000000001,0.0100403202642593
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1997_season_2","shared (fishing mortality)",31,0.34183717,0.34199867,0.000161499999999981,0.00888743065320732
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2015_season_2","shared (fishing mortality)",31,1.03376192,1.03390972,0.000147800000000142,0.00813351238727839
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1988_season_2","shared (fishing mortality)",31,-5.78553033,-5.78538691,0.00014342000000056,0.00789247866432274
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_12","male",31,-0.8964532,-0.89632445,0.0001287499999999,0.00708518078389898
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_18","male",31,-0.16356388,-0.16343786,0.000126020000000004,0.00693494743602078
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1999_season_2","shared (fishing mortality)",31,0.28997533,0.29008728,0.000111950000000027,0.00616066787385089
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_11","male",31,-0.86054869,-0.86043884,0.000109849999999967,0.00604510376009067
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_11","male",31,-0.94218207,-0.94208746,9.4609999999995e-05,0.00520643847739937
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_13","male",31,-0.87342648,-0.8733347,9.17799999999858e-05,0.00505070207647886
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1987_season_2","shared (fishing mortality)",31,-0.45045676,-0.45036801,8.87500000000263e-05,0.00488395956948901
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_9","male",31,-1.04027415,-1.04019846,7.56899999998506e-05,0.00416526084297221
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_10","male",31,-1.00660434,-1.00653099,7.33500000000831e-05,0.00403648940194162
+"26_gmacs_male_only","Ret_Pot_Fishery_male_base_Logistic_mean","male",31,4.5991957,4.59926747,7.17699999999155e-05,0.00394954116396293
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_21","male",31,-0.05711427,-0.05704324,7.10299999999997e-05,0.00390881857150085
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_10","male",31,-0.88635858,-0.88629608,6.24999999999654e-05,0.00343940814752455
+"26_gmacs_male_only","Sel_NMFS_Trawl_1989_male_base_class_6","male",31,-0.96428548,-0.96422571,5.97700000000145e-05,0.0032891747996433
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_1990_season_2","shared (fishing mortality)",31,0.57285467,0.57290742,5.27499999999348e-05,0.00290286047650874
+"26_gmacs_male_only","Log_fdev_Trawl_Bycatch_year_1989_season_2","shared (fishing mortality)",31,-1.95443646,-1.95438778,4.86799999999121e-05,0.00267888621794057
+"26_gmacs_male_only","M_base_male_mature","male",31,0.28907706,0.28911831,4.12499999999927e-05,0.00227000937736706
+"26_gmacs_male_only","Log_fdev_Pot_Fishery_year_2011_season_2","shared (fishing mortality)",31,-0.1413372,-0.14130595,3.12499999999827e-05,0.00171970407376227
+"26_gmacs_male_only","Sel_NMFS_Trawl_1982_male_base_class_14","male",31,-0.78448497,-0.78446574,1.92299999999257e-05,0.00105823709882685
+"26_gmacs_male_only","Beta_male","male",31,-0.25358772,-0.25358136,6.36000000003856e-06,0.000349994173094414
+"26_gmacs_male_only","M_base_male_immature","male",31,-0.99999994,-0.99999994,0,0

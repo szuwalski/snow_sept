@@ -1,0 +1,5 @@
+"model","n_optima","grad_screen","nll_window","class","total_range","n_parameters","mean_range","share_pct","total_range_all_classes"
+"26_gmacs_male_only",31,0.01,2,"shared (recruitment devs)",0.93937868,44,0.0213495154545455,51.6945069696743,1.81717311
+"26_gmacs_male_only",31,0.01,2,"male",0.581186430000003,101,0.00575432108910894,31.9829974811812,1.81717311
+"26_gmacs_male_only",31,0.01,2,"shared (fishing mortality)",0.29020471,88,0.00329778079545454,15.9701191043928,1.81717311
+"26_gmacs_male_only",31,0.01,2,"shared (other)",0.0064032900000015,1,0.0064032900000015,0.352376444751677,1.81717311

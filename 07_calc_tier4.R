@@ -21,17 +21,30 @@
 ##
 ## OFL BASIS (settled 2026-08-28; backlog 7d, 7e). Two independent choices, both
 ## switchable at the top of Section 1, with all four combinations reported:
-##   HCR_RAMP = FALSE  flat F_OFL = M above the beta closure (no linear ramp).
-##                     The ramp is retained and reported as OFL_ramp.
-##   OFL_EQN  = linear OFL = F_OFL * B, matching other BSAI crab Tier 4
-##                     assessments. Baranov is reported as OFL_baranov and is
-##                     the author recommendation for future cycles.
-## Morphometric, 2026: reported 30.765 / ramp 22.867 / Baranov 23.772 /
-## both 18.239 kt.
+##   HCR_RAMP = TRUE   the crab FMP Tier 4 control rule: F_OFL ramps linearly
+##                     from 0 at beta to M at the BMSY proxy,
+##                     F_OFL = M (status - alpha)/(1 - alpha). This is the FMP
+##                     form and is what the October 2025 SSC specified for this
+##                     stock (F_OFL 0.19, OFL 20.11 kt). The flat rule is
+##                     retained and reported as OFL_linear/OFL_baranov columns.
+##   OFL_EQN  = baranov  the author recommendation as of 2026-08-29. F_OFL is an
+##                     instantaneous rate and M acts over the same year, so the
+##                     yield is F's share of Z = F + M. The linear form F*B is
+##                     reported alongside as OFL_linear.
+## Morphometric, 2026: reported (flat F, Baranov) 23.772 / ramp 18.449 /
+## linear 30.765 / ramp+linear 23.158 kt. (Ramp figures changed 2026-08-29 when
+## BMSY_WINDOW_END was widened to the full 1982-2026 series; neither flat-F
+## figure depends on it.)
 ##
-## Basis for flat M (per Grant, 2026-08-28): it follows the GROUNDFISH TIER 5
-## FMP, where the OFL is F = M applied to the biomass with no status-based ramp.
-## Not from the June 2026 SSC report -- that document never mentions a ramp.
+## Basis (Grant, 2026-08-30, superseding the flat rule decided earlier the same
+## day): the RAMPED crab FMP Tier 4 control rule with the Baranov catch equation,
+## and a 20% ABC buffer. This is the FMP form, and it is what the October 2025
+## SSC specified for this stock after finding that flat M x B was not a full
+## Tier 4 implementation.
+## Historical note, so it is not reinstated: the flat rule was previously
+## justified by citing the groundfish Tier 5 FMP. That was a category error --
+## the crab and groundfish FMPs are separate tier systems, so a groundfish
+## citation is never available to a crab stock, whichever rule is chosen.
 ## ============================================================================
 
 options(warn = 1)
@@ -54,28 +67,41 @@ NAT_M <- 0.27
 BETA  <- 0.25
 ALPHA <- 0.10
 
-## Which F_OFL the REPORTED OFL uses (settled 2026-08-28, per Grant: flat, on
-## the basis that it follows the groundfish Tier 5 FMP -- backlog 7d).
+## Which F_OFL the REPORTED OFL uses (settled 2026-08-30, per Grant: flat).
+## See the note at the top on why this is a departure from the FMP rule and not
+## an application of it -- backlog 7d.
 ## FALSE = flat F_OFL = M above the beta closure. The ramp is retained and
 ## reported alongside as a sensitivity, never dropped.
 ##
 ## "No ramp" is taken to mean the LINEAR RAMP between beta and 1 is removed, not
 ## that the beta closure is removed: below beta directed fishing is still
 ## prohibited. This assumption changes nothing in 2026 -- all three currencies
-## sit above beta (morphometric 0.769, >95 mm 0.279, >101 mm 0.255) -- but note
-## that >101 mm clears beta by only 0.005, so the two readings could diverge in
+## sit above beta (morphometric 0.777, >95 mm 0.288, >101 mm 0.264) -- but note
+## that >101 mm clears beta by only 0.014, so the two readings could diverge in
 ## a future year.
-HCR_RAMP <- FALSE
+HCR_RAMP <- TRUE
 
-## Which OFL equation the REPORTED column uses (backlog 7e). "linear" = F_OFL*B,
-## matching other BSAI crab Tier 4 assessments. "baranov" is the author
-## recommendation for future cycles and is reported alongside either way.
-OFL_EQN <- "linear"
+## Which OFL equation the REPORTED column uses (backlog 7e).
+## "baranov" (per Grant, 2026-08-29) is the author recommendation and the basis
+## of the reported OFL. "linear" = F_OFL*B is what other BSAI crab Tier 4
+## assessments use; it is reported alongside as OFL_linear either way, so the
+## cross-stock comparison is not lost.
+OFL_EQN <- "baranov"
 stopifnot("OFL_EQN must be 'linear' or 'baranov'" = OFL_EQN %in% c("linear", "baranov"))
 
 ## B_MSY proxy = mean biomass over years strictly before this one. Deliberately
 ## a literal: widening it moves B_MSY, status and the OFL. Advance consciously.
-BMSY_WINDOW_END <- 2025
+##
+## 2027 => the average runs over the WHOLE survey time series, 1982-2026,
+## terminal year included (Grant, 2026-08-29). The 2025 assessment averaged
+## 1982-2024, i.e. every year but the terminal one; carrying that convention
+## forward would have given 1982-2025. The full series is used instead because
+## the B_MSY proxy is meant to be the long-term average productivity of the
+## stock and there is no reason to withhold the most recent observation from it.
+## Note the mean is over the REMA-SMOOTHED series, which supplies a 2020 value
+## the survey does not (cancelled for COVID); that was true of the 1982-2024
+## window as well, so it is not a consequence of widening.
+BMSY_WINDOW_END <- 2027
 
 for (d in c("data/tier4", "plots")) dir.create(d, recursive = TRUE, showWarnings = FALSE)
 
@@ -92,7 +118,9 @@ tier4_fofl_ramp <- function(status, m = NAT_M, alpha = ALPHA, beta = BETA) {
          ifelse(status > beta, m * (status - alpha) / (1 - alpha), 0))
 }
 
-## FLAT rule -- what the SSC wants and what the SAFE reports:
+## FLAT rule -- retained as the sensitivity, no longer the reported basis.
+## The SSC declined this form for this stock in October 2025, calling flat M x B
+## an incomplete implementation of Tier 4.
 ##   status >  beta     F_OFL = M
 ##   status <= beta     F_OFL = 0   (directed closure retained; see HCR_RAMP)
 tier4_fofl_flat <- function(status, m = NAT_M, beta = BETA) {
@@ -106,11 +134,11 @@ tier4_fofl <- function(status, ...) {
 
 ## Converting F_OFL to a catch (backlog 7e, settled 2026-08-28).
 ##
-## REPORTED: OFL = F_OFL * B, for consistency with how other BSAI crab Tier 4
-## assessments compute it. Comparability across stocks won here, not because the
-## linear form is the better approximation -- it is not.
+## REPORTED (2026-08-29): Baranov. Until that date the linear form was reported,
+## for consistency with how other BSAI crab Tier 4 assessments compute it; that
+## comparability is preserved by the OFL_linear column, which is always written.
 ##
-## ALTERNATIVE, and the author recommendation for future cycles: Baranov. F_OFL
+## Why Baranov is the recommendation: F_OFL
 ## is an INSTANTANEOUS rate (yr^-1, the same scale as M, which is why Tier 4 can
 ## set F_OFL = M), and natural mortality acts over the same year, so the yield is
 ## F's share of total mortality Z = F + M. F*B is only the first-order
@@ -308,18 +336,43 @@ tier4_hcr <- function(biomass, cv, years, currency, size_label, model_name) {
   b_curr <- pred$pred[nrow(pred)]
   bmsy   <- mean(pred$pred[pred$year < BMSY_WINDOW_END])
   status <- b_curr / bmsy
-  ## Two independent choices, so all four combinations are computed and each
-  ## reported column isolates ONE of them (backlog 7d, 7e):
-  ##   OFL              reported     F_OFL basis + reported equation
-  ##   OFL_ramp         ramp sensitivity  -- changes the HCR only
-  ##   OFL_baranov      equation alternative -- changes the equation only
-  ##   OFL_ramp_baranov both changed, for completeness
-  fofl      <- tier4_fofl(status)
+  ## Two independent choices -- the control rule and the catch equation -- so
+  ## all four combinations are computed and named for WHAT THEY ARE, not for
+  ## which one happens to be selected (backlog 7d, 7e):
+  ##   OFL               reported: the F_OFL basis and equation set at the top
+  ##   OFL_flat          flat-HCR sensitivity, reported equation
+  ##   OFL_ramp          ramped-HCR sensitivity, reported equation
+  ##   OFL_{flat,ramp}_{linear,baranov}   all four combinations, named for what
+  ##                     they ARE and computed from an explicit F_OFL, never from
+  ##                     whichever rule happens to be selected.
+  ## BOTH AXES ARE ALWAYS EMITTED, and both halves of that sentence have been
+  ## broken before. Naming a column after one equation worked only while OFL_EQN
+  ## was the other one: setting OFL_EQN = "baranov" (2026-08-29) made OFL_baranov
+  ## a copy of OFL and the linear result vanished. The same defect existed on the
+  ## control-rule axis and surfaced when HCR_RAMP was set TRUE (2026-08-30) --
+  ## ofl_linear/ofl_baranov were built from the SELECTED fofl, so the FLAT
+  ## sensitivity disappeared from the output entirely. Both are fixed by deriving
+  ## every combination from fofl_flat/fofl_ramp explicitly.
+  fofl      <- tier4_fofl(status)          # the reported basis (HCR_RAMP)
+  fofl_flat <- tier4_fofl_flat(status)
   fofl_ramp <- tier4_fofl_ramp(status)
   ofl              <- tier4_ofl(fofl, b_curr)
+  ofl_flat         <- tier4_ofl(fofl_flat, b_curr)
   ofl_ramp         <- tier4_ofl(fofl_ramp, b_curr)
-  ofl_baranov      <- tier4_ofl_baranov(fofl, b_curr)
+  ofl_flat_linear  <- tier4_ofl_linear(fofl_flat, b_curr)
+  ofl_ramp_linear  <- tier4_ofl_linear(fofl_ramp, b_curr)
+  ofl_flat_baranov <- tier4_ofl_baranov(fofl_flat, b_curr)
   ofl_ramp_baranov <- tier4_ofl_baranov(fofl_ramp, b_curr)
+  ## Back-compat aliases for readers written against the pre-2026-08-30 names.
+  ofl_linear  <- ofl_flat_linear
+  ofl_baranov <- ofl_flat_baranov
+  ## The reported column must equal the selected rule under the selected equation.
+  stopifnot("reported OFL does not match the selected HCR x equation" =
+              isTRUE(all.equal(ofl, if (HCR_RAMP) {
+                if (OFL_EQN == "baranov") ofl_ramp_baranov else ofl_ramp_linear
+              } else {
+                if (OFL_EQN == "baranov") ofl_flat_baranov else ofl_flat_linear
+              })))
 
   p <- plot_rema(tidy_rema = out)$biomass_by_strata + theme_bw() +
     ylab("Biomass 1,000 t") +
@@ -344,6 +397,21 @@ tier4_hcr <- function(biomass, cv, years, currency, size_label, model_name) {
   stopifnot("terminal REMA interval does not bracket the point estimate" =
               b_curr_lo <= b_curr && b_curr <= b_curr_hi)
 
+  ## OFL at the ends of that biomass interval. Under the FLAT rule F_OFL is
+  ## constant, so the OFL scaled linearly with biomass and the Rmd could get the
+  ## interval by multiplying the point estimate by B_lo/B_curr. Under the RAMP it
+  ## cannot: F_OFL is itself a function of status, so the OFL is quadratic in
+  ## biomass and that shortcut understates the upper bound and overstates the
+  ## lower one. Computed here, at source, by re-applying the SELECTED rule and
+  ## equation at each bound -- so the interval follows HCR_RAMP and OFL_EQN
+  ## automatically and the formula lives in exactly one place (2026-08-30).
+  fofl_lo <- tier4_fofl(b_curr_lo / bmsy)
+  fofl_hi <- tier4_fofl(b_curr_hi / bmsy)
+  ofl_lo  <- tier4_ofl(fofl_lo, b_curr_lo)
+  ofl_hi  <- tier4_ofl(fofl_hi, b_curr_hi)
+  stopifnot("OFL interval does not bracket the reported OFL" =
+              ofl_lo <= ofl && ofl <= ofl_hi)
+
   list(rema = data.frame(Year = pred$year, rema_pred = pred$pred,
                          rema_lci = pred$pred_lci, rema_uci = pred$pred_uci,
                          size = size_label, stringsAsFactors = FALSE),
@@ -356,7 +424,14 @@ tier4_hcr <- function(biomass, cv, years, currency, size_label, model_name) {
                          B_curr_lci = b_curr_lo, B_curr_uci = b_curr_hi,
                          B_curr_cv = b_curr_cv,
                          status = status, M = NAT_M, Fofl = fofl, OFL = ofl,
+                         Fofl_lci = fofl_lo, Fofl_uci = fofl_hi,
+                         OFL_lci = ofl_lo, OFL_uci = ofl_hi,
+                         Fofl_flat = fofl_flat, OFL_flat = ofl_flat,
                          Fofl_ramp = fofl_ramp, OFL_ramp = ofl_ramp,
+                         OFL_flat_linear = ofl_flat_linear,
+                         OFL_flat_baranov = ofl_flat_baranov,
+                         OFL_linear = ofl_linear,
+                         OFL_ramp_linear = ofl_ramp_linear,
                          OFL_baranov = ofl_baranov,
                          OFL_ramp_baranov = ofl_ramp_baranov,
                          stringsAsFactors = FALSE),
@@ -390,10 +465,35 @@ cat(sprintf("\nREPORTED (morphometric): OFL = %.3f kt   [%s F_OFL = %.4f, %s equ
             by_currency$OFL[1], if (HCR_RAMP) "ramped" else "flat",
             by_currency$Fofl[1], OFL_EQN))
 cat("  alternatives, each changing ONE choice:\n")
-cat(sprintf("    ramp HCR      (F_OFL %.4f, %s eqn) : %.3f kt\n",
-            by_currency$Fofl_ramp[1], OFL_EQN, by_currency$OFL_ramp[1]))
-cat(sprintf("    Baranov eqn   (F_OFL %.4f)          : %.3f kt   <- author recommendation\n",
-            by_currency$Fofl[1], by_currency$OFL_baranov[1]))
-cat(sprintf("    both changed                         : %.3f kt\n",
-            by_currency$OFL_ramp_baranov[1]))
+## Name the OTHER rule and the OTHER equation, whichever they are. Hardcoding
+## either was wrong twice: "Baranov" was printed as the alternative after Baranov
+## became the basis (2026-08-29), and the ramp was printed as the alternative
+## after the ramp became the basis (2026-08-30).
+.alt_hcr_lab <- if (HCR_RAMP) "flat" else "ramp"
+.alt_eqn_lab <- if (OFL_EQN == "baranov") "linear" else "Baranov"
+.alt_hcr_ofl <- if (HCR_RAMP) by_currency$OFL_flat[1] else by_currency$OFL_ramp[1]
+.alt_hcr_f   <- if (HCR_RAMP) by_currency$Fofl_flat[1] else by_currency$Fofl_ramp[1]
+.alt_eqn_ofl <- if (OFL_EQN == "baranov") {
+  if (HCR_RAMP) by_currency$OFL_ramp_linear[1] else by_currency$OFL_flat_linear[1]
+} else {
+  if (HCR_RAMP) by_currency$OFL_ramp_baranov[1] else by_currency$OFL_flat_baranov[1]
+}
+cat(sprintf("    %-8s HCR  (F_OFL %.4f, %s eqn) : %.3f kt\n",
+            .alt_hcr_lab, .alt_hcr_f, OFL_EQN, .alt_hcr_ofl))
+cat(sprintf("    %-8s eqn  (F_OFL %.4f)          : %.3f kt\n",
+            .alt_eqn_lab, by_currency$Fofl[1], .alt_eqn_ofl))
+## "Both changed" means the ramp AND the other equation. Printing
+## "Both changed" must be the OPPOSITE rule under the OPPOSITE equation. Naming
+## a fixed column was wrong twice: OFL_ramp_baranov duplicated the ramp line once
+## Baranov became the basis (2026-08-29), and OFL_ramp_linear duplicated the
+## equation line once the ramp became the basis (2026-08-30).
+.both <- if (HCR_RAMP) {
+  if (OFL_EQN == "baranov") by_currency$OFL_flat_linear[1] else by_currency$OFL_flat_baranov[1]
+} else {
+  if (OFL_EQN == "baranov") by_currency$OFL_ramp_linear[1] else by_currency$OFL_ramp_baranov[1]
+}
+stopifnot("the 'both changed' figure duplicates a single-change alternative" =
+            !isTRUE(all.equal(.both, .alt_hcr_ofl)) &&
+            !isTRUE(all.equal(.both, .alt_eqn_ofl)))
+cat(sprintf("    both changed                         : %.3f kt\n", .both))
 cat("  wrote data/tier4/*.csv and plots/*.png\n\nDone.\n")

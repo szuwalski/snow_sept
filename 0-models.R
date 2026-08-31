@@ -15,40 +15,51 @@
 # (reslst$repsLst[[accepted_model]]), never by position. The one "model_defs[1]"
 # in the Rmd is a comment recording a reference that had already been removed.
 #
-# MODEL NUMBERING (Grant, 2026-08-28). The shortnames below are what the report
+# MODEL NUMBERING (Grant, 2026-08-29). The shortnames below are what the report
 # shows; the long labels are internal case keys only and still carry the earlier
-# "26.1 gmacs (...)" wording -- that is cosmetic and deliberately NOT churned,
-# because those strings are the join key across 0-models.R,
+# "25.1/26.1 gmacs (...)" wording -- that is cosmetic and deliberately NOT
+# churned, because those strings are the join key across 0-models.R,
 # 03_build_results_object.R and the Rmd's accepted_model selector.
-# Set with the Plan Team, 2026-08-28. The scheme distinguishes DATA variants from
-# STRUCTURAL ones: a run that only changes the data keeps its parent's number and
-# takes a parenthetical, while a change to the model itself takes a new number.
-#   Model 25                 the September 2025 assessment, rolled forward.
-#   Model 25.2c              the MAY accepted fit (terminal 2024), the step-change
-#                            baseline and the number the SSC endorsed.
-#   Model 25.2e              binning (right = FALSE) + growth-typo methodology
-#                            sensitivity, terminal 2024. "e" because 25.2d was
-#                            already the immature-index model.
-#   Model 25.2e (new data)   the RECOMMENDED model -- the 25.2e configuration
-#                            advanced to end year 2025 (fishery through 2025,
-#                            survey through 2026). Data change only, so it keeps
-#                            the 25.2e number. Numbered from 25.2e rather than
-#                            25.2c because it carries the right = FALSE binning
-#                            and the growth-typo fix.
-#   Model 25.2e (2019 data)  the same configuration truncated to 2019, a May 2026
-#                            CPT request: tests whether the convergence problems
-#                            originate in estimating recruitment after the 2018-19
-#                            collapse and across the missing 2020 survey. Also a
-#                            data change only.
-#   Model 26.1               male-only sensitivity, requested by the May 2026 CPT.
-#                            This one IS structural -- nsex = 1 removes the female
-#                            population, parameters and data (412 -> 234 estimated
-#                            parameters) -- so it takes a new number rather than a
-#                            parenthetical. Not proposed for specification unless
-#                            the CPT selects it.
-# The May 2026 CPT minutes call the accepted configuration "Model 25.2c"; the
-# SAFE review checklist requires model numbers to be cross-validated against the
-# numbers the SSC endorsed, so state the mapping explicitly in the report text.
+#
+# RENUMBERED to 26.x on 2026-08-29, following the May 2026 CPT report:
+# "The base model brought forward was model 25.3 (which was mistakenly labeled
+# as model 25 in the proposed model document and presentation)" and "Numbers for
+# new models that were brought forward at this meeting were mistakenly labeled
+# as corresponding to 2025 rather than 2026, and this will be corrected for the
+# September CPT meeting." The September 2025 CPT report says the same of the
+# 2025 document ("mistakenly labeled as model 25.1"). The previous scheme here
+# (Model 25 / 25.2c / 25.2e / 25.2e (new data) / 25.2e (2019 data) / 26.1) was
+# the labelling the CPT identified as mistaken.
+#
+# The scheme follows the review checklist: "Model yy.j" for a major change,
+# "Model yy.jx" for a minor one, where yy is the year. A run that only changes
+# the data is minor and takes a letter; a change to the model itself takes a new
+# integer.
+#   Model 25.3   the September 2025 accepted assessment, rolled forward. Its
+#                correct number per both CPT reports; GMACS 2.20.22.
+#   Model 26.1   the configuration accepted by the CPT in May 2026 -- GMACS
+#                2.20.34, total-male composition corrected, plus group expanded,
+#                new maturity workflow. Terminal 2024. The step-change baseline.
+#   Model 26.1a  as 26.1 with the binning convention (right = FALSE) and the
+#                growth transcription error corrected. Terminal 2024. Data
+#                corrections only, hence a letter.
+#   Model 26.1b  the RECOMMENDED model -- 26.1a advanced to end year 2025
+#                (fishery through 2025, survey through 2026). Data only.
+#   Model 26.1c  26.1b truncated to 2019, the May 2026 CPT diagnostic request.
+#                Data only.
+#   Model 26.2   male-only sensitivity, requested by the May 2026 CPT. Structural
+#                -- nsex = 1 removes the female population, parameters and data
+#                (412 -> 234 estimated parameters) -- so a new integer rather
+#                than a letter. Not proposed for specification unless the CPT
+#                selects it.
+#
+# CROSS-VALIDATION AGAINST THE SSC. The checklist also requires model numbers to
+# match those the SSC endorsed, and the June 2026 SSC report refers to the
+# accepted configuration as "Model 25.2c". That is Model 26.1 here. The mapping
+# from the May 2026 numbering is therefore stated explicitly in Section E of the
+# report, and it is:
+#   25.3 -> 25.3 | 25.2c -> 26.1 | 25.2e -> 26.1a
+#   25.2e (new data) -> 26.1b | 25.2e (2019 data) -> 26.1c | 26.1 (male-only) -> 26.2
 model_defs <- c(
   "25.1 gmacs"                                                       = "Models/25_gmacs/",
   "25.1 gmacs (update + compfix + plus group + new_mat)"             = "Models/25_gmacs_update_newmat_plus_group/",
@@ -66,12 +77,12 @@ model_defs <- c(
 # they never reach a table or figure. Everything the reader sees is the
 # letter-based shortname, applied via to_short().
 model_shorts <- c(
-  "25.1 gmacs"                                                       = "Model 25",
-  "25.1 gmacs (update + compfix + plus group + new_mat)"             = "Model 25.2c",
-  "25.1 gmacs (update + compfix + plus group + new_mat + data-fix)"  = "Model 25.2e",
-  "26.1 gmacs (update + compfix + plus group + new_mat)"             = "Model 25.2e (new data)",
-  "26.1 gmacs (update + compfix + plus group + new_mat + male_only)" = "Model 26.1",
-  "26.1 gmacs (update + compfix + plus group + new_mat + data2019)"  = "Model 25.2e (2019 data)"
+  "25.1 gmacs"                                                       = "Model 25.3",
+  "25.1 gmacs (update + compfix + plus group + new_mat)"             = "Model 26.1",
+  "25.1 gmacs (update + compfix + plus group + new_mat + data-fix)"  = "Model 26.1a",
+  "26.1 gmacs (update + compfix + plus group + new_mat)"             = "Model 26.1b",
+  "26.1 gmacs (update + compfix + plus group + new_mat + male_only)" = "Model 26.2",
+  "26.1 gmacs (update + compfix + plus group + new_mat + data2019)"  = "Model 26.1c"
 )
 
 
@@ -141,11 +152,93 @@ local({
 # (so it's safe to apply to a `case` column that may include intermediate
 # labels). Returns a factor whose level order follows `model_defs` so
 # ggplot legends and kable column orders stay consistent across chunks.
+#-- Display order for tables, figure legends and column headers ------------
+# model_defs is ordered by folder/lineage, which since the 2026-08-29
+# renumbering no longer reads in model-number order (the male-only run, 26.2,
+# sits before the 2019 diagnostic, 26.1c). The report must present them in
+# numerical order -- the review checklist asks for tables and figures to be
+# correctly labelled and ordered -- so state that order once, here, rather than
+# reordering model_defs and disturbing the folder listing it mirrors.
+model_order <- c("Model 25.3", "Model 26.1", "Model 26.1a",
+                 "Model 26.1b", "Model 26.1c", "Model 26.2")
+stopifnot("model_order does not match model_shorts" =
+            setequal(model_order, unname(model_shorts)))
+
 to_short <- function(x, factor = TRUE) {
   out <- ifelse(x %in% names(model_shorts), model_shorts[x], x)
-  if (factor) {
-    lvls <- unname(model_shorts[names(model_defs)])
-    out  <- factor(out, levels = unique(c(lvls, out)))
-  }
+  if (factor) out <- factor(out, levels = unique(c(model_order, out)))
   unname(out)
 }
+
+#-- Convergence experiments (2026-08-30, per Grant) ------------------------
+# DELIBERATELY NOT IN model_defs. These three were built to diagnose the 26
+# model's multimodality, not to be assessment candidates, and they must not
+# enter the model-comparison tables. The reason is that their objective
+# functions are not the same function:
+#
+#   26.d1 stability   forked TPL (GMACS_tpl-cpp_code_recprop_sd1): the sex-ratio
+#                     penalty sd is hardcoded, changed 2.0 -> 1.0
+#   26.d2 initscaled  stock binary, but initial conditions mode 2 -> 3
+#                     (FREEPARSSCALED) drops the reference class and rescales
+#   26.d3 eqmdevs     forked TPL (GMACS_tpl-cpp_code_eqmdevs): adds
+#                     nlogPenalty(5), a term that does not exist in 2.20.34
+#
+# So a likelihood comparison against the six above is meaningless: eqmdevs
+# reports nll -23886.01 against the accepted model's -23546.35 while its DATA
+# component (catch + index + size + stock-recruit + tagging + growth) is 36 units
+# WORSE. Only within-model convergence statistics -- how
+# often a model recovers its own best optimum -- are comparable across this set,
+# and that is all the convergence appendix reports.
+#
+# The shared tree GMACs/GMACS_tpl-cpp_code is byte-unchanged (md5
+# b5392eea9d2956816b36acbae7c2c317), asserted at every build.
+diagnostic_models <- c(
+  "26.d1 stability"  = "Models/26_gmacs_stability/",
+  "26.d2 initscaled" = "Models/26_gmacs_initscaled/",
+  "26.d3 eqmdevs"    = "Models/26_gmacs_eqmdevs/",
+  "26.d4 combined"   = "Models/26_gmacs_combined/",
+  "26.d5 male-only + eqmdevs" = "Models/26_gmacs_male_only_eqmdevs/"
+)
+
+# Which pathology each one addresses. The diagnostic found THREE independent
+# problems; each experiment fixed a different subset and none fixed all three,
+# which is why none of them resolved the multimodality.
+diagnostic_purpose <- c(
+  "26.d1 stability"  = "Fixes the non-identified 2019 immature-female M deviation and the recruitment sex-ratio penalty; leaves the unpenalised 1982 initial numbers.",
+  "26.d2 initscaled" = "Rescales the initial-condition parameterisation (GMACS mode 3). Not jittered: the data fit was 138 nll units worse and it was set aside.",
+  "26.d3 eqmdevs"    = "Replaces the 83 unpenalised 1982 initial numbers with an equilibrium backbone times penalised deviations; leaves the other two.",
+  "26.d4 combined"   = "All three fixes at once on the two-sex model. Its printed '16.7% at the best mode' is NOT the recovery rate: mode A sits 5.89 nll below its own best fit, which only 2 of 72 converged runs reached.",
+  "26.d5 male-only + eqmdevs" = "Model 26.2 with the 26.d3 equilibrium backbone. The only configuration tested that improved recovery of its own best fit (41.2% vs 26.2's 25.3%, Fisher p = 0.034), and the only one whose usable runs span 6.3 nll rather than 128-312."
+)
+
+# Jitter results live in per-model files. This USED to be a workaround: until
+# 2026-08-30 05_run_jitter.R wrote Models/rda_jitter.RData and five fixed plot
+# paths regardless of --model, so every run overwrote the last and a diagnostic
+# jitter could silently replace the accepted model's diagnostics under the
+# accepted model's labels. That is now fixed at source -- 05 writes
+# Models/rda_jitter_<tag>.RData and plots/*_<tag>.png for every model, and only
+# touches the shared paths when --model is the report model. The per-model files
+# below are therefore what the pipeline produces, not hand-kept copies.
+# NA means the model was not jittered.
+diagnostic_jitter <- c(
+  "26.d1 stability"  = "Models/rda_jitter_stability.RData",
+  "26.d2 initscaled" = NA_character_,
+  "26.d3 eqmdevs"    = "Models/rda_jitter_eqmdevs.RData",
+  "26.d4 combined"   = "Models/rda_jitter_combined.RData",
+  "26.d5 male-only + eqmdevs" = "Models/rda_jitter_male_only_eqmdevs.RData"
+)
+
+stopifnot("diagnostic_purpose does not cover diagnostic_models" =
+            setequal(names(diagnostic_purpose), names(diagnostic_models)))
+stopifnot("diagnostic_jitter does not cover diagnostic_models" =
+            setequal(names(diagnostic_jitter), names(diagnostic_models)))
+stopifnot("a diagnostic model must never be in model_defs" =
+            !any(diagnostic_models %in% model_defs))
+
+local({
+  gone <- names(diagnostic_models)[!dir.exists(diagnostic_models)]
+  if (length(gone))
+    warning("0-models.R: diagnostic model folder(s) not found: ",
+            paste(gone, collapse = ", "), call. = FALSE, immediate. = TRUE)
+})
+

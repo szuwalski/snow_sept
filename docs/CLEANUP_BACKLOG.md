@@ -554,7 +554,49 @@ hygiene.
 
 ---
 
+## Tier 1 — reproducibility (added 2026-08-29)
+
+- [ ] **1f. `26_gmacs_update_newmat_plus_group/jitter/base_prepromotion/` holds TWO different
+  fits.** Its `gmacs.par`, `gmacs.std` and `Gmacsall.out` are the genuine cold start — a fresh
+  cold-start run on 2026-08-29 reproduced them exactly (nll **-23542.7677063715**, max|grad|
+  **0.00739405322922705**). Its `admodel.hes`, `admodel.cov` and `gmacs.eva` are **not**: they
+  invert to min eigenvalue **34.6442**, condition **1.42e06** and an SE of **0.077** for
+  `M_pars_est[15]`, which are the *promoted* fit's values, while the `.std` sitting beside them
+  reports **5351.76** for the same parameter. The true cold-start Hessian is min eigenvalue
+  **1.08126e-06**, next-smallest **19.7795**, condition **4.6e13**.
+  **Mechanism:** `05_run_jitter.R:466` runs the promotion with `run_gmacs(MODEL_DIR, ...)`, i.e.
+  inside the model directory, so the promote run's Hessian output landed in the directory the
+  backup was taken from. `gmacs_promote_run.log` is present inside `base_prepromotion/`, which is
+  the tell. Same family as **1c**.
+  **Consequence:** the eigenvalues quoted in the SAFE's convergence section are CORRECT (verified
+  against the fresh run) but cannot be checked against this directory, and anyone who tries will
+  conclude the opposite. Either re-run the cold start and store its Hessian here, or rename the
+  directory to make clear it holds parameters only.
+  **To reproduce:** copy the model dir without `gmacs.pin`, run `./gmacs -nox -verbose 0`, and read
+  `admodel.hes`; the pin is what makes the difference between a cold start and the accepted fit.
+
 ## Tier 2 — hygiene, as you pass through
+
+- [ ] **9b. A flextable caption is emitted twice for any table that breaks across a page, so its
+  label is multiply defined.** The mechanism, from the generated LaTeX: flextable writes
+  `\caption{...}\label{tab:x}\\` in the first head and again in `\endhead`, which longtable
+  typesets on every continuation page. So the reader sees the table number twice with no
+  "(continued)", and LaTeX reports `Label 'tab:x' multiply defined`. Only tables that actually
+  break are affected — `\endhead` never fires for a table that fits.
+  **There is no `caption_repeat` option in the installed flextable (0.10.0)**; `opts_pdf` supports
+  only `tabcolsep`, `arraystretch` and `float`, and `float = "float"` still emits a longtable
+  inside the `table` environment, so it does not help. Do not "fix" it by removing the
+  `autonum`/`bkm` — that is what makes `\@ref()` resolve at all.
+  Found on the 2026-08-29 render, which reported four: `tab:jitter-attribution`,
+  `tab:survey-currencies`, `tab:risk-table`, `tab:obscatch`. Three were addressed the same day by
+  making the tables fit: the attribution table is capped at its top 10 rows of 15, and
+  `survey-currencies` (three rows, breaking only on placement) is guarded with
+  `\Needspace{9\baselineskip}` — `needspace` was added to the YAML `header-includes` for this.
+  **Still open: `tab:risk-table` and `tab:obscatch`.** The risk table is four rows of dense text
+  and `obscatch` is 44 crab years, so neither can be made to fit; both may shrink on their own
+  once the `[[author]]` placeholders in the risk table are replaced with scored levels. If it has
+  to be solved properly, the lever is a Lua filter or a post-processing pass over the `.tex` that
+  strips the `\label` from the `\endhead` block.
 
 - [ ] **10. Convert comment banners to `## ---`** in files you're already editing:
   `03_build_results_object.R`, `07_calc_tier4.R`, `0-models.R` still use Cody's `#--` / `#==`.
@@ -722,6 +764,88 @@ convention and denominator.
   Now written once, `05:560`.
 - [x] ~~An unrelated historical-bias analysis was bolted onto the end of `05`.~~ Extracted to
   `06b_plot_historical_bias.R`.
+
+### 10. `05_run_jitter.R` writes six artifacts to fixed paths regardless of `--model`
+
+`05:627-647` and `05:707` write `Models/rda_jitter.RData` and the five `plots/jitter*.png`
+to hardcoded names, so a jitter of ANY model silently overwrites the last one's results. The
+SAFE reads `Models/rda_jitter.RData` unconditionally, so a jitter run on a side model leaves
+the report quoting that model's convergence statistics under the accepted model's name --- with
+nothing to mark them as belonging to a different fit. The hand-kept `rda_jitter_25.2c`,
+`_data2019` and `_male_only` copies exist because of this; there are no per-model copies of the
+five PNGs at all. Reported 2026-08-29 by a parallel session that hit it while jittering
+`Models/26_gmacs_eqmdevs`. Fix is to suffix all six by model shortname, as `06` already does for
+its retrospective plots.
+
+### 11. `pct_at_best_mode` is not the recovery rate of the reported fit
+
+`classify_modes()` (`R/gmacs_jitter.R`) letters a cluster only once at least three runs share it,
+so a solution found by one or two runs is bucketed `minor`. For the recommended model the accepted
+fit IS such a solution: it is the best nll any run reached, while lettered mode A is 0.81 units
+worse and holds the 5.1 percent the field reports. The name invites the field to be quoted as
+"percent of runs that recovered the reported fit", which overstates it by about fourfold (the true
+figure is 1 of 79 converged runs). The SAFE now computes the recovery rate directly and asserts
+that no lettered mode beats the reported fit; the field itself should be renamed
+`pct_at_largest_mode` so the trap does not reappear elsewhere.
+
+### Reference MMBs in the known-traps table are precision-limited, not wrong (2026-08-30)
+
+**Resolved --- do not chase further.** `CLAUDE.md:209` and `docs/MACOS_GMACS.md:85,97,127` record
+terminal MMB for the superseded Windows fit as 144.27194, where the jitter's mode A (the same
+optimum: nll agrees to 13 significant figures) gives 144.27733. The 3.7e-05 relative gap looked
+alarming because the four mode A runs reproduce MMB among themselves to 1.9e-07, i.e. the gap was
+~200x the within-mode spread, and because BMSY and OFL agreed to 7 figures.
+
+The cause is a log-and-exponentiate round trip through `gmacs.std`, which prints only **5
+significant figures**:
+
+| | true (Gmacsall.out SSB) | log | gmacs.std prints | exp() | docs record |
+|---|---|---|---|---|---|
+| 26 model | 141.53436861 | 4.95254258 | 4.9525 | 141.52834287 | 141.52834 |
+| mode A | 144.27733 | 4.97173735 | 4.9717 | 144.27194132 | 144.27194 |
+
+Both land within ~1e-06 of the recorded figures, which is the docs' own print precision. That also
+explains why only MMB disagreed: nll, BMSY and OFL are recorded directly at full precision, while
+MMB alone went through the round trip.
+
+**The fix, when someone is next in these docs:** source reference MMB from the `Gmacsall.out` SSB
+series (`R/gmacs_jitter.R:562` does this) rather than `exp(sd_log_ssb)`. **This does not weaken the
+stale-directory test** those numbers exist for --- that test keys on the ~178 vs ~150 BMSY gap, 19%,
+and a 4e-05 error is nowhere near it.
+
+Related trap found alongside: `sd_last_ssb` in `gmacs.std` is the **projected** MMB, not the
+terminal one (26 model: 1.9141e+02 against a terminal 141.53). Pairing a terminal MMB with a status
+computed off the projected value produced a false "biomass is above B_MSY" sentence in the
+Executive Summary. Both numbers are individually correct, which is why it survived review.
+
+Diagnosed jointly with the parallel multimodality-diagnosis session.
+
+### 05_run_jitter.R writes six shared paths regardless of --model (2026-08-30)
+
+`05_run_jitter.R:627-647` and `:707` write `Models/rda_jitter.RData` and five fixed plot names
+(`plots/jittered_results_{ofl,rec,ssb}.png`, `jitter_convergence.png`,
+`jitter_param_attribution.png`) **whatever model was jittered**. Every run overwrites the previous
+one. The SAFE reads that shared path for the ACCEPTED model throughout --- Section E, Table 8, the
+risk table, and the first row of Appendix C.
+
+**This fired on 2026-08-30.** A jitter of `26_gmacs_combined` left that model's results at the
+shared path. A render in that window would have relabelled the combined model's diagnostics as the
+author-recommended model's, in the section the June 2026 SSC specifically asked for, with nothing on
+the page looking wrong. It was caught by a verification pass, not by anything in the pipeline, and
+the only reason it was recoverable is that the run directories under
+`Models/26_gmacs_update_newmat_plus_group/jitter/` survived.
+
+Two mitigations are already in:
+- `SAFE_snow_gmacs.Rmd` asserts `jitter$summary$model` is `26_gmacs_update_newmat_plus_group`, so a
+  clobbered file now fails the knit loudly instead of printing another model's numbers.
+- Durable per-model copies exist for all seven configurations, `Models/rda_jitter_26.RData` included.
+
+**The defect itself is unfixed.** `05` should write `Models/rda_jitter_<model>.RData` and per-model
+plot names, with the Rmd selecting by name, so correctness stops depending on a human remembering to
+restore. Note the general lesson from the same day: the earlier md5 baseline lived in a
+`/private/tmp` scratch directory that is wiped on process exit, so the check silently degraded into
+comparing against nothing --- a guard that cannot fire on the case it protects is worse than no
+guard. Verify against literals held in the repo or in the command itself.
 
 ## Deliberately not changed
 

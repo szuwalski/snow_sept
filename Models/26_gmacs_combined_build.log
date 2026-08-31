@@ -1,0 +1,25 @@
+
+== 1. Fork the eqmdevs source ========================================
+inherited from eqmdevs fork: mode 6, nlogPenalty(5), smoothness gate
+patched: TPL:10249  sex-ratio sd 2.0 -> 1.0
+         TPL:100  version stamp -> 2.20.34-combined
+shared GMACS source unchanged (md5 b5392eea)
+
+== 2. Compile ========================================================
+building ...
+built: /Users/grantadams/Documents/GitHub/AFSC_assessments/snow_sept/GMACs/GMACS_tpl-cpp_code_combined/gmacs
+
+== 3. Build Models/26_gmacs_combined =================================
+
+== 4. Verify =========================================================
+byte-identical to 26 model : 26_snow_update_newmat_plus_group.dat
+byte-identical to 26 model : snow.prj
+snow.ctl lines changed     : 10
+FIX 1  M 2019 immature-female : phase 4 -> -4, ival 0.000 (npar -1)
+FIX 2  sex ratio              : annual sd 2.0 -> 1.0 (TPL), mean emphasis 3 -> 0
+FIX 3  initialisation         : mode 2 -> 6, logRini estimated, emphasis 5 = 1.0
+no inherited fit           : ok
+
+== Done ==============================================================
+Models/26_gmacs_combined/ built. Inputs only -- not fit.
+Contents: 26_snow_update_newmat_plus_group.dat  gmacs  gmacs.dat  gmacsbase.TPL  PROVENANCE.md  snow.ctl  snow.prj

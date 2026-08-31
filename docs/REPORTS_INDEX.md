@@ -21,6 +21,12 @@ name each arrived under is recorded here so provenance is not lost.
 | `2025-10_SSC_report.pdf` | SSC final report, 29 September – 2 October 2025. Carries the 2025/26 specifications the SSC adopted — the OFL and the ABC buffer — which the overfishing determination and the buffer history both need. | `2025 October SSC Report.pdf` |
 | `2026-04_guidelines_groundfish_assessment.pdf` | Alaska Groundfish Stock Assessment Guidelines, AFSC, April 2026. Groundfish, not crab, but the Tier 4–5 requirements apply; gaps worked through in `docs/GROUNDFISH_GUIDELINE_GAPS.md`. | `2026 Groundfish Stock Assessment Guidelines.pdf` |
 | `2026-06_SSC_report.pdf` | June 2026 SSC report. Directs that **only the Tier 4 model** be brought forward in October, and sets out what a simplified Tier 3 model would need. | `2026 June SSC.pdf` |
+| `2024 Snow SAFE.pdf` | The September 2024 SAFE. Source for the Appendix A maximin analysis cited in Section B, and for the 2024 comment set. Added 2026-08-29; **not yet renamed** to the `YYYY-MM_` convention. | (added directly) |
+| `2025 Sept CPT.pdf` | Crab Plan Team report, 8–12 September 2025 (cover-labelled "CPT Report October 2025"). One of the **two most recent CPT comment sets**. Establishes that the 2025 accepted model is **Model 25.3**, "mistakenly labeled as model 25.1 in the presentation and draft SAFE 2025 document", and carries the CPT's ≥ 95 mm maturity recommendation and the data-through-2019 jitter request. Four comments in Section B were attributed to the October 2024 SSC until 2026-08-29; they are from here. Added 2026-08-29; **not yet renamed**. | (added directly) |
+| `May 2026 CPT report.pdf` | Crab Plan Team report, May 2026. The other of the **two most recent CPT comment sets**. Carries the September 2026 request list (Tier 4 analysis, Model 25.2c, Model 25.2c males-only), the continued request for the data-through-2019 run, the sequential-parameter and covariance-matrix convergence recommendations, the statement that the May model numbers were **mistakenly labelled 2025 rather than 2026**, and the new Executive Summary Table 3 guidance. Added 2026-08-29; **not yet renamed**. | (added directly) |
+| `SAFE_guidelines_revised.pdf` | The BSAI Crab SAFE Guidelines — the document both 2026 review checklists are built on, and the source of the Executive Summary table templates. Added 2026-08-29; **not yet renamed**, and the revision date needs confirming. | (added directly) |
+| `Snow Crab ESP-ESR Risk Table Summary 2026.pdf` | PDF rendering of the `.docx` of the same name, added 2026-08-29 so the risk table is readable without Word. | (added directly) |
+| `2025_2026_bsai_crab_tac_industry_meeting.pdf` | ADF&G BSAI crab industry meeting deck for the 2025/26 season, 151 pp. **The only source for the State TAC**, which is not a federal number and never appears in the Federal Register — the Amendment 53 final rule says so explicitly ("the State has established a harvest strategy to set total allowable catch"). Page 2 gives the 2025/26 snow crab specifications as OFL 44.33, ABC 26.60 and **TAC 9.30 million lb** (= 4.218 kt); the OFL and ABC reproduce the SSC's adopted 20.11 and 12.07 kt exactly, which validates the row. The TAC includes a **1 million lb "hybrid add-on"** and the deck's own "~11% of TAC" for it reproduces at 10.8%. Also the source for the HOT-Zone, the 35%/5% incidental retention rates, and the 2025 survey hybrid statistics. Added 2026-08-29; **not yet renamed**. | (added directly) |
 | `2026-08_checklist_crab_SAFE_review.pdf` | BSAI Crab SAFE Report Review Checklist, 11 August 2026. Sections A–K and the Executive Summary's ten items. | `BSAI Crab SAFE Report Review Checklist.pdf` |
 | `2026-08_reminders_crab_SAFE_review.pdf` | General Reminders for Crab SAFE Review, 10 August 2026. Table and caption conventions. | `General Reminders for Crab SAFE Review.pdf` |
 | `2026_checklist_internal_SAFE_review.pdf` | Internal SAFE Review Quick Start Checklist — the internal reviewer's form. Undated in the document itself. | `Internal SAFE Review Quick Start Checklist.pdf` |
@@ -30,6 +36,14 @@ name each arrived under is recorded here so provenance is not lost.
 
 - The **SAFE Introduction risk-table template**, which §4.12 of the groundfish
   guidelines points to for the four risk categories and their scoring.
+- The **draft template tables for the SSC tables** that the crab checklist links,
+  and the **draft Table 3 template** the May 2026 CPT report says was circulated to
+  authors. Executive Summary Tables 1–3 cannot be built to format without them.
+- The **October 2025 and June 2026 Council motions**. The review reminders tell
+  minute leads to check these as well as the CPT and SSC reports, because the
+  Council sometimes endorses items outside the specifications.
+- The **2026 ESP** (Fedewa and Shotwell 2026), cited as Appendix A and as the source
+  of the risk table's ecosystem and fishery-informed rows. Only the 2025 ESP is here.
 
 ## Extraction note
 

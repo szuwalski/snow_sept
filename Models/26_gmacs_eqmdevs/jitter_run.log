@@ -1,0 +1,171 @@
+Warning message:
+package ‘ggplot2’ was built under R version 4.5.2 
+
+== A. Preflight ========================================================
+model      : Models/26_gmacs_eqmdevs
+runs       : 100   workers: 4   seeds: 20260822..20260921
+datafile   : 26_snow_update_newmat_plus_group.dat
+controlfile: snow.ctl
+projection : snow.prj
+executable : gmacs, 3531672 bytes, 2026-08-29 22:30:00, md5 804eb2f260d3bade4e7a592230f33922
+exe version: ## GMACS Version 2.20.34-eqmdevs; ** AEP **; Compiled 2026-01-15
+jitter line: '0 0 0.1'  -> sdJitter = 0.1  (field order IsJittered IsPin sdJitter)
+year range : 1982-2025 (from 26_snow_update_newmat_plus_group.dat)
+disk free  : 49.8 GB   (need 6.7 GB: 4 workers x 0.62 GB scratch + 100 x 0.017 GB output + 1 GB promotion + 1.5 GB margin)
+base fit   : current (nll -23879.9739, max|grad| 0.00337)
+
+== B. Base fit =========================================================
+Base fit is current; skipping (End year 2025).
+  note: base max|grad| 0.00337 exceeds the conventional 1e-03. Expected for this assessment; recorded and reported, not fatal.
+
+== C/D. 100 jitter runs on 4 workers ===================================
+100 run(s) to do, 0 already complete.
+sh: line 1:  5305 Abort trap: 6           './gmacs' -jitter 20260823 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  5307 Abort trap: 6           './gmacs' -jitter 20260824 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  5306 Abort trap: 6           './gmacs' -jitter 20260822 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  5304 Abort trap: 6           './gmacs' -jitter 20260825 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6022 Abort trap: 6           './gmacs' -jitter 20260826 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6033 Abort trap: 6           './gmacs' -jitter 20260827 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6047 Abort trap: 6           './gmacs' -jitter 20260829 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6040 Abort trap: 6           './gmacs' -jitter 20260828 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6296 Abort trap: 6           './gmacs' -jitter 20260830 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6352 Abort trap: 6           './gmacs' -jitter 20260831 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6371 Abort trap: 6           './gmacs' -jitter 20260833 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6360 Abort trap: 6           './gmacs' -jitter 20260832 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6504 Abort trap: 6           './gmacs' -jitter 20260834 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6540 Abort trap: 6           './gmacs' -jitter 20260837 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6507 Abort trap: 6           './gmacs' -jitter 20260835 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6521 Abort trap: 6           './gmacs' -jitter 20260836 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6697 Abort trap: 6           './gmacs' -jitter 20260838 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6709 Abort trap: 6           './gmacs' -jitter 20260840 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6726 Abort trap: 6           './gmacs' -jitter 20260841 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6706 Abort trap: 6           './gmacs' -jitter 20260839 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6890 Abort trap: 6           './gmacs' -jitter 20260843 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6881 Abort trap: 6           './gmacs' -jitter 20260842 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6892 Abort trap: 6           './gmacs' -jitter 20260844 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6896 Abort trap: 6           './gmacs' -jitter 20260845 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6933 Abort trap: 6           './gmacs' -jitter 20260846 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6935 Abort trap: 6           './gmacs' -jitter 20260847 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6960 Abort trap: 6           './gmacs' -jitter 20260848 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  6977 Abort trap: 6           './gmacs' -jitter 20260849 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7027 Abort trap: 6           './gmacs' -jitter 20260850 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7036 Abort trap: 6           './gmacs' -jitter 20260851 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7056 Abort trap: 6           './gmacs' -jitter 20260852 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7079 Abort trap: 6           './gmacs' -jitter 20260853 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7171 Abort trap: 6           './gmacs' -jitter 20260855 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7161 Abort trap: 6           './gmacs' -jitter 20260854 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7242 Abort trap: 6           './gmacs' -jitter 20260856 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7278 Abort trap: 6           './gmacs' -jitter 20260857 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7360 Abort trap: 6           './gmacs' -jitter 20260859 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7377 Abort trap: 6           './gmacs' -jitter 20260860 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7344 Abort trap: 6           './gmacs' -jitter 20260858 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7392 Abort trap: 6           './gmacs' -jitter 20260861 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7760 Abort trap: 6           './gmacs' -jitter 20260862 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7843 Abort trap: 6           './gmacs' -jitter 20260864 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7814 Abort trap: 6           './gmacs' -jitter 20260863 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7869 Abort trap: 6           './gmacs' -jitter 20260865 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  7988 Abort trap: 6           './gmacs' -jitter 20260866 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8009 Abort trap: 6           './gmacs' -jitter 20260868 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8016 Abort trap: 6           './gmacs' -jitter 20260869 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8001 Abort trap: 6           './gmacs' -jitter 20260867 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8146 Abort trap: 6           './gmacs' -jitter 20260870 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8179 Abort trap: 6           './gmacs' -jitter 20260871 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8207 Abort trap: 6           './gmacs' -jitter 20260872 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8210 Abort trap: 6           './gmacs' -jitter 20260873 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8348 Abort trap: 6           './gmacs' -jitter 20260874 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8359 Abort trap: 6           './gmacs' -jitter 20260875 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8364 Abort trap: 6           './gmacs' -jitter 20260876 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8374 Abort trap: 6           './gmacs' -jitter 20260877 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8413 Abort trap: 6           './gmacs' -jitter 20260878 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8451 Abort trap: 6           './gmacs' -jitter 20260879 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8465 Abort trap: 6           './gmacs' -jitter 20260880 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8478 Abort trap: 6           './gmacs' -jitter 20260881 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8553 Abort trap: 6           './gmacs' -jitter 20260882 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8565 Abort trap: 6           './gmacs' -jitter 20260884 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8562 Abort trap: 6           './gmacs' -jitter 20260883 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8568 Abort trap: 6           './gmacs' -jitter 20260885 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8580 Abort trap: 6           './gmacs' -jitter 20260886 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8591 Abort trap: 6           './gmacs' -jitter 20260888 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8587 Abort trap: 6           './gmacs' -jitter 20260887 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8593 Abort trap: 6           './gmacs' -jitter 20260889 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8660 Abort trap: 6           './gmacs' -jitter 20260890 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8678 Abort trap: 6           './gmacs' -jitter 20260892 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8692 Abort trap: 6           './gmacs' -jitter 20260893 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8669 Abort trap: 6           './gmacs' -jitter 20260891 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8878 Abort trap: 6           './gmacs' -jitter 20260894 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8952 Abort trap: 6           './gmacs' -jitter 20260895 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  8988 Abort trap: 6           './gmacs' -jitter 20260896 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9037 Abort trap: 6           './gmacs' -jitter 20260897 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9139 Abort trap: 6           './gmacs' -jitter 20260898 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9199 Abort trap: 6           './gmacs' -jitter 20260900 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9192 Abort trap: 6           './gmacs' -jitter 20260899 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9229 Abort trap: 6           './gmacs' -jitter 20260901 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9305 Abort trap: 6           './gmacs' -jitter 20260902 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9315 Abort trap: 6           './gmacs' -jitter 20260903 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9324 Abort trap: 6           './gmacs' -jitter 20260904 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9336 Abort trap: 6           './gmacs' -jitter 20260905 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9389 Abort trap: 6           './gmacs' -jitter 20260906 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9406 Abort trap: 6           './gmacs' -jitter 20260907 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9411 Abort trap: 6           './gmacs' -jitter 20260908 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9425 Abort trap: 6           './gmacs' -jitter 20260909 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9447 Abort trap: 6           './gmacs' -jitter 20260910 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9464 Abort trap: 6           './gmacs' -jitter 20260912 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9458 Abort trap: 6           './gmacs' -jitter 20260911 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9516 Abort trap: 6           './gmacs' -jitter 20260913 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9587 Abort trap: 6           './gmacs' -jitter 20260914 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9605 Abort trap: 6           './gmacs' -jitter 20260915 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9627 Abort trap: 6           './gmacs' -jitter 20260916 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9644 Abort trap: 6           './gmacs' -jitter 20260917 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9686 Abort trap: 6           './gmacs' -jitter 20260919 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9682 Abort trap: 6           './gmacs' -jitter 20260918 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9707 Abort trap: 6           './gmacs' -jitter 20260920 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+sh: line 1:  9717 Abort trap: 6           './gmacs' -jitter 20260921 -nohess -nox -verbose 0 > 'gmacs_run.log' 2> 'gmacs_run.log.err'
+  wall clock: 49.6 min for 100 run(s)
+Warning message:
+In e$fun(obj, substitute(ex), parent.frame(), e$data) :
+  already exporting variable(s): REPO_ROOT, run_dirs, run_seeds, gc_ctl
+
+== E. Verification =====================================================
+complete: 100/100   usable (max|grad| < 1e-02): 82   meets 1e-03: 2
+max|grad| range: 0.000852 to 306   (base 0.00337)
+nll range: -23886.0107 to -23734.2365   (base -23879.9739)
+directed OFL range: 83.274 to 95.126 kt
+
+== F. Best run =========================================================
+best run 028: nll -23886.0107 (base -23879.9739, improvement 6.0367), max|grad| 0.00223
+  OFL 90.385 kt (base run's OFL is in the model dir), MMB 146.597 kt
+
+*** A jitter run fits better than the base by 6.0367 nll units. The base fit was at an inferior local optimum. ***
+  backed up the previous fit to jitter/base_prepromotion/ (48 files, md5-verified)
+sh: line 1:  9783 Abort trap: 6           './gmacs' -nox -verbose 0 > 'gmacs_promote_run.log' 2> 'gmacs_promote_run.log.err'
+  promoted: model dir re-fit with Hessian, nll -23886.0107, max|grad| 0.00207
+  wrote jitter/PROMOTION.md
+
+== G. Modes and figures ================================================
+modes: A=5, B=3, C=9, D=7, E=4, F=3, G=3, H=3, I=6, J=3, minor=36
+  top separating parameter: T_pars_est[54] (std. difference -4.12)
+There were 50 or more warnings (use warnings() to see the first 50)
+TableGrob (2 x 1) "arrange": 2 grobs
+  z     cells    name           grob
+1 1 (1-1,1-1) arrange gtable[layout]
+2 2 (2-2,1-1) arrange gtable[layout]
+TableGrob (2 x 1) "arrange": 2 grobs
+  z     cells    name           grob
+1 1 (1-1,1-1) arrange gtable[layout]
+2 2 (2-2,1-1) arrange gtable[layout]
+TableGrob (2 x 1) "arrange": 2 grobs
+  z     cells    name           grob
+1 1 (1-1,1-1) arrange gtable[layout]
+2 2 (2-2,1-1) arrange gtable[layout]
+null device 
+          1 
+null device 
+          1 
+
+== Saving ==============================================================
+  /Users/grantadams/Documents/GitHub/AFSC_assessments/snow_sept/Models/26_gmacs_eqmdevs/jitter/jitter_results.csv
+  Models/rda_jitter.RData
+
+== Done ================================================================
+82/100 runs converged; 6.1% reached the best mode.
+MODEL DIRECTORY WAS CHANGED -- re-run 03_build_results_object.R, the retrospective, 07_calc_tier4.R and the report. See jitter/PROMOTION.md.

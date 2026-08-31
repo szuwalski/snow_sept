@@ -9,15 +9,16 @@ dirPrj = getwd()
 
 #devtools::install_github("wStockhausen/wtsQMD")
 
-##--September 2026 model set. Shortnames (Model 25, 26.1, ...) live in 0-models.R;
+##--September 2026 model set. Shortnames (Model 25.3, 26.1, ...) live in 0-models.R;
 ##--the long strings below are INTERNAL case keys only and never reach the report,
-##--which shows the letter-based designations via to_short().
-##--   Model 25     Models/25_gmacs/                          2025 rolled-forward REFERENCE
-##--   Model 25.2c  Models/25_gmacs_update_newmat_plus_group/  MAY accepted (terminal 2024)
-##--   Model 25.2e  Models/25_gmacs_rightFALSE_growthfix/      binning + growth-typo sensitivity
-##--   Model 26.1   Models/26_gmacs_update_newmat_plus_group/  RECOMMENDED (terminal 2025)
-##--   Model 26.1a  Models/26_gmacs_male_only/                 male-only sensitivity of 26.1
-##--   Model 26.1b  Models/26_gmacs_data2019/                  data through 2019 sensitivity
+##--which shows the letter-based designations via to_short(). Renumbered to 26.x on
+##--2026-08-29 per the May 2026 CPT report; see the numbering block in 0-models.R.
+##--   Model 25.3   Models/25_gmacs/                          2025 rolled-forward REFERENCE
+##--   Model 26.1   Models/25_gmacs_update_newmat_plus_group/  MAY accepted (terminal 2024)
+##--   Model 26.1a  Models/25_gmacs_rightFALSE_growthfix/      binning + growth-typo corrections
+##--   Model 26.1b  Models/26_gmacs_update_newmat_plus_group/  RECOMMENDED (terminal 2025)
+##--   Model 26.2   Models/26_gmacs_male_only/                 male-only sensitivity of 26.1b
+##--   Model 26.1c  Models/26_gmacs_data2019/                  data through 2019 diagnostic
 fldrs = c("Models/25_gmacs/",
           "Models/25_gmacs_update_newmat_plus_group/",
           "Models/25_gmacs_rightFALSE_growthfix/",

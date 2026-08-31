@@ -21,6 +21,17 @@ cat("Using pandoc", as.character(rmarkdown::pandoc_version()),
     "from", if (nzchar(Sys.getenv("RSTUDIO_PANDOC"))) Sys.getenv("RSTUDIO_PANDOC")
             else dirname(Sys.which("pandoc")), "\n")
 
+# --- LaTeX passes --------------------------------------------------------------
+# Force at least three. The table of contents is two pages long, so inserting it
+# pushes every numbered page down by two; the .toc written on the pass before
+# still holds the old numbers, and LaTeX does NOT emit "Rerun to get
+# cross-references right" for a stale .toc (that warning covers \label/\ref
+# only). tinytex therefore stopped early and shipped a contents list that was
+# uniformly two pages out -- "Executive Summary 2" against a printed folio of 4,
+# "Tables 55" against 57 (found 2026-08-29, on the third reviewer pass).
+# min_times defaults to 1; max_times is already 10, so this only raises the floor.
+options(tinytex.compile.min_times = 3)
+
 # --- render (PDF is the SAFE standard; the Rmd YAML also defines Word output) ---
 rmarkdown::render(
   input         = "SAFE_snow_gmacs.Rmd",

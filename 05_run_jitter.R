@@ -21,12 +21,20 @@
 ##   --seed-base <n>  base for the deterministic per-run seeds
 ##   --no-promote     never promote a better-fitting jitter run (see PROMOTION)
 ##   --force          re-run every jitter directory instead of resuming
+##   --tag <name>     short name used in output filenames (default: derived from
+##                    --model; see "Output naming")
 ##
-## Outputs
-##   Models/<model>/jitter/<nnn>/            one directory per run
+## Outputs -- ALWAYS, for every model
+##   Models/<model>/jitter/<nnn>/                one directory per run
 ##   Models/<model>/jitter/jitter_results.csv
-##   Models/rda_jitter.RData                 object `jitter`, read by the SAFE Rmd
-##   plots/jittered_results_{ofl,rec,ssb}.png    (the names SAFE_snow_gmacs.Rmd expects)
+##   Models/rda_jitter_<tag>.RData               object `jitter`
+##   plots/jittered_results_{ofl,rec,ssb}_<tag>.png
+##   plots/jitter_convergence_<tag>.png
+##   plots/jitter_param_attribution_<tag>.png
+##
+## Outputs -- ONLY when --model is REPORT_MODEL (copies of the above)
+##   Models/rda_jitter.RData                     read by SAFE_snow_gmacs.Rmd:976
+##   plots/jittered_results_{ofl,rec,ssb}.png    the names the Rmd expects
 ##   plots/jitter_convergence.png
 ##   plots/jitter_param_attribution.png
 ##
@@ -95,6 +103,31 @@ MIN_MODE_N  <- 3L          # runs needed before a cluster counts as a mode
 TOP_PARAMS  <- 15L         # parameters reported in the attribution table
 
 ## ---------------------------------------------------------------------------
+## Output naming -- WHY THIS EXISTS (2026-08-30)
+## ---------------------------------------------------------------------------
+## Until today this script wrote Models/rda_jitter.RData and five FIXED plot
+## paths regardless of --model. Those six paths are what SAFE_snow_gmacs.Rmd
+## reads for the ACCEPTED model (:976 and the figure chunks), so a jitter of any
+## other model silently replaced the accepted model's diagnostics with a
+## different model's, under the accepted model's labels. Nothing in the rendered
+## document would look wrong. It happened on 2026-08-30 -- the report path held
+## 26_gmacs_combined's results and was caught by a hand md5 check, not by
+## anything in the pipeline, and the accepted model's jitter object existed in no
+## backed-up location at all.
+##
+## Now: EVERY run writes per-model files. The shared paths are additionally
+## written ONLY when the model is REPORT_MODEL, so no diagnostic jitter can
+## reach the SAFE by accident.
+##
+## OUTPUT_TAG reproduces the names already referenced by 0-models.R:215-217 and
+## SAFE_snow_gmacs.Rmd:543,4208-4212 -- stripping the "<yy>_gmacs_" prefix gives
+## male_only, stability, eqmdevs, combined, data2019. The accepted model is the
+## one exception, kept as "26" because that is the name already in use. Use
+## --tag to override for anything these rules do not cover (e.g. 25.2c).
+REPORT_MODEL <- "26_gmacs_update_newmat_plus_group"  # the model the SAFE reports
+REPORT_TAG   <- "26"
+
+## ---------------------------------------------------------------------------
 ## Command line
 ## ---------------------------------------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
@@ -113,6 +146,16 @@ SEED_BASE   <- as.integer(opt_val("--seed-base", SEED_BASE))
 N_RUNS      <- as.integer(opt_val("--n", if (PILOT) PILOT_N else JITTER_N))
 CORES_ARG   <- opt_val("--cores", NA_character_)
 if (is.na(N_RUNS) || N_RUNS < 1L)  stop("--n must be a positive integer")
+
+## Short name used in every output filename (see "Output naming" above).
+OUTPUT_TAG <- opt_val("--tag",
+                      if (identical(MODEL_NAME, REPORT_MODEL)) REPORT_TAG
+                      else sub("^[0-9]+_gmacs_", "", MODEL_NAME))
+IS_REPORT_MODEL <- identical(MODEL_NAME, REPORT_MODEL)
+
+## "jitter_convergence.png" -> "jitter_convergence_<tag>.png"
+tagged <- function(file)
+  sub("\\.([^.]+)$", paste0("_", OUTPUT_TAG, ".\\1"), file, perl = TRUE)
 
 REPO_ROOT <- normalizePath(getwd(), winslash = "/")
 source(file.path(REPO_ROOT, "R", "gmacs_io.R"))
@@ -133,6 +176,11 @@ rule <- function(x) message("\n== ", x, " ", strrep("=", max(0, 68 - nchar(x))))
 ## ===========================================================================
 rule("A. Preflight")
 message("model      : Models/", MODEL_NAME)
+message("output tag : ", OUTPUT_TAG, "   -> Models/rda_jitter_", OUTPUT_TAG,
+        ".RData, plots/*_", OUTPUT_TAG, ".png")
+message("SAFE paths : ", if (IS_REPORT_MODEL)
+        "WILL BE WRITTEN (this is the report model)" else
+        paste0("not written (report model is ", REPORT_MODEL, ")"))
 message("runs       : ", N_RUNS, "   workers: ", N_CORES, "   seeds: ",
         SEED_BASE + 1L, "..", SEED_BASE + N_RUNS)
 
@@ -624,11 +672,11 @@ if (!requireNamespace("gridExtra", quietly = TRUE)) {
 }
 
 term_yr <- if (all(is.na(res$terminal_year))) yr$end_year else max(res$terminal_year, na.rm = TRUE)
-save_jitter_fig("jittered_results_ofl.png", "ofl_directed", "Directed OFL (1,000 t)")
-save_jitter_fig("jittered_results_ssb.png", "mmb_terminal", sprintf("MMB in %d (1,000 t)", term_yr))
-save_jitter_fig("jittered_results_rec.png", "rec_terminal", sprintf("Male recruitment in %d", term_yr))
+save_jitter_fig(tagged("jittered_results_ofl.png"), "ofl_directed", "Directed OFL (1,000 t)")
+save_jitter_fig(tagged("jittered_results_ssb.png"), "mmb_terminal", sprintf("MMB in %d (1,000 t)", term_yr))
+save_jitter_fig(tagged("jittered_results_rec.png"), "rec_terminal", sprintf("Male recruitment in %d", term_yr))
 
-png(file.path(REPO_ROOT, "plots", "jitter_convergence.png"),
+png(file.path(REPO_ROOT, "plots", tagged("jitter_convergence.png")),
     height = 5, width = 7, res = 350, units = "in")
 print(ggplot(plt, aes(x = objFun, y = abs(maxGrad), colour = mode)) +
         geom_point(size = 2, alpha = 0.85) +
@@ -644,7 +692,7 @@ dev.off()
 if (!is.null(attribution)) {
   a <- attribution
   a$parameter <- factor(a$parameter, levels = rev(unique(a$parameter)))
-  png(file.path(REPO_ROOT, "plots", "jitter_param_attribution.png"),
+  png(file.path(REPO_ROOT, "plots", tagged("jitter_param_attribution.png")),
       height = 6, width = 7.5, res = 350, units = "in")
   print(ggplot(a, aes(x = std_difference, y = parameter)) +
           geom_col(fill = "grey35") + geom_vline(xintercept = 0) +
@@ -704,8 +752,36 @@ jitter <- list(
     r_version = R.version.string, git_commit = git_sha,
     run_date = format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
 
-save(jitter, file = file.path(REPO_ROOT, "Models", "rda_jitter.RData"))
-message("  Models/rda_jitter.RData")
+rda_model <- file.path(REPO_ROOT, "Models", sprintf("rda_jitter_%s.RData", OUTPUT_TAG))
+save(jitter, file = rda_model)
+message("  Models/", basename(rda_model))
+
+## ---------------------------------------------------------------------------
+## The six paths the SAFE reads belong to REPORT_MODEL alone
+## ---------------------------------------------------------------------------
+## Copied from the per-model files just written, so the two are byte-identical
+## by construction rather than by a second render. For any other model these are
+## left untouched -- that is the whole point (see "Output naming" above).
+SHARED_PLOTS <- c("jittered_results_ofl.png", "jittered_results_ssb.png",
+                  "jittered_results_rec.png", "jitter_convergence.png",
+                  "jitter_param_attribution.png")
+if (IS_REPORT_MODEL) {
+  stopifnot("report-model copy failed" =
+              file.copy(rda_model, file.path(REPO_ROOT, "Models", "rda_jitter.RData"),
+                        overwrite = TRUE))
+  message("  Models/rda_jitter.RData        (report model)")
+  for (f in SHARED_PLOTS) {
+    src <- file.path(REPO_ROOT, "plots", tagged(f))
+    if (file.exists(src)) {
+      stopifnot(setNames(file.copy(src, file.path(REPO_ROOT, "plots", f), overwrite = TRUE),
+                         paste("could not write shared plot", f)))
+      message("  plots/", f, strrep(" ", max(1L, 30L - nchar(f))), "(report model)")
+    }
+  }
+} else {
+  message("\n  NOT the report model (", REPORT_MODEL, "), so the shared paths the")
+  message("  SAFE reads were NOT written. Outputs are tagged '", OUTPUT_TAG, "' only.")
+}
 
 rule("Done")
 message(sprintf("%d/%d runs converged; %.1f%% reached the best mode.",

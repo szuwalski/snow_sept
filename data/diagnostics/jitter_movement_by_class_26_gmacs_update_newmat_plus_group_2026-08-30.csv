@@ -1,0 +1,8 @@
+"model","n_optima","grad_screen","nll_window","class","total_range","n_parameters","mean_range","share_pct","total_range_all_classes"
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"sex allocation",26.35015179,44,0.598867086136364,41.1460312841945,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"female",14.95935384,91,0.164388503736264,23.3591838862032,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"male",10.1107187,101,0.100106125742574,15.7879905683796,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"shared (recruitment devs)",6.98974883,44,0.158857927954546,10.9145642241419,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"female (F offsets)",3.4222068,43,0.0795862046511628,5.3438108886804,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"shared (fishing mortality)",2.13107113,88,0.0242167173863636,3.32768934625646,64.04056714
+"26_gmacs_update_newmat_plus_group",40,0.01,2,"shared (other)",0.0773160500000003,1,0.0773160500000003,0.120729802143973,64.04056714

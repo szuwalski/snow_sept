@@ -1,0 +1,35 @@
+*** Parse: gmacs.tpl
+tpl2cpp -debug gmacs || tpl2rem -debug gmacs
+
+*** Compile: gmacs.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -ogmacs.obj gmacs.cpp
+
+*** Compile: src_mac/tailcompression.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/tailcompression.obj src_mac/tailcompression.cpp
+
+*** Compile: src_mac/nloglike.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/nloglike.obj src_mac/nloglike.cpp
+
+*** Compile: src_mac/spr.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/spr.obj src_mac/spr.cpp
+
+*** Compile: src_mac/multinomial.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/multinomial.obj src_mac/multinomial.cpp
+
+*** Compile: src_mac/robust_multi.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/robust_multi.obj src_mac/robust_multi.cpp
+
+*** Compile: src_mac/equilibrium.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/equilibrium.obj src_mac/equilibrium.cpp
+
+*** Compile: src_mac/dirichlet.cpp
+c++ -c -std=c++17 -g -DDEBUG -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -osrc_mac/dirichlet.obj src_mac/dirichlet.cpp
+
+*** Linking: gmacs.obj src_mac/dirichlet.obj src_mac/equilibrium.obj src_mac/robust_multi.obj src_mac/multinomial.obj src_mac/spr.obj src_mac/nloglike.obj src_mac/tailcompression.obj
+c++ -std=c++17 -g -DDEBUG -ogmacs gmacs.obj src_mac/dirichlet.obj src_mac/equilibrium.obj src_mac/robust_multi.obj src_mac/multinomial.obj src_mac/spr.obj src_mac/nloglike.obj src_mac/tailcompression.obj "/usr/local/admb/lib/libadmb-contrib-arm64-macos-clang.a"
+
+Successfully built executable.
+
+
+Built: /Users/grantadams/Documents/GitHub/AFSC_assessments/snow_sept/GMACs/GMACS_tpl-cpp_code_recprop_sd1/gmacs
+ !! TheHeader = adstring("## GMACS Version 2.20.34-recprop-sd1; ** AEP **; Compiled 2026-01-15");

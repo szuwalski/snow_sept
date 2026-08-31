@@ -72,6 +72,29 @@ MODEL_DIR <- normalizePath(file.path(REPO_ROOT, MODEL_REL), winslash = "/", must
 RETRO_DIR <- file.path(MODEL_DIR, "retro")
 PLOT_DIR  <- file.path(REPO_ROOT, "plots")
 
+## Figure titles carry the model's REPORT designation ("Model 26.1b"), not the
+## folder name. Titling them basename(MODEL_DIR) put the internal directory
+## string ("26_gmacs_update_newmat_plus_group") on figures that go to the CPT.
+## Resolved through 0-models.R so the shortname has one definition; falls back
+## to the folder name if the directory is not one of the report's models, which
+## is the case when a scratch copy is retrospected.
+MODEL_LABEL <- local({
+  fallback <- basename(MODEL_DIR)
+  defs <- file.path(REPO_ROOT, "0-models.R")
+  if (!file.exists(defs)) return(fallback)
+  e <- new.env()
+  ok <- tryCatch({ suppressWarnings(sys.source(defs, envir = e)); TRUE },
+                 error = function(...) FALSE)
+  if (!ok || is.null(e$model_defs) || is.null(e$model_shorts)) return(fallback)
+  ## Compare resolved paths, so a trailing slash or a relative form cannot miss.
+  want  <- normalizePath(file.path(REPO_ROOT, e$model_defs), winslash = "/",
+                         mustWork = FALSE)
+  hit   <- which(want == MODEL_DIR)
+  if (length(hit) != 1L) return(fallback)
+  unname(e$model_shorts[names(e$model_defs)[hit]])
+})
+cat(sprintf("Model label for figures: %s\n", MODEL_LABEL))
+
 ## Per-peel parameter-vector shapes, used to seed each peel from the accepted
 ## fit -- see prepare_peel(). One <mode>/<peel>.par per peel, each a .par GMACS
 ## itself wrote for that peel, so the pin lengths are never inferred. Cached
@@ -495,11 +518,13 @@ if (STAGE %in% c("all", "diagnose")) {
   write.csv(dg, file.path(RETRO_DIR, "prj_growth_year_diagnostic.csv"), row.names = FALSE)
 
   if (all(dg$ok)) {
-    rel <- function(a, b) if (is.na(a) || is.na(b) || b == 0) NA_real_ else (a - b) / b
-    cat(sprintf("  BMSY differs by %.4f%%, OFL by %.4f%% (compensated vs not)\n",
-                100 * rel(dg$BMSY[2], dg$BMSY[1]), 100 * rel(dg$OFL_tot[2], dg$OFL_tot[1])))
-    cat("  -> if ~0, the executable is not affected and the compensation is a no-op;\n")
-    cat("     if non-zero, uncompensated peel reference points are unreliable.\n")
+    ## Compare nll and max|grad|, which is what the rows actually carry. This
+    ## read dg$BMSY and dg$OFL_tot, columns the block above deliberately stopped
+    ## writing on 2026-08-27 -- so it errored on `if (is.na(NULL))` and aborted
+    ## the default `all` stage AFTER two full GMACS fits (fixed 2026-08-29).
+    cat(sprintf("  nll differs by %.6f; max|grad| %.3g compensated vs %.3g not\n",
+                dg$nll[2] - dg$nll[1], dg$max_grad[2], dg$max_grad[1]))
+    cat("  -> if the nll difference is ~0 the compensation is a no-op.\n")
   } else {
     cat("  NOTE: a diagnostic run failed; see prj_growth_year_diagnostic.csv\n")
   }
@@ -789,20 +814,20 @@ peel_plot <- function(mode, ycol, ylab, title, subtitle) {
 
 png(file.path(PLOT_DIR, "retro_mmb.png"), height = 6, width = 8, res = 400, units = "in")
 print(peel_plot("standard", "ssb", "Mature male biomass (1,000 t)",
-                sprintf("Retrospective analysis, %s", basename(MODEL_DIR)),
+                sprintf("Retrospective analysis, %s", MODEL_LABEL),
                 sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "mature_male_biomass"))))
 dev.off()
 
 png(file.path(PLOT_DIR, "retro_recruitment.png"), height = 6, width = 8, res = 400, units = "in")
 print(peel_plot("standard", "recruit_male", "Male recruitment (millions)",
-                sprintf("Recruitment retrospective, %s", basename(MODEL_DIR)),
+                sprintf("Recruitment retrospective, %s", MODEL_LABEL),
                 sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "recruitment_male"))))
 dev.off()
 
 if ("drop_survey" %in% series$mode) {
   png(file.path(PLOT_DIR, "retro_mmb_drop_survey.png"), height = 6, width = 8, res = 400, units = "in")
   print(peel_plot("drop_survey", "ssb", "Mature male biomass (1,000 t)",
-                  "Retrospective with the terminal survey year withheld",
+                  sprintf("Retrospective with the terminal survey year withheld, %s", MODEL_LABEL),
                   sprintf("Peels 0-%d, compared with the full base fit.  %s",
                           N_PEELS, rho_lab("drop_survey", "mature_male_biomass"))))
   dev.off()
@@ -821,7 +846,7 @@ print(
     scale_colour_brewer(name = "Retrospective", palette = "Set1") +
     expand_limits(y = 0) +
     labs(x = "Year", y = "Mature male biomass (1,000 t)",
-         title = "Terminal-year MMB from each peel vs the base fit (black)") +
+         title = sprintf("Terminal-year MMB from each peel vs the base fit (black), %s", MODEL_LABEL)) +
     theme_bw(base_size = 11)
 )
 dev.off()
