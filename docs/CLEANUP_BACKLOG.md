@@ -16,7 +16,7 @@ hygiene.
 
 - [ ] **1. `.gitignore:22`'s `*.out` swallows every `Gmacsall.out`.** The rule is in the LaTeX
   block and is meant for `.out` build artifacts, but it also matches `Gmacsall.out` — the primary
-  GMACS results file, and the one `03_build_results_object.R` and `06_run_retrospective.R` parse.
+  GMACS results file, and the one `scripts/03_build_results_object.R` and `scripts/06_run_retrospective.R` parse.
   Found 2026-08-26: `Models/26_gmacs_update_newmat_plus_group/` reached this machine with
   `gmacs.par`, `gmacs.std`, `Gmacsall.std` and `run.log` intact but **no `Gmacsall.out`**, so the
   accepted Windows fit's results were simply absent and stage `collect` could not run. `git
@@ -43,7 +43,7 @@ hygiene.
   output from such a run is trustworthy. Until that is answered, **do not adopt a promoted fit whose
   log contains this message**, and do not widen the benign-exit allowlist to cover it.
 
-- [ ] **1e. `00_advance_model.R` ships the TEMPLATE's results inside every new model dir.**
+- [ ] **1e. `scripts/00_advance_model.R` ships the TEMPLATE's results inside every new model dir.**
   Section 8 regenerates `out_dir` by copying `template_dir`, so a freshly built model directory
   arrives already containing the template's `gmacs.par`, `gmacs.std`, `Gmacsall.out`, `gmacs.rep`
   and `Gmacsall.std`. Nothing marks them as stale. On 2026-08-27 a male-only build that had
@@ -63,7 +63,7 @@ hygiene.
   **Standing rule from the 2026-08-21 render blocker:** never put a backtick inside an inline
   `` `r ` `` expression, escaped or not. knitr's inline pattern stops at the first backtick, so the
   expression truncates mid-string and the whole document fails to knit — one bad line costs the
-  entire PDF. To name a script in placeholder prose, write it bare (`run 05_run_jitter.R`). Cheap
+  entire PDF. To name a script in placeholder prose, write it bare (`run scripts/05_run_jitter.R`). Cheap
   check before any render:
 
   ```r
@@ -75,9 +75,9 @@ hygiene.
   ```
 
 - [ ] **2. `README.md` documents a workflow that no longer exists.** `README.md:71` and `:77-78`
-  describe hand-pasting `data/derived/` into the model `.DAT` — the step `00_advance_model.R`
+  describe hand-pasting `data/derived/` into the model `.DAT` — the step `scripts/00_advance_model.R`
   replaced. `README.md:35` repeats it. The script inventory (`:18-25`) and the run sequence
-  (`:65-75`) **omit `00_advance_model.R` entirely**, and now also omit `06b_plot_historical_bias.R`
+  (`:65-75`) **omit `scripts/00_advance_model.R` entirely**, and now also omit `scripts/06b_plot_historical_bias.R`
   and `R/`. A new user will hand-paste for nothing.
   Also stale: `README.md` cites `docs/HANDOFF_from_cody.md` and `docs/EMAIL_to_tyler.md`; neither
   exists in `docs/` any more.
@@ -86,9 +86,9 @@ hygiene.
   2026-08-27 by retiring the script (per Grant). It could not run on four counts: the two missing
   CSVs; `plot_layout()`/`|` with `patchwork` never loaded; `snowad.rep`/`M`/`x` undefined anywhere
   in the repo; and hardcoded 1978-2017/1982-2019 year ranges. Its male ridgeline duplicated
-  `02_prep_survey_data.R:156` (item 4) and the SAFE referenced neither figure. The female ridgeline
+  `scripts/02_prep_survey_data.R:156` (item 4) and the SAFE referenced neither figure. The female ridgeline
   moved to `02` section 6c and the recruitment comparison was rebuilt as
-  `04_plot_recruitment_comparison.R`, reading the fit's own `Gmacsall.out` rather than the
+  `scripts/04_plot_recruitment_comparison.R`, reading the fit's own `Gmacsall.out` rather than the
   month-stale `rda_ModelsResLst.RData`. Original text: `:18` reads
   `data/survey/EBSCrab_Abundance_Biomass_female.csv`, `:39` the `_male` equivalent. `data/survey/`
   contains only `EBSCrab_AB_Sizegroup.csv`, `survey_large_male_index_derived.csv`, `README.txt`.
@@ -96,9 +96,9 @@ hygiene.
   retire it.
 
 - [x] ~~**4. `plots/size_bins_comp_Kodiak_m.png` is written by two scripts**~~ Resolved
-  2026-08-27: `04` was retired, so `02_prep_survey_data.R` is the sole writer of both Kodiak
+  2026-08-27: `04` was retired, so `scripts/02_prep_survey_data.R` is the sole writer of both Kodiak
   figures. Original text: written by —
-  `02_prep_survey_data.R:156` and `04_plot_numbers_at_length.R:74`. Whichever ran last is what
+  `scripts/02_prep_survey_data.R:156` and `04_plot_numbers_at_length.R:74`. Whichever ran last is what
   appears in the SAFE, silently. (Related: item 3 — `04` can't currently run at all, which is the
   only reason this hasn't bitten yet.)
 
@@ -107,7 +107,7 @@ hygiene.
 ## Tier 1 — reproducibility
 
 - [ ] **4f. Re-running `02` is not byte-reproducible, and that silently breaks the provenance
-  check.** Run on 2026-08-28 against the same crabpack data, `02_prep_survey_data.R` rewrote
+  check.** Run on 2026-08-28 against the same crabpack data, `scripts/02_prep_survey_data.R` rewrote
   `data/derived/survey_indices.csv` and `survey_size_comps.csv` with **different bytes but the same
   numbers** — max |diff| **1.0e-12** and **1.0e-15** respectively, identical dimensions, columns and
   year ranges. `male_maturity_ogive.csv` was byte-identical, and the three files `02` does not touch
@@ -123,7 +123,7 @@ hygiene.
   Note the two intended outputs of the run were kept: `data/survey/survey_recruit_index_derived.csv`
   and `survey_large_male_index_derived.csv`, plus the new §3b/§6c figures.
 
-- [x] ~~**4e. `00_advance_model.R` could not build at an EARLIER end year.**~~ Fixed 2026-08-28
+- [x] ~~**4e. `scripts/00_advance_model.R` could not build at an EARLIER end year.**~~ Fixed 2026-08-28
   while building the data-through-2019 run (Model 26.1b), the first time anything asked `00` for an
   end year below the template's. Two files carry year settings that `00` was passing through
   untouched, and both stopped GMACS before the first function evaluation:
@@ -147,8 +147,8 @@ hygiene.
   The same failure mode as the vacuous filter in the 2026-08-28 adversarial review. A regression
   test that cannot fail is worse than none.
 
-- [x] ~~**4c. `06_run_retrospective.R` rebuilt drop-survey peels as TWO-SEX models.**~~ Fixed
-  2026-08-28. `prepare_peel()` replays `00_advance_model.R` to regenerate a drop-survey peel's
+- [x] ~~**4c. `scripts/06_run_retrospective.R` rebuilt drop-survey peels as TWO-SEX models.**~~ Fixed
+  2026-08-28. `prepare_peel()` replays `scripts/00_advance_model.R` to regenerate a drop-survey peel's
   `.DAT` with a shortened `survey_end`, and passed args 1-7 — **never arg 8, `male_only`**. Every
   drop-survey peel of `26_gmacs_male_only` was therefore a two-sex model: it parsed, converged, and
   returned plausible retrospective numbers (nll **-20673** against the male-only **-12664**, and
@@ -163,7 +163,7 @@ hygiene.
   **The `SHAPES_FOR.txt` stamp does not cover this**: it records the *model's* datafile name, md5
   and end year, none of which change when the *rebuilt* peel `.DAT` has the wrong sex structure.
   It is adequate now only because the male-only flag is read from the same datafile the stamp
-  hashes. Any future `00_advance_model.R` argument that alters peel structure without altering the
+  hashes. Any future `scripts/00_advance_model.R` argument that alters peel structure without altering the
   model `.DAT` would reopen the same hole.
 
 - [x] ~~**4d. `model_defs` was the retained May bracket, not the models this cycle ran.**~~
@@ -177,7 +177,7 @@ hygiene.
   all-zero columns, and Table \@ref(tab:stepchange) — **the table the OFL/B<sub>MSY</sub>
   comparison is read from** — 12 rows of NA management quantities.
 
-  Resolved by **pruning `0-models.R` to the five-model September set** (per Grant), which is what
+  Resolved by **pruning `scripts/0-models.R` to the five-model September set** (per Grant), which is what
   the old port note's "TODO(Phase 3)" called for. Its precondition — "audit every `model_defs[N]`
   use in the Rmd" — was done first and found **no positional indexing anywhere**: every reference
   is by name (`model_defs[accepted_model]`), by loop, or whole-vector, and the results object is
@@ -185,11 +185,11 @@ hygiene.
   `model_defs[1]` is a comment recording an already-removed reference. The May bracket survives in
   `../snow_crab/0-models.R` and in git history.
 
-  Also folded in: `model_jittered` now lives in `0-models.R` keyed by label, replacing the
+  Also folded in: `model_jittered` now lives in `scripts/0-models.R` keyed by label, replacing the
   positional `jittered` vector in the model-overview chunk (a positional list misaligns silently,
   and R only errors when lengths do not divide evenly — 14 against 28 would have recycled without
   complaint); `models_present`/`n_models` remain as a guard so an unbuilt model drops out of the
-  tables and the count instead of rendering blank; and `0-models.R` warns by shortname when a
+  tables and the count instead of rendering blank; and `scripts/0-models.R` warns by shortname when a
   folder is missing.
 
   **Still open — the Rmd's Section C narrative now contradicts the model set.** Eleven bullets at
@@ -200,7 +200,7 @@ hygiene.
   **[REMOVE] hybrid scenarios 25.3a–d (keep a short audit-trail note)**. Left for the author: it is
   a substantial piece of SAFE prose, not a mechanical edit.
 
-- [ ] **4b. `06_run_retrospective.R` writes its figures to model-independent filenames.**
+- [ ] **4b. `scripts/06_run_retrospective.R` writes its figures to model-independent filenames.**
   `:770`, `:776`, `:783`, `:793` write `plots/retro_mmb.png`, `retro_recruitment.png`,
   `retro_mmb_drop_survey.png` and `retro_terminal_mmb.png` with no model qualifier, while the
   script takes `model_dir` as an argument. Running the retrospective on any second model therefore
@@ -212,7 +212,7 @@ hygiene.
   from `basename(model_dir)`, or take an output prefix. Same class as the two-writers-one-filename
   item on the watch list, but worse — here the two writers are the same script on different models.
 
-  **`05_run_jitter.R` has the identical defect, and it is worse there** because one of the outputs
+  **`scripts/05_run_jitter.R` has the identical defect, and it is worse there** because one of the outputs
   is data, not a figure. Despite taking `--model`, it writes `Models/rda_jitter.RData` (the object
   the SAFE Rmd loads) plus `plots/jittered_results_{ofl,rec,ssb}.png`,
   `plots/jitter_convergence.png` and `plots/jitter_param_attribution.png` under model-independent
@@ -225,11 +225,11 @@ hygiene.
   `plots/_male_only_jitter/*_male_only.png`. **Until this is fixed, any jitter or retrospective run
   on a non-default model silently destroys the accepted model's artifacts** — back them up first.
 
-- [ ] **5. One `END_YEAR`, in a `config.R`.** `00_advance_model.R` already takes it as a validated
+- [ ] **5. One `END_YEAR`, in a `config.R`.** `scripts/00_advance_model.R` already takes it as a validated
   CLI arg (`:45-70`). Nothing else does. Still hardcoded at:
-  `01_prep_fishery_data.R:229` (`use_yrs <- seq(1991, 2026)`) and the NORPAC date window;
-  `02_prep_survey_data.R:69` (`years = c(1982:2026)`), plus the hardcoded 2020 gap-year drop;
-  `07_calc_tier4.R:23` (`years = c(1982:2026)`), `:191`, `:235`, `:278` (B<sub>MSY</sub> averaging
+  `scripts/01_prep_fishery_data.R:229` (`use_yrs <- seq(1991, 2026)`) and the NORPAC date window;
+  `scripts/02_prep_survey_data.R:69` (`years = c(1982:2026)`), plus the hardcoded 2020 gap-year drop;
+  `scripts/07_calc_tier4.R:23` (`years = c(1982:2026)`), `:191`, `:235`, `:278` (B<sub>MSY</sub> averaging
   window `year < 2025`, three copies).
   **`07:23`'s crabpack year range must be kept in sync with `02:69` by hand** — nothing checks it,
   and they are two independent pulls of the same survey.
@@ -267,7 +267,7 @@ hygiene.
   rolling back. Do **not** instead add the message to `GMACS_FP_TEARDOWN_MSGS` — an unrecognised
   ADMB error must never be waved through.
 
-- [ ] **5d. `06b_plot_historical_bias.R` — three open items.** The script itself works: verified
+- [ ] **5d. `scripts/06b_plot_historical_bias.R` — three open items.** The script itself works: verified
   end-to-end 2026-08-27, reads both `data/historical/*_by_assessment.csv`, writes a correct
   three-panel `plots/historical_mating_mmb_est.png` (10 vintages, 1982-2025). The
   "Removed 45/55 rows" warnings are structural — each vintage covers 1982 through its own
@@ -297,7 +297,7 @@ hygiene.
      a caption) or accept the figure as a standalone diagnostic.
 
 - [x] ~~**5e. Male-only sensitivity: builds and parses, does not yet fit.**~~ **It fits, 2026-08-28.**
-  `00_advance_model.R male_only=TRUE` (arg 8, added 2026-08-27) now produces `nsex = 1` files that
+  `scripts/00_advance_model.R male_only=TRUE` (arg 8, added 2026-08-27) now produces `nsex = 1` files that
   GMACS runs to convergence. Built into `Models/26_gmacs_male_only/` from the 25 template,
   `END_YEAR = 2025`, survey to 2026 — same data vintage as the accepted 26 model.
 
@@ -415,7 +415,7 @@ hygiene.
     difference of **exactly 0** over 44 years. Mohn's rho MMB **-0.0915** standard /
     **-0.0835** drop-survey — inside the Hurtado-Ferro bounds and tighter than the two-sex
     -0.109/-0.110. Recruitment rho 0.72/0.68 vs the two-sex 7.9-9.5.
-  - **The first promotion was decided by floating-point noise** — `05_run_jitter.R:387` ordered
+  - **The first promotion was decided by floating-point noise** — `scripts/05_run_jitter.R:387` ordered
     candidates by `order(objFun, maxGrad)`, intending the gradient to break nll ties, but `objFun`
     is a continuous double so exact ties never occur and the tiebreaker never fired. Five runs
     agreed to **2e-09** in nll and **1.6e-05 kt** in OFL; the winner was picked on a 1.6e-09 nll
@@ -427,7 +427,7 @@ hygiene.
   - See **4c** for the drop-survey peels being rebuilt as two-sex models, and **4b** for the
     artifact-clobbering that both `05` and `06` cause on any non-default model.
 
-  Not yet done: inclusion as a SAFE sensitivity (`0-models.R`, `03_build_results_object.R`, the
+  Not yet done: inclusion as a SAFE sensitivity (`scripts/0-models.R`, `scripts/03_build_results_object.R`, the
   scenario table and the section text).
 
 - [ ] **5f. Why fixing female phases does NOT give a male-only model.** Recorded because it is the
@@ -450,7 +450,7 @@ hygiene.
   - the row-alignment assumption `01:94` flags in a comment (`filter(fems, fish=='QO')` assumed
     row-aligned by crab_year, with no join and no check)
 
-- [x] ~~**7. Collapse `07_calc_tier4.R`'s three REMA/HCR blocks into one function.**~~ Done
+- [x] ~~**7. Collapse `scripts/07_calc_tier4.R`'s three REMA/HCR blocks into one function.**~~ Done
   2026-08-27. One `tier4_hcr()` + one vectorised `tier4_fofl()`; constants (`NAT_M`, `BETA`,
   `ALPHA`, `BMSY_WINDOW_END`) declared once. Every listed drift item removed, plus five dead
   imports and the `dplyr` dependency (`07` is a base-R file per CLAUDE.md). **Proven identical**
@@ -488,7 +488,7 @@ hygiene.
     x1.000000 for morphometric; exploitation rate falls correspondingly for the two comparison
     currencies. `plots/tier_4.png` moves with it.
 
-- [ ] **7c. `07_calc_tier4.R` can half-complete on a network hiccup.** It pulls crabpack live with
+- [ ] **7c. `scripts/07_calc_tier4.R` can half-complete on a network hiccup.** It pulls crabpack live with
   no fallback, and writes its three CSVs at separate points. A run on 2026-08-27 died mid-pull on
   `Timeout was reached [apex.psmfc.org]` — harmlessly, because it failed before any write, but a
   timeout between the first and second `write.csv` would leave `data/tier4/` holding a mix of two
@@ -564,7 +564,7 @@ hygiene.
   `M_pars_est[15]`, which are the *promoted* fit's values, while the `.std` sitting beside them
   reports **5351.76** for the same parameter. The true cold-start Hessian is min eigenvalue
   **1.08126e-06**, next-smallest **19.7795**, condition **4.6e13**.
-  **Mechanism:** `05_run_jitter.R:466` runs the promotion with `run_gmacs(MODEL_DIR, ...)`, i.e.
+  **Mechanism:** `scripts/05_run_jitter.R:466` runs the promotion with `run_gmacs(MODEL_DIR, ...)`, i.e.
   inside the model directory, so the promote run's Hessian output landed in the directory the
   backup was taken from. `gmacs_promote_run.log` is present inside `base_prepromotion/`, which is
   the tell. Same family as **1c**.
@@ -599,11 +599,11 @@ hygiene.
   strips the `\label` from the `\endhead` block.
 
 - [ ] **10. Convert comment banners to `## ---`** in files you're already editing:
-  `03_build_results_object.R`, `07_calc_tier4.R`, `0-models.R` still use Cody's `#--` / `#==`.
-  Standard is in `R/gmacs_io.R` and `00_advance_model.R`. See `CLAUDE.md` → R style.
+  `scripts/03_build_results_object.R`, `scripts/07_calc_tier4.R`, `scripts/0-models.R` still use Cody's `#--` / `#==`.
+  Standard is in `R/gmacs_io.R` and `scripts/00_advance_model.R`. See `CLAUDE.md` → R style.
   (`05`/`06` were rewritten 2026-08-21 and already conform.)
 
-- [ ] **11. Re-audit `06_run_retrospective.R` once the current rewrite lands.** It went 465 → 624
+- [ ] **11. Re-audit `scripts/06_run_retrospective.R` once the current rewrite lands.** It went 465 → 624
   lines on 2026-08-21 and now correctly sources `R/gmacs_io.R` and uses `on.exit(setwd(old))`. The
   old dead-code findings (undefined `retro_outs`/`mohnrho`, the `./retro/2018_s/` block, the
   duplicated `df_normalized`) were against the previous version and have **not** been re-checked
@@ -611,7 +611,7 @@ hygiene.
 
 - [ ] **11b. `R/gmacs_io.R:7` is a stale line reference in three places.** `gmacs_max_workers()`
   is at `R/gmacs_io.R:379`, not `:7` — line 7 is inside the file header banner. Cited wrongly by
-  `CLAUDE.md` rule 11, `05_run_jitter.R:19` and `05_run_jitter.R:63`. Found 2026-08-24 while
+  `CLAUDE.md` rule 11, `scripts/05_run_jitter.R:19` and `scripts/05_run_jitter.R:63`. Found 2026-08-24 while
   adding the macOS platform section.
 
 - [ ] **11c. Rule 11's worker budget is justified by Windows-laptop thermals only.** The
@@ -622,20 +622,20 @@ hygiene.
   just raise it. Raised 2026-08-24; see `docs/MACOS_GMACS.md`.
 
 - [ ] **12. Stale cross-references.** `2026_snowcrab_safe_draft.Rmd:67` cites `05_buck_read_results.R`
-  (now `03_build_results_object.R`). `0-models.R:11-12` carries `TODO(Phase 3)`: audit every
+  (now `scripts/03_build_results_object.R`). `scripts/0-models.R:11-12` carries `TODO(Phase 3)`: audit every
   positional `model_defs[N]` use in the Rmd before pruning the list to the September set.
   `2026_snowcrab_safe_draft.Rmd:98` — `>>> REVIEW: confirm comparison pairs once the 2026 results object exists`.
 
-- [ ] **13. Package loading.** `03_build_results_object.R:4` uses `require(wtsGMACS)` — warns
+- [ ] **13. Package loading.** `scripts/03_build_results_object.R:4` uses `require(wtsGMACS)` — warns
   instead of failing — and never loads `wtsUtilities` despite calling it at `:26`.
   (The `reshape` vs `reshape2` conflict in `04_plot_numbers_at_length.R:3-12` went away with that
-  script on 2026-08-27; `reshape` is now unused repo-wide.) `07_calc_tier4.R:2-13` loads `dplyr`,
+  script on 2026-08-27; `reshape` is now unused repo-wide.) `scripts/07_calc_tier4.R:2-13` loads `dplyr`,
   `ggplot2`, and `reshape2`
   twice each within 12 lines.
 
 - [ ] **14. Dependency pinning.** ~40 packages, 5 GitHub-only (`wtsGMACS`, `wtsUtilities`,
   `crabpack`, `rema`, `gmr`) whose install instructions live only in comments
-  (`2026_snowcrab_safe_draft.Rmd:44-52`, `07_calc_tier4.R:164`). No `renv.lock`, no `DESCRIPTION`, no
+  (`2026_snowcrab_safe_draft.Rmd:44-52`, `scripts/07_calc_tier4.R:164`). No `renv.lock`, no `DESCRIPTION`, no
   version pinning; R 4.5.1 is documented in prose only. A `packages.R` would be the cheap version;
   `renv` the real one.
 
@@ -648,16 +648,16 @@ hygiene.
   models the document no longer presents.
 
 - **`data/derived/fishery_size_comps.csv` rows do not sum to 1.** 66 of 174 rows are off by up to
-  3.0e-03. Cause is `01_prep_fishery_data.R:250-251`, which normalizes then rounds to 3 dp
+  3.0e-03. Cause is `scripts/01_prep_fishery_data.R:250-251`, which normalizes then rounds to 3 dp
   (`round(BycatchFem / sum(BycatchFem), 3)`); 55 of the affected rows are fleet 2 / type 2, matching
   that code exactly. Violates the "comps sum to 1" contract. Cheap fix is to drop the rounding, but
   it changes model inputs, so it needs the rule-3 identity check.
 
 - ~~**`plots/size_bins_comp_Kodiak_m.png` is written by two scripts.**~~ Closed 2026-08-27 with
-  Tier 0 item 4: `04` was retired and `02_prep_survey_data.R` is now the sole writer.
+  Tier 0 item 4: `04` was retired and `scripts/02_prep_survey_data.R` is now the sole writer.
 
 - **All 44 male/immature CVs in `data/derived/survey_indices.csv` are `NA`.** Inert today —
-  `00_advance_model.R:326` filters to `maturity == "mature"`, so those rows never reach the model.
+  `scripts/00_advance_model.R:326` filters to `maturity == "mature"`, so those rows never reach the model.
   It becomes live the moment anyone acts on the SSC's immature-index suggestion.
 
 - **`Models/25_gmacs` has no `gmacs.exe`.** It has results but cannot be re-run or peeled. It was
@@ -693,7 +693,7 @@ hygiene.
     10 of 44 directories damaged.
 
   So **4 is not safe on this machine** and `gmacs_max_workers()`'s default of 4 should drop to 2.
-  Not changed here because it is shared with `06_run_retrospective.R`, whose peel timings were set
+  Not changed here because it is shared with `scripts/06_run_retrospective.R`, whose peel timings were set
   against 4 — raise it with Grant rather than editing unilaterally. The jitter sweep completed at
   `--cores 2`.
 
@@ -705,10 +705,10 @@ hygiene.
   fixed inter-launch delay so workers don't all hit the optimiser's hottest phase together.
 
 - **Crash-truncated output files parse.** The reset above produced `Gmacsall.out` files that stop
-  mid-block and read fine for hundreds of lines. `05_run_jitter.R`'s resume guard now requires the
+  mid-block and read fine for hundreds of lines. `scripts/05_run_jitter.R`'s resume guard now requires the
   file to end with GMACS's `>EOD<` terminator (`.ends_cleanly()`), and `prepare_run_dir()` wipes a
   directory's previous outputs before re-running it, so a stale file cannot be mistaken for the
-  new run's result. **`06_run_retrospective.R` should carry the same terminator check** if it does
+  new run's result. **`scripts/06_run_retrospective.R` should carry the same terminator check** if it does
   not already — existence of `Gmacsall.out` is not evidence a peel finished.
 
 ## From the 2026-08-21 adversarial review — not yet triaged
@@ -716,7 +716,7 @@ hygiene.
 Found by review of `832d034~1..HEAD`. Two were confirmed against run artifacts on disk, not just
 read from the diff. Ranked; none fixed (they sit in in-flight work).
 
-- [ ] **A. `06_run_retrospective.R:168` — `verify_run` never checks reference points are non-zero.**
+- [ ] **A. `scripts/06_run_retrospective.R:168` — `verify_run` never checks reference points are non-zero.**
   `retro/_diagnostic/prjfix_off/` has BMSY = OFL = `0.0` and is recorded `ok = TRUE`. Combined with
   the `-nohess` behaviour (see CLAUDE.md known traps), the same condition in the peels stage puts
   **zeros** into `retro_refpoints.csv` and the SAFE figure. Highest-consequence finding.
@@ -732,7 +732,7 @@ read from the diff. Ranked; none fixed (they sit in in-flight work).
   run, which is the run that isolates the terminal survey's leverage.
 - [ ] **F. `05:490` — Ralston's sigma divides by `n-1` where `n` counts non-NA `rel`**, not non-NA
   `lg` (which carries an extra guard), understating the RMSE.
-- [ ] **G. `00_advance_model.R:701` — the (e2) check** compares survey comp years against an
+- [ ] **G. `scripts/00_advance_model.R:701` — the (e2) check** compares survey comp years against an
   index-derived, male-only `expect_surv`, forcing two derived files to share a terminal year. A
   legitimate mismatch exits 1 and breaks every `drop_survey` peel.
 
@@ -746,7 +746,7 @@ convention and denominator.
 
 - [x] ~~The SAFE did not render at all: escaped backticks inside inline `` `r ` `` expressions at
   `2026_snowcrab_safe_draft.Rmd:695` and `:804` truncated the expression, so knitr failed with
-  `unexpected INCOMPLETE_STRING` and `08_render_report.R` produced no PDF.~~ Both fixed
+  `unexpected INCOMPLETE_STRING` and `scripts/08_render_report.R` produced no PDF.~~ Both fixed
   2026-08-21 (804 by Grant, 695 here). Verified by parsing every inline expression in the file:
   **29 expressions, 0 failing.** Still to confirm with an actual knit.
 - [x] ~~`R/` untracked in git while three committed scripts hard-stop without it.~~ Tracked in
@@ -763,9 +763,9 @@ convention and denominator.
 - [x] ~~`plots/retro_mmb.png` written twice within `05` (`:130`, `:154`), first figure destroyed.~~
   Now written once, `05:560`.
 - [x] ~~An unrelated historical-bias analysis was bolted onto the end of `05`.~~ Extracted to
-  `06b_plot_historical_bias.R`.
+  `scripts/06b_plot_historical_bias.R`.
 
-### 10. `05_run_jitter.R` writes six artifacts to fixed paths regardless of `--model`
+### 10. `scripts/05_run_jitter.R` writes six artifacts to fixed paths regardless of `--model`
 
 `05:627-647` and `05:707` write `Models/rda_jitter.RData` and the five `plots/jitter*.png`
 to hardcoded names, so a jitter of ANY model silently overwrites the last one's results. The
@@ -820,9 +820,9 @@ Executive Summary. Both numbers are individually correct, which is why it surviv
 
 Diagnosed jointly with the parallel multimodality-diagnosis session.
 
-### 05_run_jitter.R writes six shared paths regardless of --model (2026-08-30)
+### scripts/05_run_jitter.R writes six shared paths regardless of --model (2026-08-30)
 
-`05_run_jitter.R:627-647` and `:707` write `Models/rda_jitter.RData` and five fixed plot names
+`scripts/05_run_jitter.R:627-647` and `:707` write `Models/rda_jitter.RData` and five fixed plot names
 (`plots/jittered_results_{ofl,rec,ssb}.png`, `jitter_convergence.png`,
 `jitter_param_attribution.png`) **whatever model was jittered**. Every run overwrites the previous
 one. The SAFE reads that shared path for the ACCEPTED model throughout --- Section E, Table 8, the
@@ -852,7 +852,7 @@ guard. Verify against literals held in the repo or in the command itself.
 These look like bugs and aren't — they match the authoritative `snow_crab` repo, i.e. they are
 long-standing and intentional. Ask Cody before touching any of them.
 
-- `01_prep_fishery_data.R` — male total comp uses `right = TRUE` while retained and female use
+- `scripts/01_prep_fishery_data.R` — male total comp uses `right = TRUE` while retained and female use
   `right = FALSE`
 - `01:33,53` — `bssc_discards.csv` read into `disc`, never used (ADFG no longer delivers it)
 - `01:38,340` — `bycatch_dat_big[,-24]` drops a column by position (fragile, but matches upstream)

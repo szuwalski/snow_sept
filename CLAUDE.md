@@ -17,7 +17,7 @@ This repo produces the September EBS snow crab SAFE. It sets federal OFL/ABC.
 1. **Never invent a number.** Every quantity in the SAFE comes from a model run, a derived CSV, or
    a cited source. Not computed yet? Write `NA` and flag it. A plausible placeholder that survives
    to print is the worst failure mode this repo has.
-2. **Never hand-edit a model `.DAT`/`.CTL`.** Use `00_advance_model.R`. And never
+2. **Never hand-edit a model `.DAT`/`.CTL`.** Use `scripts/00_advance_model.R`. And never
    `readLines()`/`writeLines()` a GMACS file — they silently rewrite the CRLF line endings and
    non-ASCII comment glyphs those files carry. Use `read_raw_lines()` / `write_raw_lines()` from
    `R/gmacs_io.R`.
@@ -52,7 +52,7 @@ This repo produces the September EBS snow crab SAFE. It sets federal OFL/ABC.
 
 ## Run order
 
-`00_advance_model.R` runs **third**, despite the number. It consumes 01/02's output.
+`scripts/00_advance_model.R` runs **third**, despite the number. It consumes 01/02's output.
 
 **Jitter (`05`) runs before the retrospective (`06`)** — they were renumbered on 2026-08-27 to make
 that order follow the numbers. The jitter can find a better optimum and *promote* it into the model
@@ -61,36 +61,36 @@ round, an hour of peels is thrown away the moment a promotion lands.
 
 | # | Script | Does |
 |---|---|---|
-| 1 | `01_prep_fishery_data.R` | ADFG removals + NORPAC → `data/derived/` |
-| 2 | `02_prep_survey_data.R` | crabpack survey pull → comps, indices, maturity ogive |
-| 3 | `00_advance_model.R` | writes `data/derived/` into a model `.DAT`/`.CTL` |
+| 1 | `scripts/01_prep_fishery_data.R` | ADFG removals + NORPAC → `data/derived/` |
+| 2 | `scripts/02_prep_survey_data.R` | crabpack survey pull → comps, indices, maturity ogive |
+| 3 | `scripts/00_advance_model.R` | writes `data/derived/` into a model `.DAT`/`.CTL` |
 | 4 | *(GMACS)* | run `gmacs.exe` in the model dir, to convergence |
-| 5 | `03_build_results_object.R` | model dirs → `Models/rda_ModelsResLst.RData` |
+| 5 | `scripts/03_build_results_object.R` | model dirs → `Models/rda_ModelsResLst.RData` |
 | 6 | `04`–`07` | numbers-at-length, **jitter, then retrospective** (+`06b`), Tier 4 |
-| 7 | `08_render_report.R` | `2026_snowcrab_safe_draft.Rmd` → PDF |
+| 7 | `scripts/08_render_report.R` | `2026_snowcrab_safe_draft.Rmd` → PDF |
 
 `R/` holds the shared function libraries (`gmacs_io.R`, `gmacs_jitter.R`). Nothing there runs on
 `source()`; `00`, `05`, and `06` all depend on it.
 
 ```powershell
 $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"   # run from repo root
-& $RS 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix] [repo_root] [survey_end]
+& $RS scripts/00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix] [repo_root] [survey_end]
 ```
 
-`2026_snowcrab_safe_draft.Rmd` sources `0-models.R` (model labels) and loads
+`2026_snowcrab_safe_draft.Rmd` sources `scripts/0-models.R` (model labels) and loads
 `Models/rda_ModelsResLst.RData`. Case names must match across all three — see
-`03_build_results_object.R:16-21`.
+`scripts/03_build_results_object.R:16-21`.
 
 ---
 
 ## R style
 
 **Banner comments.** File header states purpose / inputs / outputs / terminal-year knobs / notes;
-body is split by numbered section rules. Copy the shape from `R/gmacs_io.R` or `00_advance_model.R`:
+body is split by numbered section rules. Copy the shape from `R/gmacs_io.R` or `scripts/00_advance_model.R`:
 
 ```r
 ## ============================================================================
-## 01_prep_fishery_data.R
+## scripts/01_prep_fishery_data.R
 ##
 ## ADFG fishery removals -> data/derived/. Weights in metric tons.
 ## Crab-year convention: year N = the N/N+1 season.
@@ -178,7 +178,7 @@ header row, an explicit `year` column, and **values already in model units**:
 `directed_catch.csv` · `bycatch_catch.csv` · `fishery_size_comps.csv` · `survey_size_comps.csv` ·
 `survey_indices.csv` · `male_maturity_ogive.csv`
 
-Changing this schema means changing `00_advance_model.R` too. Provider-delivered files keep their
+Changing this schema means changing `scripts/00_advance_model.R` too. Provider-delivered files keep their
 delivery names (ADFG, `EBSCrab_*`, `SnowCrabGrowthMaster.csv`); everything else is snake_case.
 
 ---
@@ -230,10 +230,10 @@ Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACK
   failure. Still leave `snow.prj` alone and keep `FIX_PRJ_GROWTH_YEAR <- FALSE` — not because
   compensating breaks anything, but because it changes nothing: the quantities `spr_grow_yr` feeds
   are never computed for a peel.
-- `README.md` still documents the hand-paste `.DAT` workflow that `00_advance_model.R` replaced,
+- `README.md` still documents the hand-paste `.DAT` workflow that `scripts/00_advance_model.R` replaced,
   and omits `00` entirely. Trust `00`, not the README.
 - Two figure filenames are written by two different places each — last writer wins, silently.
-- **A freshly built model dir already contains the TEMPLATE's results.** `00_advance_model.R`
+- **A freshly built model dir already contains the TEMPLATE's results.** `scripts/00_advance_model.R`
   regenerates `out_dir` by copying `template_dir`, which brings the template's `gmacs.par`,
   `gmacs.std`, `Gmacsall.out`, `gmacs.rep` and `Gmacsall.std` with it. Nothing marks them stale.
   On 2026-08-27 a build that had **failed at runtime** showed a complete, plausible fit (407 par,
@@ -251,7 +251,7 @@ Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACK
   The stale values are preserved in
   `_pre_run_backup/`. Before trusting any model directory, check `Year_range` in `Gmacsall.out` and
   the datafile named in `gmacs_files_in.dat` — a `.dat` filename from the wrong cycle is the tell.
-- `07_calc_tier4.R` and `02_prep_survey_data.R` both pull crabpack with a hardcoded year range.
+- `scripts/07_calc_tier4.R` and `scripts/02_prep_survey_data.R` both pull crabpack with a hardcoded year range.
   They must be advanced together, by hand.
 - A hard reset during `05`/`06` leaves a **half-written** peel/jitter directory that still looks
   plausible. After any crash, re-run with `--force` (05) or delete the affected `retro/<n>` /

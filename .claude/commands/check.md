@@ -37,7 +37,7 @@ Confirm whether each is still live (see `docs/CLEANUP_BACKLOG.md` for the full l
 
 - Is `R/gmacs_io.R` tracked in git yet? (`git ls-files R/`)
 - Do any two scripts write the same file under `plots/`?
-- Do the crabpack year ranges in `02_prep_survey_data.R` and `07_calc_tier4.R` still agree?
+- Do the crabpack year ranges in `scripts/02_prep_survey_data.R` and `scripts/07_calc_tier4.R` still agree?
 
 ## Output
 

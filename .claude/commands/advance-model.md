@@ -1,5 +1,5 @@
 ---
-description: Write data/derived into a GMACS model .DAT/.CTL via 00_advance_model.R
+description: Write data/derived into a GMACS model .DAT/.CTL via scripts/00_advance_model.R
 argument-hint: "[template_dir] [out_dir] [end_year]"
 ---
 
@@ -9,7 +9,7 @@ Arguments given: $ARGUMENTS
 
 ## Before running
 
-1. **Confirm `data/derived/` is current.** `00_advance_model.R` transcribes whatever is there. If
+1. **Confirm `data/derived/` is current.** `scripts/00_advance_model.R` transcribes whatever is there. If
    `01`/`02` haven't been re-run for this cycle, the model gets last cycle's data. Run `/check`
    first if unsure.
 2. **Confirm the template directory.** The accepted May baseline is
@@ -21,7 +21,7 @@ Arguments given: $ARGUMENTS
 
 ```powershell
 $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
-& $RS 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix] [repo_root] [survey_end]
+& $RS scripts/00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix] [repo_root] [survey_end]
 ```
 
 | Arg | Meaning |
@@ -37,7 +37,7 @@ $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
 Example — the September model:
 
 ```powershell
-& $RS 00_advance_model.R Models/25_gmacs_update_newmat_plus_group Models/26_gmacs_update_newmat_plus_group 2025 26_snow_update_newmat_plus_group.dat
+& $RS scripts/00_advance_model.R Models/25_gmacs_update_newmat_plus_group Models/26_gmacs_update_newmat_plus_group 2025 26_snow_update_newmat_plus_group.dat
 ```
 
 ## After running

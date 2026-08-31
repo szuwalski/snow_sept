@@ -13,21 +13,21 @@ Authors: Grant Adams and Cody Szuwalski. Inherited from the May 2026 CPT/model-s
 
 ```
 2026_snowcrab_safe_draft.Rmd          # the SAFE report (bookdown::pdf_document2). Loads Models/rda_ModelsResLst.RData
-0-models.R                   # model case definitions (model_defs) sourced by the Rmd
+scripts/0-models.R                   # model case definitions (model_defs) sourced by the Rmd
 
-01_prep_fishery_data.R       # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
-02_prep_survey_data.R        # crabpack survey PULL -> size comps, maturity, growth (data/derived/)
-03_build_results_object.R    # reads the model dirs -> writes Models/rda_ModelsResLst.RData
-04_plot_recruitment_comparison.R  # survey vs model recruitment
-06_run_retrospective.R       # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
-05_run_jitter.R              # jitter analysis (parallel)
-07_calc_tier4.R              # Tier-4 / REMA calculation
-08_render_report.R           # renders the SAFE to PDF (wires in Positron's pandoc)
+scripts/01_prep_fishery_data.R       # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
+scripts/02_prep_survey_data.R        # crabpack survey PULL -> size comps, maturity, growth (data/derived/)
+scripts/03_build_results_object.R    # reads the model dirs -> writes Models/rda_ModelsResLst.RData
+scripts/04_plot_recruitment_comparison.R  # survey vs model recruitment
+scripts/06_run_retrospective.R       # retrospective peels (uses Models/25_gmacs_update_newmat_plus_group)
+scripts/05_run_jitter.R              # jitter analysis (parallel)
+scripts/07_calc_tier4.R              # Tier-4 / REMA calculation
+scripts/08_render_report.R           # renders the SAFE to PDF (wires in Positron's pandoc)
 
 Models/                    # LIVE model runs the report consumes
   25_gmacs/                #   2025 rolled-forward reference ("25.1 gmacs")
   25_gmacs_update_newmat_plus_group/  # ACCEPTED final ("25.1 gmacs (update + compfix + plus group + new_mat)")
-  rda_ModelsResLst.RData   #   results object built by 03_build_results_object.R
+  rda_ModelsResLst.RData   #   results object built by scripts/03_build_results_object.R
 
 data/
   new_catch/               # WORKING copy of ADFG removals that script 01 reads (latest = crab_year 2025)
@@ -58,7 +58,7 @@ archive_2025/              # prior-cycle leftovers, kept for reference (NOT used
 - Packages: `gmr`, `wtsGMACS`, `wtsUtilities`, `crabpack`, `rema`, `bookdown`, `officedown`,
   `officer`, `flextable`, `pacman`, `pander` (+ tidyverse). `gmacsr` / Cody's old gmr fork are NOT
   required (the report was ported off the sourced-gmr architecture).
-- **pandoc**: not on the terminal PATH — `08_render_report.R` points `RSTUDIO_PANDOC` at the Positron
+- **pandoc**: not on the terminal PATH — `scripts/08_render_report.R` points `RSTUDIO_PANDOC` at the Positron
   bundle (`%LOCALAPPDATA%/Programs/Positron/resources/app/quarto/bin/tools`, pandoc 3.6.3).
   Rendering from inside Positron/RStudio works without this.
 
@@ -66,13 +66,13 @@ archive_2025/              # prior-cycle leftovers, kept for reference (NOT used
 
 ```powershell
 $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
-& $RS 01_prep_fishery_data.R        # rebuild fishery-removal inputs in data/derived/
-& $RS 02_prep_survey_data.R         # crabpack pull + rebuild survey size-comp / maturity / growth inputs
+& $RS scripts/01_prep_fishery_data.R        # rebuild fishery-removal inputs in data/derived/
+& $RS scripts/02_prep_survey_data.R         # crabpack pull + rebuild survey size-comp / maturity / growth inputs
 #   -> hand-paste the data/derived/ outputs into the model .DAT, then run gmacs.exe in the model dir
-& $RS 03_build_results_object.R     # rebuild Models/rda_ModelsResLst.RData
-& $RS 04_plot_recruitment_comparison.R; & $RS 05_run_jitter.R; & $RS 06_run_retrospective.R; & $RS 07_calc_tier4.R
+& $RS scripts/03_build_results_object.R     # rebuild Models/rda_ModelsResLst.RData
+& $RS scripts/04_plot_recruitment_comparison.R; & $RS scripts/05_run_jitter.R; & $RS scripts/06_run_retrospective.R; & $RS scripts/07_calc_tier4.R
 #   jitter BEFORE retrospective: a promotion changes the fit and invalidates any peels run first
-& $RS 08_render_report.R            # render 2026_snowcrab_safe_draft.Rmd -> PDF
+& $RS scripts/08_render_report.R            # render 2026_snowcrab_safe_draft.Rmd -> PDF
 ```
 
 The `.DAT` build (scripts 01/02) still ends in a **manual paste** step into the model `.DAT` file —

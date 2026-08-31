@@ -21,7 +21,7 @@
 ---
 
 ## STEP 0 — Hard prerequisite (do before touching any model reference)
-`0-models.R` (defines `model_defs` and the folder→case-name map) was **not** in the staged copy, and `docs/SESSION_HANDOFF.md` says the `model_defs` index audit is "not yet done." **Locate `0-models.R`, and verify** that:
+`scripts/0-models.R` (defines `model_defs` and the folder→case-name map) was **not** in the staged copy, and `docs/SESSION_HANDOFF.md` says the `model_defs` index audit is "not yet done." **Locate `scripts/0-models.R`, and verify** that:
 1. the case name/string for `Models/25_gmacs_update_newmat_plus_group` is what the Rmd's `accepted_model` and the sketches call "Model 25.2c";
 2. `model_defs[[...]]` indices used in the Rmd resolve to the intended folders after the hybrid models are removed.
 Do not proceed to any model-reference repointing until this resolves. If it doesn't, stop and report.
@@ -93,7 +93,7 @@ Many new chunks depend on runs that don't exist yet. Keep the document knitting:
 ---
 
 ## STEP 4 — Phase 2 (blocked on the 2026 summer-survey crabpack pull + Cody's GMACS exe)
-Build the runs that **do not exist yet** — the May final model advanced to End year 2025, plus the **male-only** and **data-through-2019** variants (only `25_gmacs` and `25_gmacs_update_newmat_plus_group` are in `Models/` today). Then run the pipeline: `01`/`02` → build `.DAT` → GMACS → `03_build_results_object.R` → `05` jitter → `06` retrospective → `07_tier_4.R` → projections → `08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify the `07_tier_4.R` output object matches the interface the sketches assume (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); if the columns differ, adapt **only** the `tier4-setup` chunk. Repopulate every management quantity from the real runs.
+Build the runs that **do not exist yet** — the May final model advanced to End year 2025, plus the **male-only** and **data-through-2019** variants (only `25_gmacs` and `25_gmacs_update_newmat_plus_group` are in `Models/` today). Then run the pipeline: `01`/`02` → build `.DAT` → GMACS → `scripts/03_build_results_object.R` → `05` jitter → `06` retrospective → `07_tier_4.R` → projections → `scripts/08_render_report.R`. Flip the `PHASE 2` chunks to `eval=TRUE`. Verify the `07_tier_4.R` output object matches the interface the sketches assume (`tier4$by_currency` with `currency/Bmsy/B_curr/status/M/Fofl/OFL`); if the columns differ, adapt **only** the `tier4-setup` chunk. Repopulate every management quantity from the real runs.
 
 ## STEP 5 — Verification / acceptance criteria
 - Document knits cleanly at the end of Phase 1 (placeholders allowed) and Phase 2 (real numbers).

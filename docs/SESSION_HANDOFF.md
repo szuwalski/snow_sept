@@ -39,7 +39,7 @@ well-conditioned; jitter and retrospective on it are the next step.
   **exists as data** — `data/tier4/tier4_by_currency.csv` — where before it was only text inside a PNG.
   Current: morphometric **OFL 22.867 kt**, status 0.769.
 - **Male-only sensitivity fits, jittered and retrospected (2026-08-28).**
-  `Models/26_gmacs_male_only/`, built by `00_advance_model.R ... TRUE` (arg 8) from the 25
+  `Models/26_gmacs_male_only/`, built by `scripts/00_advance_model.R ... TRUE` (arg 8) from the 25
   template, `END_YEAR = 2025`, survey to 2026. **Accepted fit promoted from `jitter/095`**
   (seed 20260916; provenance in `jitter/PROMOTION.md`): npar **234**,
   nll **-14010.6635839271**, max|grad| **0.000705** (meets 1e-3), BMSY **131.34304372**,
@@ -65,9 +65,9 @@ well-conditioned; jitter and retrospective on it are the next step.
   both drivers smoke-tested; `.gitignore` and README order fixed.
 - **`04_plot_numbers_at_length.R` retired.** Could not run (4 independent blockers) and duplicated
   `02`. Female ridgeline moved to `02` §6c; recruitment comparison rebuilt as
-  `04_plot_recruitment_comparison.R`, reading the fit's own `Gmacsall.out`.
+  `scripts/04_plot_recruitment_comparison.R`, reading the fit's own `Gmacsall.out`.
   **Neither new figure has been produced yet** — both need `02` to run (crabpack).
-- **Written and parsed, NOT yet run:** `02`'s new §3b/§6c, `04_plot_recruitment_comparison.R`
+- **Written and parsed, NOT yet run:** `02`'s new §3b/§6c, `scripts/04_plot_recruitment_comparison.R`
   (its transformation logic was exercised against the real fit with a synthetic survey vector),
   and the male-only mode of `00`. `03` and `08` have never run on macOS.
 
@@ -75,7 +75,7 @@ well-conditioned; jitter and retrospective on it are the next step.
 
 The September cycle is **renumbered 26.x** rather than carried on as 25.2c (Grant's call). The
 letter-based shortnames are what the report shows; the long strings in `model_defs` /
-`03_build_results_object.R` are internal case keys only and never reach a table or figure, which
+`scripts/03_build_results_object.R` are internal case keys only and never reach a table or figure, which
 go through `to_short()`. The five-model September set:
 
 | Shortname | Folder | Role |
@@ -90,7 +90,7 @@ go through `to_short()`. The five-model September set:
 resolves to Model 26.1 — **it previously named the May folder**, which would have reported a
 terminal-2024 fit as the September assessment.
 
-**`0-models.R` was pruned to these five on 2026-08-28** (the old "TODO(Phase 3)"). Its precondition
+**`scripts/0-models.R` was pruned to these five on 2026-08-28** (the old "TODO(Phase 3)"). Its precondition
 — auditing every `model_defs[N]` use — was done first and found no positional indexing anywhere;
 the results object is keyed by case name too. The May bracket lives in `../snow_crab/0-models.R`
 and git history. `model_jittered` now sits beside the definitions instead of as a positional vector
@@ -367,7 +367,7 @@ MMB at realistic catch values.
 **What the SSC did NOT say:** nothing about the Tier 4 ramp — see backlog 7d.
 
 ## Known flags / gotchas
-- **A new model dir already contains the TEMPLATE's results.** `00_advance_model.R` §8 copies
+- **A new model dir already contains the TEMPLATE's results.** `scripts/00_advance_model.R` §8 copies
   `template_dir`, bringing its `gmacs.par`/`Gmacsall.out`/etc. A male-only build that had *failed at
   runtime* showed a complete, plausible fit (407 par, nll -19222.489) that belonged to the 25 model.
   **Check `gmacs.par`'s mtime before believing any number from a new model dir.** Backlog 1e.
@@ -381,11 +381,11 @@ MMB at realistic catch values.
 - **`05`'s promotion rollback silently lied once** (2026-08-24), leaving 7 of 9 files holding a
   rejected fit. Now md5-verified and refuses to promote if the backup is incomplete. **Root cause of
   the copy failure is still unexplained** — backlog 1c.
-- **`07_calc_tier4.R` pulls crabpack live with no fallback** and writes three CSVs at separate points;
+- **`scripts/07_calc_tier4.R` pulls crabpack live with no fallback** and writes three CSVs at separate points;
   a timeout between two writes leaves a mixed `data/tier4/`. Backlog 7c.
 - `Models/25_gmacs` was fit with GMACS **2.20.22** and has no executable — it cannot be reproduced by a
   current binary and got no macOS build.
-- **`model_defs[N]` index audit** still not done — audit before pruning `0-models.R`.
+- **`model_defs[N]` index audit** still not done — audit before pruning `scripts/0-models.R`.
 
 ## Blocked on decisions (critical path)
 1. **Which Tier 4 basis is correct — ramp or flat M?** `07` ramps (status 0.769 → F_OFL 0.201 →
@@ -402,20 +402,20 @@ MMB at realistic catch values.
 ## Resume here (prioritized)
 1. **Settle the Tier 4 basis (blocked #1).** Every OFL/ABC number in the SAFE depends on it, and
    `PHASE1_SECTION_SKETCHES.md:80` has `[[value]]` placeholders waiting on it.
-2. **Re-run what the promotion invalidated:** `03_build_results_object.R` (its
+2. **Re-run what the promotion invalidated:** `scripts/03_build_results_object.R` (its
    `Models/rda_ModelsResLst.RData` is dated **2026-07-28**, a month older than the accepted fit), then
-   `08_render_report.R`. `05`/`06`/`07` are already current.
+   `scripts/08_render_report.R`. `05`/`06`/`07` are already current.
 3. **Run `02`** to produce the two new figures and `data/survey/survey_recruit_index_derived.csv`, then
-   `04_plot_recruitment_comparison.R`. Needs crabpack (works; `07` used it 2026-08-27).
+   `scripts/04_plot_recruitment_comparison.R`. Needs crabpack (works; `07` used it 2026-08-27).
 4. **Male-only sensitivity: wired into the report, needs `03` re-run.** Fit, jitter, retrospective
    and the report wiring are all done (backlog **5e** closed). Added 2026-08-28 as
    **`Model 25.2c (males only)`** — it keeps the 25.2c designation because the CPT asked for it as
    a *sensitivity of* 25.2c, not a new candidate:
-   - `0-models.R` — appended to `model_defs`/`model_shorts` (**appended, not inserted**, so the
+   - `scripts/0-models.R` — appended to `model_defs`/`model_shorts` (**appended, not inserted**, so the
      positional `model_defs[N]` references the port note warns about keep their indices; 1-14 are
      unchanged, male-only is 15).
-   - `03_build_results_object.R` — third folder/label, plus a new guard that fails loudly if the
-     labels here, in `0-models.R`, and the folders on disk ever disagree. Negative-tested.
+   - `scripts/03_build_results_object.R` — third folder/label, plus a new guard that fails loudly if the
+     labels here, in `scripts/0-models.R`, and the folders on disk ever disagree. Negative-tested.
    - `2026_snowcrab_safe_draft.Rmd` — scenario table (`model-overview`; its `Jittered` column is a
      **positional** vector, now 15 long and assertion-guarded), a `Model 25.2c (males only)` entry
      under Model scenarios, the two assumption bullets, and a convergence/retrospective results

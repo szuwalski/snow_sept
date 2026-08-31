@@ -11,8 +11,8 @@ substituting `NA`/`0`, so a stale or absent `Models/rda_ModelsResLst.RData` prod
 plausible-looking table rather than an error.
 
 1. Does `Models/rda_ModelsResLst.RData` exist, and is it newer than the model dirs it summarizes?
-2. Do the case names in `03_build_results_object.R` still match `accepted_model` /
-   `reference_model` in the Rmd setup chunk and the labels in `0-models.R`?
+2. Do the case names in `scripts/03_build_results_object.R` still match `accepted_model` /
+   `reference_model` in the Rmd setup chunk and the labels in `scripts/0-models.R`?
 
 If either is off, say so and stop. Rendering a SAFE off stale results is the failure mode rule 1
 exists to prevent.
@@ -21,12 +21,12 @@ exists to prevent.
 
 ```powershell
 $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
-& $RS 08_render_report.R
+& $RS scripts/08_render_report.R
 ```
 
-pandoc is not on the terminal PATH. `08_render_report.R` points `RSTUDIO_PANDOC` at the Positron
+pandoc is not on the terminal PATH. `scripts/08_render_report.R` points `RSTUDIO_PANDOC` at the Positron
 bundle (`%LOCALAPPDATA%/Programs/Positron/resources/app/quarto/bin/tools`). Rendering from inside
-Positron/RStudio works without that. If the `stopifnot` at `08_render_report.R:17` fires, pandoc
+Positron/RStudio works without that. If the `stopifnot` at `scripts/08_render_report.R:17` fires, pandoc
 wasn't found — report it rather than guessing another path.
 
 ## After rendering

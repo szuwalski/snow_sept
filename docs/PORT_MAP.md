@@ -4,7 +4,7 @@ Tracks porting the September EBS snow crab SAFE onto the **portable May 2026 Rmd
 staying faithful to the September 2025 SAFE format/content/style.
 
 - **Base (new `2026_snowcrab_safe_draft.Rmd`)** = May 2026 Rmd: `pacman::p_load`, `wtsGMACS`/`wtsUtilities`,
-  `source("0-models.R")`, results from `Models/rda_ModelsResLst.RData`. Portable, already renders.
+  `source("scripts/0-models.R")`, results from `Models/rda_ModelsResLst.RData`. Portable, already renders.
 - **Port source** = `archive_2025/2026_snowcrab_safe_draft_2025_reference.Rmd` (archived old Sept 2025 Rmd) — has the
   September-only sections but on the old sourced-gmr architecture (`.get_catch_df`, `read_admb`, …).
 - **Format reference** = `Reports/2025-09_SAFE_snow_crab.pdf` (+ `2025-09_SAFE_snow_crab_appendix.pdf`, `2025-09_ESP_snow_crab.pdf`).
@@ -25,7 +25,7 @@ Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · �
 | **E. Data** (Catch data, Survey biomass & size comp, Spatial distribution, Experimental survey selectivity) | ➕ | **Port whole section**; rewire figure/table code to portable arch ⛔ |
 | F. Analytic approach (History, Model description, Model selection/eval) | ✅ (D) | 🔁 align headings to SAFE letter scheme; carry 2026 model description |
 | Results (convergence, fits, population processes, MMB & mgmt quantities) | ✅ (E) | 🔁 update to accepted model ⛔ |
-| G. Calculation of the OFL (Tier 3, Tier 4) | ✅ (F) | 🔁 final single-model OFL; Tier-4/REMA from `07_calc_tier4.R` ⛔ |
+| G. Calculation of the OFL (Tier 3, Tier 4) | ✅ (F) | 🔁 final single-model OFL; Tier-4/REMA from `scripts/07_calc_tier4.R` ⛔ |
 | Calculation of the ABC + Author recommendations | ✅ (G) | 🔁 buffer 0.8; final ABC ⛔ |
 | Data gaps and research priorities | ✅ (H) | 🔁 refresh for 2026 |
 | Ecosystem considerations | ➕ | Port in (May folds minimal; Sept has full section) — ESP: `Reports/2025-09_ESP_snow_crab.pdf` |
@@ -33,8 +33,8 @@ Legend: ✅ present in base · 🔁 present but needs rewiring/2026 update · �
 | References | ✅ (J) | 🔁 merge reference lists |
 | Tables | ✅ (K) | 🔁 update; add Sept-only tables (management, status determination) ⛔ |
 | **Projections** | 🔁 stub in base (chunk ~L170–240, `do_proj`/`make_proj_fig` switches) | Wire up; needs converged model + MCMC draw ⛔ |
-| **Retrospective analysis** | ➕ | Port; run `06_run_retrospective.R` (10 peels) ⛔ |
-| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `05_run_jitter.R` (100 runs) ⛔ |
+| **Retrospective analysis** | ➕ | Port; run `scripts/06_run_retrospective.R` (10 peels) ⛔ |
+| **Jitter** | ✅ (base has jitter fig chunks) | 🔁 run `scripts/05_run_jitter.R` (100 runs) ⛔ |
 | Figures appendix (size comps, maturity, CPUE, BSFRF, etc.) | partial | 🔁 many `include_graphics("plots/*.png")`; regenerate PNGs ⛔ |
 
 ---
@@ -48,7 +48,7 @@ Old Sept Rmd figures/tables that use the sourced-gmr API must be re-expressed on
 | `M <- read_admb(.MODELDIR)` then `.get_catch_df(M)` | `wtsGMACS::extractRep1Results(reslst, ...)` / `reslst$repsLst[[case]]` |
 | `.get_cpue_df`, `.get_M_df`, `.get_sizeComps_df`, `.get_selectivity_df`, `.get_molt_prob_df`, `.get_gi_df` | wtsGMACS extractors (see how May base builds each figure) |
 | `compareFitsZCs(...)` | May base's size-comp comparison chunk |
-| Hardcoded `.MODELDIR = "../snow_2025_9/24_gmacs_sq/"` | `model_defs[...]` from `0-models.R` |
+| Hardcoded `.MODELDIR = "../snow_2025_9/24_gmacs_sq/"` | `model_defs[...]` from `scripts/0-models.R` |
 
 If exact reproduction of a specific old figure proves hard, that's when Cody's `gmr`/`gmacsr` source
 (EMAIL §2) becomes worth pulling.
@@ -59,10 +59,10 @@ If exact reproduction of a specific old figure proves hard, that's when Cody's `
 - `accepted_model` = `"25.1 gmacs (update + compfix + plus group + new_mat)"` → `Models/25_gmacs_update_newmat_plus_group/`
 - `reference_model` = `"25.1 gmacs"` → `Models/25_gmacs/`
 - `report_model`, `case_for_resids`, `case_for_data_table`, `case_for_mat_plot` repointed to these.
-- `0-models.R` keeps the full May list (index stability) with a TODO to prune after the results audit.
+- `scripts/0-models.R` keeps the full May list (index stability) with a TODO to prune after the results audit.
 
 ## Hard dependencies still needed before a full render
-1. ⛔ `Models/rda_ModelsResLst.RData` regenerated for the 2 September models (`03_build_results_object.R`).
+1. ⛔ `Models/rda_ModelsResLst.RData` regenerated for the 2 September models (`scripts/03_build_results_object.R`).
 2. ⛔ Model advanced to End year 2025 + run (needs 2026 data + executable pin — EMAIL §1).
 3. ⛔ Regenerated `plots/*.png` (retros, projections, jitter, size comps, n-at-len, tier-4).
 4. Audit every `model_defs[N]` / `reslst$repsLst[[...]]` index in the Rmd body against the 2-model set.
