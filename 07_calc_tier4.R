@@ -26,13 +26,15 @@
 ##                     F_OFL = M (status - alpha)/(1 - alpha). This is the FMP
 ##                     form and is what the October 2025 SSC specified for this
 ##                     stock (F_OFL 0.19, OFL 20.11 kt). The flat rule is
-##                     retained and reported as OFL_linear/OFL_baranov columns.
+##                     retained in the OFL_flat_* columns (OFL_linear and
+##                     OFL_baranov are back-compat aliases for the flat-rule
+##                     results).
 ##   OFL_EQN  = baranov  the author recommendation as of 2026-08-29. F_OFL is an
 ##                     instantaneous rate and M acts over the same year, so the
 ##                     yield is F's share of Z = F + M. The linear form F*B is
 ##                     reported alongside as OFL_linear.
-## Morphometric, 2026: reported (flat F, Baranov) 23.772 / ramp 18.449 /
-## linear 30.765 / ramp+linear 23.158 kt. (Ramp figures changed 2026-08-29 when
+## Morphometric, 2026: reported (ramp, Baranov) 18.449 / flat+Baranov 23.772 /
+## flat+linear 30.765 / ramp+linear 23.158 kt. (Ramp figures changed 2026-08-29 when
 ## BMSY_WINDOW_END was widened to the full 1982-2026 series; neither flat-F
 ## figure depends on it.)
 ##
@@ -67,11 +69,12 @@ NAT_M <- 0.27
 BETA  <- 0.25
 ALPHA <- 0.10
 
-## Which F_OFL the REPORTED OFL uses (settled 2026-08-30, per Grant: flat).
-## See the note at the top on why this is a departure from the FMP rule and not
-## an application of it -- backlog 7d.
-## FALSE = flat F_OFL = M above the beta closure. The ramp is retained and
-## reported alongside as a sensitivity, never dropped.
+## Which F_OFL the REPORTED OFL uses (settled 2026-08-30, per Grant: the ramp;
+## reconfirmed 2026-08-31 as the author-recommended basis). TRUE = the crab FMP
+## Tier 4 ramp, the rule the October 2025 SSC applied for this stock -- backlog
+## 7d. FALSE = flat F_OFL = M above the beta closure. Whichever is selected,
+## the other is retained and reported alongside as a sensitivity, never
+## dropped.
 ##
 ## "No ramp" is taken to mean the LINEAR RAMP between beta and 1 is removed, not
 ## that the beta closure is removed: below beta directed fishing is still
