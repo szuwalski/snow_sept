@@ -33,7 +33,7 @@
 ##   plots/jitter_param_attribution_<tag>.png
 ##
 ## Outputs -- ONLY when --model is REPORT_MODEL (copies of the above)
-##   Models/rda_jitter.RData                     read by SAFE_snow_gmacs.Rmd:976
+##   Models/rda_jitter.RData                     read by 2026_snowcrab_safe_draft.Rmd:976
 ##   plots/jittered_results_{ofl,rec,ssb}.png    the names the Rmd expects
 ##   plots/jitter_convergence.png
 ##   plots/jitter_param_attribution.png
@@ -106,7 +106,7 @@ TOP_PARAMS  <- 15L         # parameters reported in the attribution table
 ## Output naming -- WHY THIS EXISTS (2026-08-30)
 ## ---------------------------------------------------------------------------
 ## Until today this script wrote Models/rda_jitter.RData and five FIXED plot
-## paths regardless of --model. Those six paths are what SAFE_snow_gmacs.Rmd
+## paths regardless of --model. Those six paths are what 2026_snowcrab_safe_draft.Rmd
 ## reads for the ACCEPTED model (:976 and the figure chunks), so a jitter of any
 ## other model silently replaced the accepted model's diagnostics with a
 ## different model's, under the accepted model's labels. Nothing in the rendered
@@ -120,7 +120,7 @@ TOP_PARAMS  <- 15L         # parameters reported in the attribution table
 ## reach the SAFE by accident.
 ##
 ## OUTPUT_TAG reproduces the names already referenced by 0-models.R:215-217 and
-## SAFE_snow_gmacs.Rmd:543,4208-4212 -- stripping the "<yy>_gmacs_" prefix gives
+## 2026_snowcrab_safe_draft.Rmd:543,4208-4212 -- stripping the "<yy>_gmacs_" prefix gives
 ## male_only, stability, eqmdevs, combined, data2019. The accepted model is the
 ## one exception, kept as "26" because that is the name already in use. Use
 ## --tag to override for anything these rules do not cover (e.g. 25.2c).

@@ -20,7 +20,7 @@ hygiene.
   Found 2026-08-26: `Models/26_gmacs_update_newmat_plus_group/` reached this machine with
   `gmacs.par`, `gmacs.std`, `Gmacsall.std` and `run.log` intact but **no `Gmacsall.out`**, so the
   accepted Windows fit's results were simply absent and stage `collect` could not run. `git
-  check-ignore -v` confirms the match. Fix: scope the LaTeX rule (e.g. `/SAFE_snow_gmacs.out`) or
+  check-ignore -v` confirms the match. Fix: scope the LaTeX rule (e.g. `/2026_snowcrab_safe_draft.out`) or
   add `!Gmacsall.out`. Until then, a Gmacsall.out never travels with a commit.
 
 - [x] ~~**1c. `05`'s promotion rollback claimed success while doing nothing.**~~ Fixed 2026-08-24.
@@ -67,7 +67,7 @@ hygiene.
   check before any render:
 
   ```r
-  L <- readLines("SAFE_snow_gmacs.Rmd", warn = FALSE)
+  L <- readLines("2026_snowcrab_safe_draft.Rmd", warn = FALSE)
   m <- gregexpr("`r[ #][^`]*`", L)
   for (i in seq_along(L)) for (h in regmatches(L[i], m[i])[[1]])
     tryCatch(parse(text = sub("^`r[ #]", "", sub("`$", "", h))),
@@ -290,7 +290,7 @@ hygiene.
      silently" convention. If it is a placeholder it should be `NA`, which breaks the line the way
      the other structural gaps already do. **Source data behind a SAFE figure — Grant's call.**
 
-  3. **Nothing consumes the output.** `SAFE_snow_gmacs.Rmd` has no reference to
+  3. **Nothing consumes the output.** `2026_snowcrab_safe_draft.Rmd` has no reference to
      `historical_mating_mmb_est.png`. The old header claimed it was included "see the 2025
      reference Rmd, line 2631", but `Reports/` holds only published PDFs — no Rmd — so that
      citation pointed at nothing and was removed. Either add an include chunk (needs a section and
@@ -542,7 +542,7 @@ hygiene.
   *"rationale for time period used to define proxy BMSY (Tier 4)"*, which is `BMSY_WINDOW_END`
   (2025) — currently a code comment, not a documented rationale.
 
-- [ ] **8. `SAFE_snow_gmacs.Rmd:979` writes a CSV into the repo root at knit time.**
+- [ ] **8. `2026_snowcrab_safe_draft.Rmd:979` writes a CSV into the repo root at knit time.**
   `write.csv(tot_likes_t, file = paste0("tot_likes_t_", Sys.Date(), ".csv"))` — every render adds a
   new untracked, un-gitignored file. Write it to `data/derived/` or drop it.
 
@@ -621,10 +621,10 @@ hygiene.
   whether macOS should have its own ceiling before anyone runs a 100-run jitter there — do not
   just raise it. Raised 2026-08-24; see `docs/MACOS_GMACS.md`.
 
-- [ ] **12. Stale cross-references.** `SAFE_snow_gmacs.Rmd:67` cites `05_buck_read_results.R`
+- [ ] **12. Stale cross-references.** `2026_snowcrab_safe_draft.Rmd:67` cites `05_buck_read_results.R`
   (now `03_build_results_object.R`). `0-models.R:11-12` carries `TODO(Phase 3)`: audit every
   positional `model_defs[N]` use in the Rmd before pruning the list to the September set.
-  `SAFE_snow_gmacs.Rmd:98` — `>>> REVIEW: confirm comparison pairs once the 2026 results object exists`.
+  `2026_snowcrab_safe_draft.Rmd:98` — `>>> REVIEW: confirm comparison pairs once the 2026 results object exists`.
 
 - [ ] **13. Package loading.** `03_build_results_object.R:4` uses `require(wtsGMACS)` — warns
   instead of failing — and never loads `wtsUtilities` despite calling it at `:26`.
@@ -635,11 +635,11 @@ hygiene.
 
 - [ ] **14. Dependency pinning.** ~40 packages, 5 GitHub-only (`wtsGMACS`, `wtsUtilities`,
   `crabpack`, `rema`, `gmr`) whose install instructions live only in comments
-  (`SAFE_snow_gmacs.Rmd:44-52`, `07_calc_tier4.R:164`). No `renv.lock`, no `DESCRIPTION`, no
+  (`2026_snowcrab_safe_draft.Rmd:44-52`, `07_calc_tier4.R:164`). No `renv.lock`, no `DESCRIPTION`, no
   version pinning; R 4.5.1 is documented in prose only. A `packages.R` would be the cheap version;
   `renv` the real one.
 
-- **`SAFE_snow_gmacs.Rmd` — the max-gradient paragraph opening `## Model convergence and
+- **`2026_snowcrab_safe_draft.Rmd` — the max-gradient paragraph opening `## Model convergence and
   comparison` is still 2025 text.** It asserts that "only `Model 25.1d` fell below that threshold;
   the remaining 13 models had max |gradient| > 0.001, with `Model 25.3c` the largest at ~0.10" —
   hardcoded claims about a 14-model bracket that the September set does not contain. Left alone
@@ -745,7 +745,7 @@ convention and denominator.
 ## Done
 
 - [x] ~~The SAFE did not render at all: escaped backticks inside inline `` `r ` `` expressions at
-  `SAFE_snow_gmacs.Rmd:695` and `:804` truncated the expression, so knitr failed with
+  `2026_snowcrab_safe_draft.Rmd:695` and `:804` truncated the expression, so knitr failed with
   `unexpected INCOMPLETE_STRING` and `08_render_report.R` produced no PDF.~~ Both fixed
   2026-08-21 (804 by Grant, 695 here). Verified by parsing every inline expression in the file:
   **29 expressions, 0 failing.** Still to confirm with an actual knit.
@@ -836,7 +836,7 @@ the only reason it was recoverable is that the run directories under
 `Models/26_gmacs_update_newmat_plus_group/jitter/` survived.
 
 Two mitigations are already in:
-- `SAFE_snow_gmacs.Rmd` asserts `jitter$summary$model` is `26_gmacs_update_newmat_plus_group`, so a
+- `2026_snowcrab_safe_draft.Rmd` asserts `jitter$summary$model` is `26_gmacs_update_newmat_plus_group`, so a
   clobbered file now fails the knit loudly instead of printing another model's numbers.
 - Durable per-model copies exist for all seven configurations, `Models/rda_jitter_26.RData` included.
 

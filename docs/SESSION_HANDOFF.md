@@ -276,7 +276,7 @@ what fixed it. That missing file had killed the render at chunk 18 of 93 with an
 
 ## SAFE checklist gap analysis — 2026-08-28
 
-Audited `SAFE_snow_gmacs.Rmd` against `Reports/2026-08_checklist_crab_SAFE_review.pdf` and
+Audited `2026_snowcrab_safe_draft.Rmd` against `Reports/2026-08_checklist_crab_SAFE_review.pdf` and
 `Reports/2026-08_reminders_crab_SAFE_review.pdf`.
 
 **The section lettering does not match the guidelines, and two required sections are absent.**
@@ -416,7 +416,7 @@ MMB at realistic catch values.
      unchanged, male-only is 15).
    - `03_build_results_object.R` — third folder/label, plus a new guard that fails loudly if the
      labels here, in `0-models.R`, and the folders on disk ever disagree. Negative-tested.
-   - `SAFE_snow_gmacs.Rmd` — scenario table (`model-overview`; its `Jittered` column is a
+   - `2026_snowcrab_safe_draft.Rmd` — scenario table (`model-overview`; its `Jittered` column is a
      **positional** vector, now 15 long and assertion-guarded), a `Model 25.2c (males only)` entry
      under Model scenarios, the two assumption bullets, and a convergence/retrospective results
      paragraph. `accepted_model`/`reference_model` are untouched.

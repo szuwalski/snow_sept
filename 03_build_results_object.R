@@ -1,4 +1,4 @@
-#--read model files and create the results object consumed by SAFE_snow_gmacs.Rmd
+#--read model files and create the results object consumed by 2026_snowcrab_safe_draft.Rmd
 #--(September 2026 SAFE). Run from the snow_sept repo root:
 #--   & "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe" 03_build_results_object.R
 require(wtsGMACS)
@@ -27,7 +27,7 @@ fldrs = c("Models/25_gmacs/",
           "Models/26_gmacs_data2019/")
 
 #--create full (absolute) paths FIRST (file.path() drops names), THEN assign the case labels.
-#--These names MUST match the case selectors in SAFE_snow_gmacs.Rmd (reference_model /
+#--These names MUST match the case selectors in 2026_snowcrab_safe_draft.Rmd (reference_model /
 #--accepted_model) and the labels in 0-models.R.
 fldrs = file.path(dirPrj, fldrs)
 names(fldrs) = c("25.1 gmacs",

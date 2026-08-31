@@ -1,13 +1,13 @@
 # Handoff — September 2026 EBS snow crab SAFE, mechanical build
 
 **For:** Claude Code, working in the `snow_sept` repo on Grant's machine.
-**Goal:** produce the September 2026 snow crab SAFE by editing the working-copy `SAFE_snow_gmacs.Rmd`, porting/ drafting the sections specified below. Phase 1 is data-independent and can be done now; Phase 2 waits on the 2026 model runs.
+**Goal:** produce the September 2026 snow crab SAFE by editing the working-copy `2026_snowcrab_safe_draft.Rmd`, porting/ drafting the sections specified below. Phase 1 is data-independent and can be done now; Phase 2 waits on the 2026 model runs.
 
 ## Source documents (read these first)
 - `SEPT2026_SNOW_CRAB_BUILD_PLAN.md` (v3) — scope, direction, guideline reconciliation, risk-table SOP.
 - `PHASE1_SECTION_SKETCHES.md` — draft R Markdown for each section, referenced below as §1–§17.
 - Project memory: `project_sept2026_direction.md`, `sept2026_tier4_and_comments.md` — settled decisions.
-- Reference (do not edit): GitHub `szuwalski/snow_sept@main/SAFE_snow_gmacs.Rmd` = the accepted Sept-2025 final (source of ported sections); the working copy's own `stepchange` chunk (the `extract_mgmt_quantities()` idiom to reuse).
+- Reference (do not edit): GitHub `szuwalski/snow_sept@main/2026_snowcrab_safe_draft.Rmd` = the accepted Sept-2025 final (source of ported sections); the working copy's own `stepchange` chunk (the `extract_mgmt_quantities()` idiom to reuse).
 
 ## Non-negotiable direction (from prior decisions — do not relitigate)
 - **Base = the working copy** (modern `reslst`/`wtsGMACS` architecture). Port section *content* from the GitHub final; **do not** reintroduce the GitHub base's legacy `gmr`/`gmacsr` plumbing (`source.all()` of local forks, `M <- lapply(read_admb)`, direct `Gmacsall.out` reads outside `extract_mgmt_quantities()`).

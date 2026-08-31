@@ -12,7 +12,7 @@ Authors: Grant Adams and Cody Szuwalski. Inherited from the May 2026 CPT/model-s
 ## Repository layout
 
 ```
-SAFE_snow_gmacs.Rmd          # the SAFE report (bookdown::pdf_document2). Loads Models/rda_ModelsResLst.RData
+2026_snowcrab_safe_draft.Rmd          # the SAFE report (bookdown::pdf_document2). Loads Models/rda_ModelsResLst.RData
 0-models.R                   # model case definitions (model_defs) sourced by the Rmd
 
 01_prep_fishery_data.R       # ADFG fishery removals -> data/derived/ (retained/discard/bycatch inputs)
@@ -72,7 +72,7 @@ $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"
 & $RS 03_build_results_object.R     # rebuild Models/rda_ModelsResLst.RData
 & $RS 04_plot_recruitment_comparison.R; & $RS 05_run_jitter.R; & $RS 06_run_retrospective.R; & $RS 07_calc_tier4.R
 #   jitter BEFORE retrospective: a promotion changes the fit and invalidates any peels run first
-& $RS 08_render_report.R            # render SAFE_snow_gmacs.Rmd -> PDF
+& $RS 08_render_report.R            # render 2026_snowcrab_safe_draft.Rmd -> PDF
 ```
 
 The `.DAT` build (scripts 01/02) still ends in a **manual paste** step into the model `.DAT` file —

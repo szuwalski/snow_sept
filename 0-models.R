@@ -73,7 +73,7 @@ model_defs <- c(
 #-- Compact shortnames for tables and figures -----------------------------
 # One-to-one map keyed by the long labels in `model_defs`. The long labels are
 # INTERNAL case keys only -- they must match the names assigned in
-# 03_build_results_object.R and the case selectors in SAFE_snow_gmacs.Rmd, but
+# 03_build_results_object.R and the case selectors in 2026_snowcrab_safe_draft.Rmd, but
 # they never reach a table or figure. Everything the reader sees is the
 # letter-based shortname, applied via to_short().
 model_shorts <- c(

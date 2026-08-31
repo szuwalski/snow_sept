@@ -18,7 +18,7 @@
 ##
 ## Output: plots/historical_mating_mmb_est.png
 ##
-## NOT CURRENTLY INCLUDED BY THE SAFE (checked 2026-08-27). SAFE_snow_gmacs.Rmd
+## NOT CURRENTLY INCLUDED BY THE SAFE (checked 2026-08-27). 2026_snowcrab_safe_draft.Rmd
 ## has no reference to this figure, so the script runs and the PNG is written
 ## but nothing consumes it. The previous header cited "the 2025 reference Rmd,
 ## line 2631"; there is no Rmd in Reports/, only the published PDFs, so that

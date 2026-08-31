@@ -1,7 +1,7 @@
 # data/ reorganization + rename map (July 2026)
 
 Old → new paths for every `data/` file moved or renamed during the July 2026 cleanup. Use this when
-**porting figures/code from the archived reference Rmd** (`archive_2025/SAFE_snow_gmacs_2025_reference.Rmd`,
+**porting figures/code from the archived reference Rmd** (`archive_2025/2026_snowcrab_safe_draft_2025_reference.Rmd`,
 which still uses the OLD `data/<name>.csv` paths) and to trace any runtime "file not found" back to a rename.
 
 **Provider-named files were deliberately NOT renamed** (they must keep matching each delivery): all

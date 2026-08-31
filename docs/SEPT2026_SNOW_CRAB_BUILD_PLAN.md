@@ -2,7 +2,7 @@
 
 **For:** Claude Code working in `snow_sept/`
 **Supersedes:** v1 (`GUIDELINES_GAP_REVIEW.md`) and v2. v3 folds in an adversarial review that corrected two of the author's own earlier claims — see §0.
-**Inputs reconciled:** `SAFE_snow_gmacs.Rmd` (working copy) · GitHub `szuwalski/snow_sept@main/SAFE_snow_gmacs.Rmd` (canonical Sept 2025 final) · `NOAA/Guidelines/2026_Stock Assessment Guidelines.docx` · `AssessmentRequestsFromPlanTeams_SSC_ToShare.xlsx`
+**Inputs reconciled:** `2026_snowcrab_safe_draft.Rmd` (working copy) · GitHub `szuwalski/snow_sept@main/2026_snowcrab_safe_draft.Rmd` (canonical Sept 2025 final) · `NOAA/Guidelines/2026_Stock Assessment Guidelines.docx` · `AssessmentRequestsFromPlanTeams_SSC_ToShare.xlsx`
 **Date:** 2026-07-30
 
 ---
@@ -21,7 +21,7 @@ Also corrected: hybrids are **4 of ~14** working-copy candidates (not "the spine
 
 ## 1. Direction
 
-**Technical base = the working copy** (`snow_sept/SAFE_snow_gmacs.Rmd`): modern `reslst`/`wtsGMACS` architecture, de-hardcoded scripts, the May final model already staged. **Port the following complete sections from the GitHub Sept-2025 final** (they exist there and are dropped/stubbed in the working copy), converting each to the working copy's architecture as you go:
+**Technical base = the working copy** (`snow_sept/2026_snowcrab_safe_draft.Rmd`): modern `reslst`/`wtsGMACS` architecture, de-hardcoded scripts, the May final model already staged. **Port the following complete sections from the GitHub Sept-2025 final** (they exist there and are dropped/stubbed in the working copy), converting each to the working copy's architecture as you go:
 
 - `A. Summary of Major Changes` (numbered: Management / Input data / Methodology / Results)
 - Numbered Executive Summary (1–7) **with** the `continuity/management_table.csv` status-&-catch tables (kt + lbs, ≥95 mm + morphometric) and the OFL/ABC basis tables

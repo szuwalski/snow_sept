@@ -3,9 +3,9 @@
 Tracks porting the September EBS snow crab SAFE onto the **portable May 2026 Rmd architecture**,
 staying faithful to the September 2025 SAFE format/content/style.
 
-- **Base (new `SAFE_snow_gmacs.Rmd`)** = May 2026 Rmd: `pacman::p_load`, `wtsGMACS`/`wtsUtilities`,
+- **Base (new `2026_snowcrab_safe_draft.Rmd`)** = May 2026 Rmd: `pacman::p_load`, `wtsGMACS`/`wtsUtilities`,
   `source("0-models.R")`, results from `Models/rda_ModelsResLst.RData`. Portable, already renders.
-- **Port source** = `archive_2025/SAFE_snow_gmacs_2025_reference.Rmd` (archived old Sept 2025 Rmd) — has the
+- **Port source** = `archive_2025/2026_snowcrab_safe_draft_2025_reference.Rmd` (archived old Sept 2025 Rmd) — has the
   September-only sections but on the old sourced-gmr architecture (`.get_catch_df`, `read_admb`, …).
 - **Format reference** = `Reports/2025-09_SAFE_snow_crab.pdf` (+ `2025-09_SAFE_snow_crab_appendix.pdf`, `2025-09_ESP_snow_crab.pdf`).
 

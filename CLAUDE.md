@@ -67,7 +67,7 @@ round, an hour of peels is thrown away the moment a promotion lands.
 | 4 | *(GMACS)* | run `gmacs.exe` in the model dir, to convergence |
 | 5 | `03_build_results_object.R` | model dirs → `Models/rda_ModelsResLst.RData` |
 | 6 | `04`–`07` | numbers-at-length, **jitter, then retrospective** (+`06b`), Tier 4 |
-| 7 | `08_render_report.R` | `SAFE_snow_gmacs.Rmd` → PDF |
+| 7 | `08_render_report.R` | `2026_snowcrab_safe_draft.Rmd` → PDF |
 
 `R/` holds the shared function libraries (`gmacs_io.R`, `gmacs_jitter.R`). Nothing there runs on
 `source()`; `00`, `05`, and `06` all depend on it.
@@ -77,7 +77,7 @@ $RS = "C:/Program Files/R/R-4.5.1/bin/x64/Rscript.exe"   # run from repo root
 & $RS 00_advance_model.R <template_dir> <out_dir> <end_year> <out_dat_name> [growth_fix] [repo_root] [survey_end]
 ```
 
-`SAFE_snow_gmacs.Rmd` sources `0-models.R` (model labels) and loads
+`2026_snowcrab_safe_draft.Rmd` sources `0-models.R` (model labels) and loads
 `Models/rda_ModelsResLst.RData`. Case names must match across all three — see
 `03_build_results_object.R:16-21`.
 
