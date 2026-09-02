@@ -3,7 +3,17 @@ title: "The 2026 assessment for eastern Bering Sea snow crab"
 author: "Grant Adams and Cody Szuwalski"
 date: "September 2026"
 output:
-  word_document:
+  officedown::rdocx_document:
+    base_format: bookdown::word_document2
+    # Page numbers on every page are a checklist requirement. Pandoc's default
+    # reference.docx has no footer part at all, so Word output had none;
+    # this template differs from the default only by its footer: the short
+    # document title on the left (so reviewers can identify loose pages, GA
+    # request 2026-08-31) and a PAGE field on the right. See templates/README.md.
+    # The PDF output gets the same footer through fancyhdr in header-includes.
+    reference_docx: templates/reference_pagenumbers.docx
+    number_sections: false
+    fig_caption: true
     toc: true
   bookdown::pdf_document2:
     fig_caption: true
@@ -11,17 +21,25 @@ output:
     fig_width: 6
     number_sections: false
     toc: true
-  pdf_document:
-    toc: true
-  officedown::rdocx_document:
-    base_format: bookdown::word_document2
-    reference_docx: templates/reference_pagenumbers.docx
-    number_sections: false
-    fig_caption: true
+  word_document:
     toc: true
 header-includes:
 - \usepackage{geometry}
 - \geometry{margin=1in}
+# Running footer so reviewers can identify loose printed pages: short title on
+# the left, page number on the right (GA request, 2026-08-31). The Word output
+# gets the same footer from templates/reference_pagenumbers.docx.
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhf{}
+- \fancyfoot[L]{\footnotesize EBS snow crab assessment, September 2026}
+- \fancyfoot[R]{\thepage}
+- \renewcommand{\headrulewidth}{0pt}
+- \fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\footnotesize EBS snow crab assessment, September 2026}\fancyfoot[R]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+# flextable emits every table as a longtable and repeats the caption AND its
+# \label in the continuation head, so a short table that happens to straddle a
+# page break prints its number twice and is reported as a multiply-defined
+# label. needspace lets a small table reserve enough room to stay whole.
 - \usepackage{needspace}
 - \usepackage{pdflscape}
 - \newcommand{\blandscape}{\begin{landscape}}
