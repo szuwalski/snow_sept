@@ -71,21 +71,11 @@ mating_ess <- ggplot(pl_dat) +
   theme_bw() + ylab("Biomass (1,000 t)") + labs(color = "Assessment") +
   ggtitle("Morphometrically mature biomass at mating, not subject to selectivity")
 
-## --- Panel 3: the same, normalised within each assessment ------------------
-## Normalising strips the scale difference so the SHAPE revisions stand out.
-df_normalized <- pl_dat %>%
-  group_by(variable) %>%
-  mutate(normalized_value = value / max(value, na.rm = TRUE)) %>%
-  ungroup()
+## Panel 3 (normalized within each assessment) removed 2026-09-08 at the
+## author's request: reviewers found the normalized panel confusing.
 
-normie <- ggplot(df_normalized) +
-  geom_line(aes(x = Year, y = normalized_value, group = variable, col = variable),
-            linewidth = 1.2) +
-  theme_bw() + ylab("Normalized MMB") + labs(color = "Assessment") +
-  ggtitle("Normalized morphometrically mature biomass at mating, not subject to selectivity")
-
-png("plots/historical_mating_mmb_est.png", height = 10, width = 8, res = 400, units = "in")
-print(survey_ess / mating_ess / normie + plot_layout(guides = "collect"))
+png("plots/historical_mating_mmb_est.png", height = 6.7, width = 8, res = 400, units = "in")
+print(survey_ess / mating_ess + plot_layout(guides = "collect"))
 dev.off()
 
 cat(sprintf("Wrote plots/historical_mating_mmb_est.png (%d assessment vintages, years %d-%d)\n",
