@@ -4854,9 +4854,9 @@ if (mv_have) {
       "Where the accepted model's alternative minima differ, by parameter class. Movement is the range",
       "of each parameter across the", mv_n_opt, "retained minima, summed within class and shown as a share of",
       "the total. Range rather than variance because these are alternative solutions, not draws from a",
-      "distribution. Retained minima both converged and sit within 2 likelihood units of the best",
-      "found, which keeps this a description of the likelihood surface rather than of optimizer",
-      "failure. 'Sex allocation' is separate from male and female because it is the split between them."),
+      "distribution. Retained minima converged and lie within 2 likelihood units of the best fit,",
+      "so the table describes solutions the data barely separate, not failed runs.",
+      "'Sex allocation' is listed apart from male and female because it is the split between them."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "movement-table"))
 } else {
   cat("*Movement decomposition not found; run `05b_jitter_movement_decomposition.R`.*")
@@ -4883,11 +4883,9 @@ if (xm_have) {
     flextable::set_caption(
       caption = paste(
         "Movement between minima across four configurations, from the same decomposition.",
-        "Shares are comparable across rows. The absolute totals are ranges taken over different numbers of",
-        "retained minima and should be read as indicative only. The equilibrium backbone",
-        "cut male-parameter movement sharply while leaving the sex allocation untouched, so the sex allocation's",
-        "share rose, whereas the male-only model removes the sex allocation and with it almost all the movement.",
-        "Model 26.d1 is absent because too few of its runs cluster near its best fit to decompose."),
+        "Shares are comparable across rows. The absolute totals are ranges taken over different",
+        "numbers of retained minima and are indicative only. Model 26.d1 is absent because too few",
+        "of its runs cluster near its best fit to decompose."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "xmodel-table"))
 }
 ```
@@ -4904,7 +4902,7 @@ The two changes are complementary. Removing the sex allocation removes the large
 
 \newpage
 
-```{r conv-fig-accepted, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for the accepted model, Model 26.1b. Left to right, top to bottom: directed OFL against negative log likelihood, terminal male recruitment, terminal mature male biomass, and maximum gradient against likelihood. Each point is one of 100 runs. Separation into distinct groups of runs is the multimodality this appendix documents."}
+```{r conv-fig-accepted, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for the accepted model, Model 26.1b. Left to right, top to bottom: directed OFL against negative log likelihood, terminal male recruitment, terminal mature male biomass, and maximum gradient against likelihood. Each point is one of 100 runs. Separation into distinct groups of runs indicates multiple minima."}
 knitr::include_graphics(c("plots/_twosex_jitter_backup/jittered_results_ofl.png",
                           "plots/_twosex_jitter_backup/jittered_results_rec.png",
                           "plots/_twosex_jitter_backup/jittered_results_ssb.png",
@@ -4913,7 +4911,7 @@ knitr::include_graphics(c("plots/_twosex_jitter_backup/jittered_results_ofl.png"
 
 \newpage
 
-```{r conv-fig-attrib, echo=FALSE, out.width="46%", fig.cap="Parameter attribution for the accepted model (left) and the male-only sensitivity, Model 26.2 (right): the parameters that most separate the jitter minima, ranked by the standardized difference in fitted value between modes. This is the ranking the June 2026 SSC asked for."}
+```{r conv-fig-attrib, echo=FALSE, out.width="46%", fig.cap="Parameter attribution for the accepted model (left) and the male-only sensitivity, Model 26.2 (right): the parameters that most separate the jitter minima, ranked by the standardized difference in fitted value between modes, as requested by the June 2026 SSC."}
 knitr::include_graphics(c("plots/_twosex_jitter_backup/jitter_param_attribution.png",
                           "plots/_male_only_jitter/jitter_param_attribution_male_only.png"))
 ```
@@ -4947,7 +4945,7 @@ knitr::include_graphics(c("plots/jittered_results_ofl_eqmdevs.png",
 
 \newpage
 
-```{r conv-fig-combined, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d4 (combined), which applies all three fixes to the two-sex model at once. Panel order as above. It converged less often than any other configuration and no run met the gradient criterion. The dense cluster visible well above the best fit is the mode whose 16.7 percent share must not be read as a recovery rate."}
+```{r conv-fig-combined, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d4 (combined), which applies all three fixes to the two-sex model at once. Panel order as above. It converged less often than any other configuration and no run met the gradient criterion. The dense cluster well above the best fit holds 16.7 percent of runs but is not the best fit."}
 knitr::include_graphics(c("plots/jittered_results_ofl_combined.png",
                           "plots/jittered_results_rec_combined.png",
                           "plots/jittered_results_ssb_combined.png",
