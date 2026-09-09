@@ -772,7 +772,7 @@ if (mp_have) mp_table(1, "1,000 t", 2)
 if (mp_have) mp_table(MLB_PER_KT, "million lb", 2)
 ```
 
-The table reports the values used to set the harvest specifications in each year, not values re-estimated by the current assessment. Mature male biomass (MMB) and the minimum stock size threshold (MSST) come from two different tiers: Tier 3 estimates for 2021/22 to 2023/24 and Tier 4 estimates for 2024/25 and 2025/26, as accepted by the SSC in each year. The status determination for a crab year is made the following October, after that year's survey, and can use a different tier from the specification made the year before: the 2024/25 OFL and ABC were specified in October 2024 under Tier 3 (Table \@ref(tab:basis-ofl)), while the 2024/25 status determination was made in October 2025 using the Tier 4 assessment, and it is the determination values that are shown here. The drop in MMB from `r if (mp_have) .f(mp$mmb[mp$crab_year == "2023/24"], 2) else "NA"` to `r if (mp_have) .f(mp$mmb[mp$crab_year == "2024/25"], 2) else "NA"` kt reflects the change in tier. The subsequent increase to `r if (mp_have) .f(mp$mmb[mp$crab_year == "2025/26"], 2) else "NA"` kt for 2025/26 occurred within Tier 4 and reflects an increase in the smoothed observed survey biomass. The 2025/26 total allowable catch included a 1 million lb hybrid add-on. Two estimates of 2025/26 mature male biomass appear in this document: the `r if (mp_have) .f(mp$mmb[mp$crab_year == "2025/26"], 2) else "NA"` kt in the table is the estimate from the September 2025 assessment that was used to set the 2025/26 specification, and the `r .f(mmb_2026, 2)` kt in Table \@ref(tab:current-status) is the updated estimate for the same crab year from this assessment, which includes the 2026 survey. The minimum stock size threshold shown for 2024/25 and 2025/26, `r if (mp_have) .f(mp$msst[mp$crab_year == "2025/26"], 2) else "NA"` kt, is likewise the value specified in October 2025. This assessment's updated threshold is `r .f(msst_2026, 2)` kt (Table \@ref(tab:current-status)).
+The table reports the values used to set the harvest specifications in each year, not values re-estimated by the current assessment. Mature male biomass (MMB) and the minimum stock size threshold (MSST) come from two different tiers: Tier 3 estimates for 2021/22 to 2023/24 and Tier 4 estimates for 2024/25 and 2025/26, as accepted by the SSC in each year. The status determination for a crab year is made the following October, after that year's survey, and can use a different tier from the specification made the year before: the 2024/25 OFL and ABC were specified in October 2024 under Tier 3 (Table \@ref(tab:basis-ofl)), while the 2024/25 status determination was made in October 2025 using the Tier 4 assessment, and it is the determination values that are shown here. The drop in MMB from `r if (mp_have) .f(mp$mmb[mp$crab_year == "2023/24"], 2) else "NA"` to `r if (mp_have) .f(mp$mmb[mp$crab_year == "2024/25"], 2) else "NA"` kt reflects the change in tier. The subsequent increase to `r if (mp_have) .f(mp$mmb[mp$crab_year == "2025/26"], 2) else "NA"` kt for 2025/26 occurred within Tier 4 and reflects an increase in the smoothed observed survey biomass. The 2025/26 total allowable catch included a 1 million lb hybrid add-on. Two estimates of 2025/26 mature male biomass appear here: the `r if (mp_have) .f(mp$mmb[mp$crab_year == "2025/26"], 2) else "NA"` kt in the table is the estimate from the September 2025 assessment that was used to set the 2025/26 specification, and the `r .f(mmb_2026, 2)` kt in Table \@ref(tab:current-status) is the updated estimate for the same crab year from this assessment, which includes the 2026 survey. The minimum stock size threshold shown for 2024/25 and 2025/26, `r if (mp_have) .f(mp$msst[mp$crab_year == "2025/26"], 2) else "NA"` kt, is likewise the value specified in October 2025. This assessment's updated threshold is `r .f(msst_2026, 2)` kt (Table \@ref(tab:current-status)).
 
 The stock was determined to be overfished for 2024/25, when mature male biomass of `r if (mp_have) .f(mp$mmb[mp$crab_year == "2024/25"], 2) else "NA"` kt was below the minimum stock size threshold of `r if (mp_have) .f(mp$msst[mp$crab_year == "2024/25"], 2) else "NA"` kt, and it remains in the rebuilding plan. Overfishing did not occur in any of the five years shown: total catch was below the specified OFL.
 
@@ -951,7 +951,7 @@ Comments are reproduced below in italics and grouped by the meeting at which the
 
 ***2026(6) SSC.** The SSC recommends that the author only bring the Tier 4 model forward in October, to allow more time for development of a simpler, viable Tier 3 model.*
 
-The overfishing limit and acceptable biological catch recommended in this document are calculated under Tier 4 (Section F). `r n_models` Tier 3 models are presented to document progress on the convergence problems and are not proposed for specification. The type and purpose of each is stated in Table \@ref(tab:model-overview).
+The recommended overfishing limit and acceptable biological catch are calculated under Tier 4 (Section F). `r n_models` Tier 3 models are presented to document progress on the convergence problems and are not proposed for specification. The type and purpose of each is stated in Table \@ref(tab:model-overview).
 
 
 ***2026(6) SSC.** The SSC supports bringing forward the composition correction and the expanded plus group in future models, as these appear to be clear technical improvements and corrections to the treatment of size compositions (>135 mm carapace width) that were previously ignored.*
@@ -966,7 +966,7 @@ The immature survey index is not included in any model presented here. The under
 
 ***2026(6) SSC.** The SSC notes that, with a new lead author, this may be an opportunity to strip the model down to a minimal parameter set that avoids convergence issues and then add back biological or process features as needed while maintaining model stability. This sequential approach to increasing model complexity by unfixing (estimating) parameters can be informed by the existing correlations among parameters in Model 25.2c.*
 
-`Model 26.2` is a first step in this direction. Removing the female population reduces the estimated parameter count from 412 to 234 and improves numerical behavior on every diagnostic examined: the Hessian is better conditioned, jittering recovers the model's own best fit in 25.3 percent of converged runs compared with 1.3 percent for the two-sex model, and the retrospective pattern in both mature male biomass and recruitment is smaller (Section E). The full sequential exercise (fixing the parameters that can be fixed, confirming convergence, then re-estimating them one group at a time in an order informed by the estimated correlations) has not been completed for this cycle. This will be conducted for the January 2027 modeling workshop starting from the male-only model.
+`Model 26.2` is a first step in this direction. Removing the female population reduces the estimated parameter count from 412 to 234 and improves the numerical behavior of the model markedly (Section E). It is presented as a sensitivity, not as a candidate for specification. A staged simplification of the male-only model, removing parameters in sequence and testing convergence at each step, has not been carried out and is the obvious next step.
 
 
 ***2026(6) SSC.** For potential new Tier 3 models brought forward in 2027, the SSC recommends that the assessment include a focused convergence section that identifies which parameters separate the jitter clouds, including correlation diagnostics, likelihood profiles for terminal MMB, recent recruitment, M, and OFL, and targeted model simplification runs. Those simplifications should be targeted rather than broad. Examples include fixing the recruitment sex ratio at 50:50, and reducing confounding among growth, M, and selectivity.*
@@ -981,7 +981,7 @@ Not completed for this cycle. See the response to the October 2025 SSC comment b
 
 ***2026(6) SSC.** The SSC recommends that future snow crab SAFEs include a “Rebuilding Analysis and Update” section as appropriate, given the stock’s 2021 overfished determination.*
 
-Section H of this document reports the status of the rebuilding plan adopted under Amendment 53, its relationship to the two earlier plans, and progress toward the rebuilt threshold on the basis used for the specification.
+Section H reports the status of the rebuilding plan adopted under Amendment 53, its relationship to the two earlier plans, and progress toward the rebuilt threshold on the basis used for the specification.
 
 
 ***2026(6) SSC.** The SSC agrees with the CPT that it is premature to include hybrid catch data in the snow and Tanner crab assessment models … the SSC agrees that uncertainties associated with hybrids can be accounted for in existing buffer setting processes for Tanner and snow crab, though the SSC cautions against a predetermined direction in modifying any buffer, recognizing this uncertainty could go either way.*
@@ -991,12 +991,12 @@ No hybrid catch or survey data are included in any model presented here. Hybrid-
 
 ***2026(5) CPT.** The base model brought forward was model 25.3 (which was mistakenly labeled as model 25 in the proposed model document and presentation), the author- and CPT-recommended model from 2025 … Numbers for new models that were brought forward at this meeting were mistakenly labeled as corresponding to 2025 rather than 2026, and this will be corrected for the September CPT meeting.*
 
-The models are renumbered accordingly in this document. The 2025 accepted assessment is `Model 25.3`, and the runs introduced in May 2026 are numbered 26.x. The correspondence with the numbering used in the May 2026 preliminary assessment is given under Model scenarios in Section E, because the June 2026 SSC report refers to the accepted configuration by its May number, `Model 25.2c` (`Model 26.1` here), and the review checklist asks that model numbers be cross-validated against those the SSC endorsed.
+The models are renumbered accordingly. The 2025 accepted assessment is `Model 25.3`, and the runs introduced in May 2026 are numbered 26.x. The correspondence with the numbering used in the May 2026 preliminary assessment is given under Model scenarios in Section E, because the June 2026 SSC report refers to the accepted configuration by its May number, `Model 25.2c` (`Model 26.1` here), and the review checklist asks that model numbers be cross-validated against those the SSC endorsed.
 
 
 ***2026(5) CPT.** The CPT noted that the authors did not present an analysis the CPT had previously requested: a model run with only data through 2019 to test the hypothesis that the model convergence problems stem from difficulties estimating recruitment following the population crash and the lack of 2020 survey data … The CPT continues to request this analysis as the authors seek to understand the causes of the convergence problems.*
 
-This analysis is presented as `Model 26.1c` (Section E). Truncating the data did not resolve the convergence problems. It made them worse. More jitter runs returned a usable fit than for the model with all of the data, and more met the conventional gradient criterion, but the runs converged to ten distinct minima instead of six, only 1.1 percent of converged runs recovered the best fit (compared with 1.3 percent for the full model), and the directed OFL across the runs ranged from zero to 158.9 kt (compared with 81.8 to 90.6 kt for the full model). The convergence problems are therefore not attributable to estimating recruitment across the collapse and the missing 2020 survey. The run is reported as a diagnostic and is not proposed for specification. Its accepted fit also does not meet the 1e-3 gradient criterion before polishing.
+This analysis is presented as `Model 26.1c` (Section E). Truncating the data did not resolve the convergence problem. The 2019 model converges more often and more of its runs meet the conventional gradient criterion, but it settles into ten distinct minima instead of six, and only 1.1 percent of converged runs recover the best fit, against 1.3 percent for the full model. The absence of the 2020 survey is therefore not the source of the multimodality.
 
 
 ***2026(5) CPT.** As an additional step to investigate the convergence problems, the CPT recommended that the authors take the following approach: fix most of the model parameters that can be fixed, confirm that the model run with very few parameters converges, then add estimation of parameters sequentially and evaluate when convergence fails. The CPT also recommended that the authors look at the parameter covariance matrix, pull out the top two or three parameters that are highly correlated, and explore the effects of those parameters on model convergence.*
@@ -1021,17 +1021,17 @@ No hybrid model is presented. The May 2026 hybrid candidates and their results r
 
 ***2025(10) SSC.** Snow crab was declared overfished in 2021, but the SAFE did not include a section on “Rebuilding Analysis and Update.” The SSC recommends that this section be included in future SAFEs as appropriate.*
 
-Section H of this document reports progress toward rebuilding against the 2026 survey, together with the definition of the rebuilt threshold, the rebuilding period, and the projections underlying it.
+Section H reports progress toward rebuilding against the 2026 survey, together with the definition of the rebuilt threshold, the rebuilding period, and the projections underlying it.
 
 
 ***2025(10) SSC.** The SSC considered convergence problems with Model 25.3 to be severe enough to prevent its use for harvest recommendations. Due to this uncertainty, the SSC recommends the Tier 4 approach using mature male biomass as a fallback until the Tier 3 model's convergence and identifiability are clearly improved … The SSC intends this be a temporary approach until an acceptable Tier 3 model can be developed.*
 
-The harvest specification recommended in this document is calculated under Tier 4 on morphometrically mature male biomass, following this recommendation and the June 2026 SSC recommendation that only the Tier 4 model be brought forward. Results for the large-male (>= 95 mm) and preferred-male (> 101 mm) definitions are reported for comparison (Table \@ref(tab:tier4-currencies)) but are not the basis of the recommendation. Convergence and identifiability of the Tier 3 model improved on several diagnostics this cycle, but the multiple minima persist, so the Tier 4 approach remains the author-recommended basis for management advice.
+The recommended harvest specification is calculated under Tier 4 on morphometrically mature male biomass, following this recommendation and the June 2026 SSC recommendation that only the Tier 4 model be brought forward. Results for the large-male (>= 95 mm) and preferred-male (> 101 mm) definitions are reported for comparison (Table \@ref(tab:tier4-currencies)) but are not the basis of the recommendation. Convergence and identifiability of the Tier 3 model improved on several diagnostics this cycle, but the multiple minima persist, so the Tier 4 approach remains the author-recommended basis for management advice.
 
 
 ***2025(10) SSC.** The SSC recommends that the assessment author explore strategies to constrain the model complexity during this period. For example, reducing the number of years with increased natural mortality may provide the model enough constraint to allow model convergence. More generally, the snow crab assessment would likely benefit from a decrease in flexibility to ensure convergence and stable, interpretable parameter estimates and results.*
 
-`Model 26.2` addresses this directly by removing the female population and 178 of the 412 estimated parameters. It is the best-behaved model in the set on the diagnostic most relevant to this comment: the fraction of converged jitter runs recovering each model's own best fit, 25.3 percent compared with 1.1 to 6.1 percent for the three other models jittered (Section E). The number of years with an additional mortality event has not been reduced. Both the 2018 and 2019 events are retained in all models presented. The second immature-female natural mortality block is the one parameter that is clearly not identified from these data, and whether it should be fixed instead of estimated is put to the Plan Team under Model convergence and comparison. Structural experiments that fix the immature-female mortality deviation are reported in Appendix B (experiments 26.d1 and 26.d4). Fixing it did not resolve the multimodality. A run with a single mortality event has not been evaluated.
+`Model 26.2` addresses this by removing the female population and 178 of the 412 estimated parameters. It is the best-behaved model on the diagnostic most relevant here: 25.3 percent of converged jitter runs recover its own best fit, against 1.1 to 6.1 percent for the other three models jittered (Section E). The number of mortality-event years has not been reduced; both 2018 and 2019 are retained in all models. The second immature-female mortality block is the one parameter clearly not identified from these data, and whether to fix it is put to the Plan Team under Model convergence and comparison. Experiments that fix it are reported in Appendix B (26.d1 and 26.d4); fixing it did not resolve the multimodality. A single-mortality-event run has not been evaluated.
 
 
 ***2025(10) SSC.** Table 13 also raises questions about what is actually being fit in the GMACS model. A significant number of parameters are either showing estimates of zero or are estimated identically to other parameters. If it is true that these parameters are active and being estimated, that would clearly cause some of the pathologies seen in the jitter analysis.*
@@ -1051,7 +1051,7 @@ Not undertaken. The growth data and the model fits to them are shown in Figure \
 
 ***2025(10) SSC.** As with a similar SSC recommendation for Tanner crab, the SSC recommends consideration of different inclusions/exclusions of hybrids into the snow crab assessment (i.e., in survey and catch data) to evaluate sensitivity to these options and ensure an internally consistent approach.*
 
-In the May 2026 preliminary assessment we evaluated the inclusion of hybrids in the snow crab assessment by including them in both the survey and the fishery data. The effect on management advice was minor. The CPT in May 2026 and the SSC in June 2026 both concluded that hybrid catch and survey data should not be included in the assessment models at this time, and no hybrid model is brought forward here. One data problem remains: retained catch already contains both hybrids and snow crab, and there is currently no method for separating them, so the retained time series is identical between the hybrid and non-hybrid configurations. That unaccounted removal is a source of uncertainty in the OFL and is one of the considerations bearing on the ABC buffer discussed in Section G. Note that the June 2026 SSC cautioned against a predetermined direction in modifying the buffer.
+The May 2026 preliminary assessment evaluated including hybrids in both the survey and fishery data; the effect on management advice was minor. The CPT in May 2026 and the SSC in June 2026 both concluded hybrid data should not be included at this time, and no hybrid model is brought forward. One data problem remains: retained catch already contains both hybrids and snow crab with no method to separate them, so the retained series is identical between configurations. That unaccounted removal is a source of uncertainty in the OFL and bears on the ABC buffer in Section G. The June 2026 SSC cautioned against a predetermined direction in modifying the buffer.
 
 
 ***2025(10) SSC.** The SSC recommends that research be conducted to evaluate whether clutch fullness is a reliable indicator of female reproductive output, using histology or lab rearing experiments.*
@@ -1099,9 +1099,9 @@ This was not undertaken for this cycle.
 
 ***2025(9) CPT.** There is a strong consensus by the CPT that the best available scientific information supports the conclusion that the status quo definition is not appropriate in terms of conserving the reproductive potential for the stock, or in terms of supporting optimal yield of commercial-sized animals for harvest. The CPT therefore again recommended a change to the definition of maturity for this stock, from morphometric maturity to >= 95 mm CW.*
 
-The CPT and SSC have not agreed on this question. The CPT recommended the >= 95 mm definition in 2024 and again in September 2025. On both occasions the SSC concluded that the available region-specific information was not sufficient to support the change and directed that morphometrically mature male biomass be retained, including for the Tier 4 fallback. This document follows the SSC's direction and reports morphometrically mature male biomass, with the large-male (>= 95 mm) and preferred-male (> 101 mm) definitions computed for comparison in Table \@ref(tab:tier4-currencies). The choice of maturity definition changes the Tier 4 OFL `r .f(ofl_curr_ratio, 0)`-fold (`r .f(ofl_2026, 2)` kt against `r .f(min(tier4_by_currency$OFL), 2)` kt). Under the sloped control rule adopted this cycle the choice matters more, because both large-male currencies sit just above the closure threshold, where the ramp reduces F~OFL~ to near zero.
+The CPT and SSC have not agreed on this question. The CPT recommended the >= 95 mm definition in 2024 and again in September 2025. On both occasions the SSC concluded that the available region-specific information was not sufficient to support the change, and directed that morphometric maturity remain the basis. The October 2025 SSC report is the most recent direction and is what the recommendation follows.
 
-The authors' position is to follow the SSC's direction: morphometrically mature male biomass is the recommended definition of maturity for the Tier 4 model and the harvest specification. The concern the CPT raises remains valid. A large fraction of the population is morphometrically mature at sizes the fishery does not retain, so reference points on this definition can permit the removal of essentially all large males while the trend in large males is negative. This document therefore continues to report the large-male and preferred-male definitions alongside the recommendation and will state directly whenever the recommended specification would allow removal of a large proportion of large males. For scale this cycle, the recommended OFL of `r .f(ofl_2026, 2)` kt is `r .f(100*ofl_2026/survey_large_2026, 0)` percent of the observed large-male (>= 95 mm) survey biomass and `r .f(100*ofl_2026/survey_pref_2026, 0)` percent of the observed preferred-male (> 101 mm) survey biomass in 2026 (Table \@ref(tab:survey-currencies)). This comparison bears on the ABC buffer discussed in Section G.
+The authors follow the SSC's direction: morphometrically mature male biomass is the recommended definition for the Tier 4 model and the harvest specification. The CPT's concern remains valid. A large fraction of the population is morphometrically mature at sizes the fishery does not retain, so reference points on this definition can permit removing essentially all large males while the trend in large males is negative. The large-male and preferred-male definitions are therefore reported alongside the recommendation. For scale, the recommended OFL of `r .f(ofl_2026, 2)` kt is `r .f(100*ofl_2026/survey_large_2026, 0)` percent of observed large-male (>= 95 mm) survey biomass and `r .f(100*ofl_2026/survey_pref_2026, 0)` percent of preferred-male (> 101 mm) biomass in 2026 (Table \@ref(tab:survey-currencies)). This bears on the ABC buffer in Section G.
 
 
 ***2025(6) SSC.** The maximin analysis should be completed assuming a Ricker stock-recruitment relationship, but including the same compensation ratios as the original Clark (1991) analysis.* 
@@ -1153,12 +1153,12 @@ The analysis was not extended beyond what was presented in appendix A of the 202
 
 ***2024(10) SSC.** The SSC again requests an analysis of the probability of maturing/terminal molt which addresses the observation error in these data and the lack of a monotonically increasing curve. A hierarchical analysis that treats years as random effects might be a starting point. The SSC would also like to better understand the sampling design for the molt data and is concerned about the weighting of the spatial samples in the analysis. Weighting should be based on abundance if the sampling rate differs by area (which it would, unless abundance were uniform and/or the targets were in direct proportion to abundance).*
 
-The Kodiak lab presented its workflow for analyzing these data to the CPT in January 2025, and a summary was given to the SSC. The revised workflow, which fits a spatiotemporal `sdmTMB` model to the chela-based maturity classifications and borrows information across years and locations for size bins with sparse chela data, was recommended for adoption by the CPT in May 2026 and is used in every model presented here other than the rolled-forward 2025 model, which retains the legacy series. The two can therefore be compared directly (Figure \@ref(fig:predmat)). The revised series shows a markedly weaker temporal trend in the probability of terminal molt at intermediate sizes. The observation error in the maturity data is still not propagated into the assessment: the ogive enters the model as a fixed input rather than as data with an associated likelihood, which remains an area for improvement. The revised workflow incorporates spatial weighting directly through the spatiotemporal model. See Ryznar (in prep) for details.
+The Kodiak lab presented its workflow to the CPT in January 2025, with a summary to the SSC. The revised workflow fits a spatiotemporal `sdmTMB` model to the chela-based maturity classifications, borrowing information across years and locations for size bins with sparse data, and incorporates spatial weighting directly. The CPT recommended it in May 2026 and it is used in every model except the rolled-forward 2025 model, which retains the legacy series, so the two can be compared directly (Figure \@ref(fig:predmat)). The revised series shows a markedly weaker temporal trend at intermediate sizes. Observation error is still not propagated: the ogive enters as a fixed input, not as data with a likelihood. See Ryznar (in prep).
 
 
 ***2024(10) SSC.** Investigate whether there is information outside the assessment model (e.g., larval or post-settlement data) or in the model, supporting estimated skewed sex-ratios at recruitment and the mismatch between recent large recruitments for males and females occurring in different years. Explore whether the estimated large differences in male and female recruitment years could be related to the lack of fit to molt-increment data.*
 
-No new information has come to light on why this might be the case. Previous discussion centered on the possibility that different spatial distributions by sex of small crab could expose them to different environments, which could alter what we perceive as recruitment five years after settlement. While this is an interesting scientific question, solving it will not address the central management problem: commercially preferred males have been at historic lows over the last decade. Removing the females from the model is a step toward focusing on that problem, and that step is taken here: `Model 26.2` estimates male recruitment only and is presented as a sensitivity (Section E). The related request, to explore whether the divergence between male and female recruitment years is connected to the lack of fit to the molt-increment data, has not been taken up. Removing the females sets it aside rather than answering it.
+No new information has come to light on why this might be the case. Previous discussion centered on the possibility that different spatial distributions by sex of small crab expose them to different environments, altering perceived recruitment five years after settlement. That is an interesting scientific question, but solving it will not address the central management problem: commercially preferred males are at historic lows. Removing the females focuses the model on that problem, and `Model 26.2` does so as a sensitivity (Section E). The related request, to examine whether the male-female divergence connects to the lack of fit to the molt-increment data, has not been taken up; removing the females sets it aside instead of answering it.
 
 
 ***2024(10) SSC.** Geostatistical (e.g. VAST) modeling of trawl survey data including both the NBS and EBS should be prioritized. This could help understand some of the inconsistent recruitment/growth trends observed in recent years as well as prepare for potential changes in stock distribution or productivity under future warming of the Bering Sea. Geostatistical modeling should evaluate alternative error distributions and other model configurations as appropriate.*
@@ -1179,13 +1179,13 @@ Observation error is still not propagated into the assessment: the maturity ogiv
 
 ***2024(6) SSC.** The SSC recommends that this model be brought forward in the fall but requests that an additional Tier 4 model be provided for comparison, as recommended in the Simpler Modeling Workshop report and requested in the SSC’s June 2023 and October 2023 Reports. This additional model would use the random effects model (REMA) to smooth survey estimates and would not decrement with natural mortality.*
 
-A Tier 4 assessment using the REMA model to smooth the survey estimates, without a decrement for natural mortality, has been included in each assessment since 2024. It is presented in Section F of this document, where it is the basis of the recommended specification rather than a comparison.
+A Tier 4 assessment using the REMA model to smooth the survey estimates, without a decrement for natural mortality, has been included in each assessment since 2024. It is presented in Section F, where it is the basis of the recommended specification rather than a comparison.
 
 \newpage
 
 # C. Introduction
 
-Studies and data relevant to key population and fishery processes are discussed below to provide background for the modeling choices made in this assessment. A description of the model is available in the GMACS repository (https://github.com/GMACS-project), and the files needed to reproduce this assessment are archived in a separate repository. Both are also linked at the end of this document.
+Studies and data relevant to key population and fishery processes are discussed below to provide background for the modeling choices made in this assessment. A description of the model is available in the GMACS repository (https://github.com/GMACS-project), and the files needed to reproduce this assessment are archived in a separate repository. Both are linked in Section J.
 
 ## Distribution
 Snow crab (*Chionoecetes opilio*) are distributed on the continental shelf of the Bering Sea, Chukchi Sea, and in the western Atlantic Ocean as far south as Maine.  In the Bering Sea, snow crab are distributed widely over the shelf and are common at depths less than ~200 meters (see tech memo; Zacher et al., 2026). Smaller crab tend to occupy more inshore northern regions and mature crab occupy deeper areas to the south of the juveniles (see Zacher et al., 2026; Zheng et al. 2001). The eastern Bering Sea population within U.S. waters is managed as a single stock. However, the distribution of the population may extend into Russian waters to an unknown degree.
@@ -1376,7 +1376,7 @@ knitr::include_graphics("plots/size_bins_comp_Kodiak_m.png")
 knitr::include_graphics("plots/n_at_l_f.png")
 ```
 
-Mature male size composition data were calculated by multiplying the total numbers at length for new shell male crab by a vector of observed proportion of mature males at length. All old shell crab of both sexes were assumed to be mature.  New shell crab were demarcated as any crab with shell condition index <= 2. The biomass of new and old shell mature individuals was calculated by multiplying the vector of numbers at length by weight at length. These vectors were then summed by sex to provide the input for assessment (Table \@ref(tab:obsbio)).  Input sample sizes are specified as 100 for both sexes and maturity states for all years of survey size composition data.
+Mature male size composition data were calculated by multiplying the total numbers at length for new shell male crab by a vector of observed proportion of mature males at length. All old shell crab of both sexes were assumed to be mature.  New shell crab were demarcated as any crab with shell condition index <= 2. The biomass of new and old shell mature individuals was calculated by multiplying the vector of numbers at length by weight at length. These vectors were then summed by sex to provide the input for assessment (Table \@ref(tab:obsbio)). The full observed survey series for all three maturity definitions, together with total survey abundance, is listed in Table \@ref(tab:survey-series).  Input sample sizes are specified as 100 for both sexes and maturity states for all years of survey size composition data.
 
 ```{r obsbio, echo=FALSE, warning=FALSE, message=FALSE}
 ## Observed survey biomass with its sampling CV -- a checklist requirement
@@ -1481,7 +1481,7 @@ knitr::include_graphics("continuity/background/sample_sizes.png")
 
 The Generalized Model for Assessing Crustacean Stocks (GMACS) was adopted as the assessment platform for snow crab in 2022 after a demonstration that GMACS could effectively reproduce the dynamics of the status quo model and offered structural improvements. GMACS is an integrated, size-structured model developed using automatic differentiation software developed as a set of libraries under C++ (ADModel Builder).  ADModel Builder can estimate a large number of parameters in a non-linear model using automatic differentiation software extended from Griewank and Corliss (1991) and developed into C++ class libraries.  GMACS version 2.20.34 was adopted for this assessment following the January 2026 CPT meeting and is used for every Tier 3 model presented. Newer GMACS releases have since superseded this version. It is retained here so that all models in this cycle are fit with the version the CPT reviewed.
 
-The snow crab population dynamics model tracks the number of crab of sex *s*,  maturity state *m*, during year *y* at width *w*, N~*s,m,y,w*~. A terminal molt was modeled in which crab move from an immature to a mature state, after which no further molting occurred. The mid-points of the size bins tracked in the model spanned from 27.5 to 132.5 mm carapace width, with 5 mm size classes. The number of estimated parameters differs among the models: 407 in `Model 25.3`, `Model 26.1` and `Model 26.1a`, 412 in `Model 26.1b`, 386 in `Model 26.1c`, and 234 in `Model 26.2`. Parameters estimated within the assessment included those associated with the population processes recruitment, growth, natural mortality (subject to an informative prior and two years of additional 'mortality events' estimated in 2018 and 2019), fishing mortality, selectivity (fisheries and survey), and catchability. The yearly probability of undergoing terminal molt, weight at size, discard mortality, bycatch mortality, variance in growth increment, and parameters associated with proportion of recruitment allocated to size bin were estimated outside of the model or specified. The control files specifying the population dynamics are available from the GMACS repository linked at the end of this document.
+The snow crab population dynamics model tracks the number of crab of sex *s*,  maturity state *m*, during year *y* at width *w*, N~*s,m,y,w*~. A terminal molt was modeled in which crab move from an immature to a mature state, after which no further molting occurred. The mid-points of the size bins tracked in the model spanned from 27.5 to 132.5 mm carapace width, with 5 mm size classes. The number of estimated parameters differs among the models: 407 in `Model 25.3`, `Model 26.1` and `Model 26.1a`, 412 in `Model 26.1b`, 386 in `Model 26.1c`, and 234 in `Model 26.2`. Parameters estimated within the assessment included those associated with the population processes recruitment, growth, natural mortality (subject to an informative prior and two years of additional 'mortality events' estimated in 2018 and 2019), fishing mortality, selectivity (fisheries and survey), and catchability. The yearly probability of undergoing terminal molt, weight at size, discard mortality, bycatch mortality, variance in growth increment, and parameters associated with proportion of recruitment allocated to size bin were estimated outside of the model or specified. The control files specifying the population dynamics are available from the GMACS repository linked in Section J.
 
 A lognormal distribution was assumed for all catch and index time-series, while a robust multinomial was assumed for all size composition data. No likelihood weights were used in the assessment.
 
@@ -1526,7 +1526,7 @@ The models presented here are numbered on the 2026 cycle, following the May 2026
 | Model 26.1c | Model 25.2e (2019 data) | 2019 | 26.1b truncated to 2019, convergence diagnostic |
 | Model 26.2 | Model 26.1 | 2025 | 26.1b with the female population removed |
 
-The configuration the June 2026 SSC report calls `Model 25.2c` is `Model 26.1` in this document, and the author-preferred run, `Model 26.1b`, is that same configuration with the two data corrections and a further year of data.
+The configuration the June 2026 SSC report calls `Model 25.2c` is `Model 26.1` here, and the author-preferred run, `Model 26.1b`, is that same configuration with the two data corrections and a further year of data.
 
 #### The models {-}
 
@@ -1581,7 +1581,7 @@ The practical cost of the multiple minima is visible in `Model 26.1`. The jitter
 `r if (jit_have && jit_multimodal) sprintf("The runs converged to %d distinct minima (Figure \\@ref(fig:jitter)), confirming that the multimodality reported in the 2025 preliminary and final assessments persists in the 2026 model. The largest cluster of solutions accounted for %s%% of the runs that reached a minimum, but that cluster is not the best fit: the solution adopted here was reached by only %s of them. Across all runs, the directed OFL ranged from %s to %s kt and mature male biomass in %s ranged from %s to %s kt, so the choice of starting values, not the data, moves the management quantities across that range. The same separation is visible in male recruitment (Figure \\@ref(fig:jitt-rec)) and in MMB (Figure \\@ref(fig:jitt-ssb)).", jit_nmodes, jit_fmt(jit_pct_best,1), jit_fmt(jit_n_at_base,0), jit_fmt(jit_ofl_min,2), jit_fmt(jit_ofl_max,2), jit_fmt(jit_term_yr,0), jit_fmt(jit_mmb_min,1), jit_fmt(jit_mmb_max,1))`
 `r if (jit_have && !jit_multimodal) sprintf("The runs converged to a single minimum (Figure \\@ref(fig:jitter)); the multimodality reported in the 2025 preliminary and final assessments is not evident in the 2026 model. The directed OFL across the runs ranged from %s to %s kt and mature male biomass in %s from %s to %s kt, which is the residual spread within one minimum, not a separation between minima.", jit_fmt(jit_ofl_min,2), jit_fmt(jit_ofl_max,2), jit_fmt(jit_term_yr,0), jit_fmt(jit_mmb_min,1), jit_fmt(jit_mmb_max,1))`
 
-`r if (jit_have && jit_improve > 0.001 && jit_promoted) sprintf("One jitter run found a better fit than the starting solution, improving the negative log likelihood by %s units. Following the convention used in the 2025 assessment, that run was adopted as the reported model and re-fit with the Hessian; all quantities in this document derive from it. The provenance of that fit, including its random seed, is recorded with the model.", jit_fmt(jit_improve,3))`
+`r if (jit_have && jit_improve > 0.001 && jit_promoted) sprintf("One jitter run found a better fit than the starting solution, improving the negative log likelihood by %s units. Following the convention used in the 2025 assessment, that run was adopted as the reported model and re-fit with the Hessian; all quantities reported derive from it. The provenance of that fit, including its random seed, is recorded with the model.", jit_fmt(jit_improve,3))`
 `r if (jit_have && jit_improve > 0.001 && !jit_promoted) sprintf("One jitter run found a better fit than the reported model, improving the negative log likelihood by %s units. It has not been adopted.", jit_fmt(jit_improve,3))`
 `r if (jit_have && jit_improve <= 0.001) "No jitter run improved materially on the reported fit, which supports the reported solution being the global minimum, not a local one."`
 
@@ -1761,7 +1761,7 @@ These results describe the accepted fit of `Model 26.1b`, not every fit of that 
 ### Retrospective analysis
 `r if (!retro_have) "*Retrospective results not yet generated; run 06_run_retrospective.R to produce them.*"`
 
-Retrospective analyses were performed by sequentially removing the terminal year of data from the model, re-fitting, and comparing the resulting time series of estimated mature male biomass with the estimates from the model fit to the full data set. A retrospective pattern is a consistent directional change in an assessment estimate for a given year as additional years of data are added. `r if (retro_have) sprintf("A total of %d retrospective model runs (peels) were made, giving terminal years from %d to %d.", retro_npeel, retro_yr1, retro_yrN)` The peels did not meet the maximum-gradient criterion of 0.001 applied to the accepted fit; the maximum absolute gradient ranged from 0.0015 to 0.020. The peels are at a local minimum and no additional Newton steps were conducted.
+Retrospective analyses were performed by sequentially removing the terminal year of data from the model, re-fitting, and comparing the resulting time series of estimated mature male biomass with the estimates from the model fit to the full data set. A retrospective pattern is a consistent directional change in an assessment estimate for a given year as additional years of data are added. `r if (retro_have) sprintf("A total of %d retrospective model runs (peels) were made, giving terminal years from %d to %d.", retro_npeel, retro_yr1, retro_yrN)` The peels did not meet the maximum-gradient criterion of 0.001 applied to the accepted fit; the maximum absolute gradient ranged from 0.0015 to 0.020. Each peel is near a local minimum and none received additional Newton steps.
 
 Mohn's $\rho$ is reported here as the mean across peels of the relative difference between each peel's terminal-year estimate and the estimate for that same year from the model fit to all of the data,
 
@@ -1840,7 +1840,7 @@ Calculated total Tier 3 OFLs across the models presented ranged from 43.8 to 147
 
 The Tier 4 model is the basis for the 2026 harvest specification. The SSC assigned this stock to Tier 4b when it set the 2025/26 specification (October 2025 SSC report, Table 2), and that subtier is used here. A random-effects model (REMA) is fitted to the observed survey biomass series, the B~MSY~ proxy is the mean of the smoothed series, and stock status is the terminal smoothed biomass relative to that proxy. Target fishing mortality is F = M = `r .f(NAT_M, 2)` yr^-1^, the median of the prior on natural mortality.
 
-The averaging period for the B~MSY~ proxy is the full survey time series, `r .fy(BMSY_WINDOW_LAB)`. The proxy represents the long-term average productivity of the stock, so the most recent observation is included. The September 2025 assessment averaged 1982 to 2024 and omitted the terminal year. The average is taken over the smoothed series rather than the observations because the smoothed series supplies a value for 2020, when the survey was cancelled.
+The averaging period for the B~MSY~ proxy is the full survey time series, `r .fy(BMSY_WINDOW_LAB)`. The proxy represents the long-term average productivity of the stock, so the most recent observation is included. The September 2025 assessment averaged 1982 to 2024 and omitted the terminal year. The average is taken over the smoothed series rather than the observations because the smoothed series supplies a value for 2020, when the survey was cancelled. The smoothed series, with its prediction intervals, is listed by maturity definition in Table \@ref(tab:rema-series).
 
 The choice of averaging window affects the reference points and, through stock status, the recommended OFL. Recomputing this cycle's smoothed series on the narrower 1982 to 2024 window gives a B~MSY~ proxy of 148.18 kt and a status of 0.769, compared with `r .f(bmsy_2026, 2)` kt and `r .f(status_2026, 3)` on the full window. The effect of the window choice is small, about 1 percent on both the proxy and the OFL. The flat-rule sensitivity (F = M applied to the terminal biomass) does not depend on the proxy and is unchanged by the choice of window.
 
@@ -2089,7 +2089,7 @@ flextable::flextable(risk_tab) |>
 
 ## Author recommendations
 
-The June 2026 SSC recommended that only the Tier 4 model be brought forward in October, to allow time for the development of a simpler and more stable Tier 3 model. The overfishing limit in this document is calculated on that basis. The Tier 3 models are presented to document progress and are not proposed for specification.
+The June 2026 SSC recommended that only the Tier 4 model be brought forward in October, to allow time for the development of a simpler and more stable Tier 3 model. The overfishing limit is calculated on that basis. The Tier 3 models are presented to document progress and are not proposed for specification.
 
 Three questions the May 2026 preliminary assessment put to the CPT and SSC have since been settled and are not reopened here. The composition correction and the expanded plus group were endorsed as technical corrections and are included in every September model. The immature survey index was rejected as a convergence fix on the grounds that it shifts the model toward higher natural mortality among mature males and raises a question of duplicative use of the same survey data. Hybrid catch data were judged premature for inclusion in the snow and Tanner crab assessment models, with hybrid-related uncertainty to be handled through the existing ABC buffer-setting process.
 
@@ -2163,7 +2163,7 @@ The authors thank the NOAA Kodiak laboratory for the maturity workflow, the Alas
 
 **Appendix A. Ecosystem and Socioeconomic Profile.** The ESP is provided as a separate document: Fedewa, E. and Shotwell, K. 2026. *Ecosystem and Socioeconomic Profile of the eastern Bering Sea snow crab stock - Update.* It is the source of the ecosystem and fishery-informed indicators summarized in the risk table (Table \@ref(tab:risk-table)) and of the indicator series referenced in Section J.
 
-**Appendix B. Convergence diagnostics.** Jitter results for every model that was jittered this cycle, including four structural experiments built to diagnose the multimodality and not proposed as assessment models. Given at the end of this document.
+**Appendix B. Convergence diagnostics.** Jitter results for every model that was jittered this cycle, including four structural experiments built to diagnose the multimodality and not proposed as assessment models. Given at the end.
 
 \newpage
 
@@ -2294,6 +2294,136 @@ Zheng, J., G.H. Kruse, and D.R. Ackley.  2001. Spatial distribution and recruitm
 \blandscape
 <!---BLOCK_LANDSCAPE_START--->
 # Tables
+```{r survey-series, echo=FALSE, warning=FALSE, message=FALSE}
+## The observed survey series the Tier 4 calculation is built on. Design-based
+## NMFS summer trawl survey estimates -- no assessment model is involved. Shown
+## in full because the Tier 4 recommendation rests on this series and the
+## document otherwise gives it only for the terminal two years (Table
+## \@ref(tab:survey-currencies)) and as points on Figure \@ref(fig:rema-fit).
+## Requested by a PSC-limit user who needed a model-free survey number, 2026-09.
+.mm <- read.csv("data/derived/survey_indices.csv", stringsAsFactors = FALSE)
+.mm <- .mm[.mm$sex == "male" & .mm$maturity == "mature", c("year", "biomass", "cv")]
+.lg <- read.csv("data/survey/survey_large_male_index_derived.csv", stringsAsFactors = FALSE)
+.cat <- function(k) {
+  d <- .lg[.lg$CATEGORY == k, c("YEAR", "BIOMASS_MT", "BIOMASS_MT_CV")]
+  names(d) <- c("year", "biomass", "cv")
+  d$biomass <- d$biomass / 1000      # t -> 1,000 t, the document's units
+  d
+}
+.fmtbc <- function(b, cv) ifelse(is.na(b), "--", sprintf("%.1f (%.2f)", b, cv))
+svy_series <- Reduce(function(a, b) merge(a, b, by = "year", all = TRUE),
+  list(setNames(.mm,             c("year", "b_mm", "cv_mm")),
+       setNames(.cat("large_male"),    c("year", "b_95", "cv_95")),
+       setNames(.cat("preferred_male"), c("year", "b_101", "cv_101"))))
+svy_series <- svy_series[order(svy_series$year), ]
+stopifnot("survey series must not contain a 2020 row (survey cancelled)" =
+            !(2020 %in% svy_series$year))
+## Total abundance, the quantity the PSC limit is set from. 50 CFR
+## 679.21(e)(1)(iii) sets the C. opilio limit from "total abundance of C. opilio
+## as indicated by the NMFS annual bottom trawl survey", so the survey column
+## must include crab < 25 mm. The model column is the same total as Table
+## \@ref(tab:predtotnum) and EXCLUDES them, because the model's first size bin
+## has a midpoint of 27.5 mm. The two are not interchangeable and the caption
+## says so (added 2026-09 for the PSC-setting analyst).
+.ta <- read.csv("data/derived/survey_total_abundance.csv", stringsAsFactors = FALSE)
+.xd <- function(lines, header) {
+  st <- grep(header, lines, fixed = TRUE) + 1
+  en <- grep("EOD", lines[st:length(lines)])[1] + st - 2
+  read.table(text = lines[st:en])
+}
+.gl <- readLines(file.path(report_model, "Gmacsall.out"))
+.nm <- .xd(.gl, "N(males): dataframe"); .nf <- .xd(.gl, "N(females): dataframe")
+.mod <- data.frame(year = as.integer(as.character(.nm[-1, 1])),
+                   model_mill = (rowSums(as.matrix(.nm[-1, -1])) +
+                                 rowSums(as.matrix(.nf[-1, -1]))) / 1e3)
+svy_series <- merge(svy_series, .ta[, c("year", "abundance")], by = "year", all.x = TRUE)
+svy_series <- merge(svy_series, .mod, by = "year", all.x = TRUE)
+stopifnot(
+  ## any() would pass on a single joined year; a key-type drift leaving 43 of 44
+  ## rows as "--" would sail through. Require every survey year to carry a total.
+  "total survey abundance failed to join onto the survey series" =
+    !anyNA(svy_series$abundance),
+  ## The model estimates the population; the survey estimates what it catches. The
+  ## model total is therefore the larger in every year. If that inverts, one of the
+  ## two columns is the wrong quantity.
+  "model total should exceed survey total in every year" =
+    all(svy_series$model_mill >= svy_series$abundance, na.rm = TRUE))
+
+svy_tab_full <- data.frame(
+  Year                          = as.integer(svy_series$year),
+  `Morphometrically mature`     = .fmtbc(svy_series$b_mm,  svy_series$cv_mm),
+  `Males >= 95 mm`              = .fmtbc(svy_series$b_95,  svy_series$cv_95),
+  `Males > 101 mm`              = .fmtbc(svy_series$b_101, svy_series$cv_101),
+  `Total, survey`               = ifelse(is.na(svy_series$abundance), "--",
+                                         sprintf("%.1f", svy_series$abundance)),
+  `Total, model`                = ifelse(is.na(svy_series$model_mill), "--",
+                                         sprintf("%.1f", svy_series$model_mill)),
+  check.names = FALSE, stringsAsFactors = FALSE)
+
+flextable::flextable(svy_tab_full) |>
+  flextable::set_table_properties(opts_pdf = list(caption_repeat = FALSE)) |>
+  flextable::colformat_int(j = "Year", big.mark = "") |>
+  flextable::fontsize(size = 8, part = "all") |>
+  flextable::align(j = 2:6, align = "right", part = "all") |>
+  ## Same page-width guard as the other wide tables: autofit sizes columns from
+  ## content, fit_to_width rescales to the 6.5 in portrait line (2026-09-09).
+  flextable::autofit() |>
+  flextable::fit_to_width(max_width = 6.4) |>
+  flextable::set_caption(
+    caption = paste(
+      "Survey biomass and total abundance. Columns 2-4 are design-based survey male biomass",
+      "(1,000 t) by maturity definition, coefficient of variation in parentheses; the morphometric",
+      "CV is the legal-male (>= 78 mm) value, carried as a proxy. Columns 5-6 are total abundance",
+      "(millions of crab, both sexes, all maturity stages). 'Survey' is design-based, includes crab",
+      "< 25 mm, and is the input 50 CFR 679.21(e)(1)(iii) specifies for the C. opilio PSC limit.",
+      "'Model' is Model 26.1b's population estimate (Table \\@ref(tab:predtotnum)), which is not",
+      "subject to survey selectivity and exceeds the survey total in every year, median 2.1 times.",
+      "No survey in 2020."),
+    autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "survey-series"))
+```
+
+\newpage
+
+```{r rema-series, echo=FALSE, warning=FALSE, message=FALSE}
+## The smoothed series the Tier 4 reference points are computed from. The
+## terminal value is the biomass the control rule acts on; the mean over the
+## whole series is the B_MSY proxy. 2020 HAS a row here and not in the observed
+## table above -- that is the point of the random-effects fit.
+.rp <- read.csv("data/tier4/rema_predictions.csv", stringsAsFactors = FALSE)
+.pick <- function(k) {
+  d <- .rp[.rp$size == k, c("Year", "rema_pred", "rema_lci", "rema_uci")]
+  d <- d[order(d$Year), ]
+  data.frame(Year = d$Year,
+             v = sprintf("%.1f (%.1f-%.1f)", d$rema_pred, d$rema_lci, d$rema_uci),
+             stringsAsFactors = FALSE)
+}
+rema_tab <- Reduce(function(a, b) merge(a, b, by = "Year", all = TRUE),
+  list(setNames(.pick("morphometric"), c("Year", "Morphometrically mature")),
+       setNames(.pick("95"),           c("Year", "Males >= 95 mm")),
+       setNames(.pick("101"),          c("Year", "Males > 101 mm"))))
+rema_tab$Year <- as.integer(rema_tab$Year)
+stopifnot("REMA series should carry 2020, which the survey does not" =
+            2020 %in% rema_tab$Year)
+
+flextable::flextable(rema_tab) |>
+  flextable::set_table_properties(opts_pdf = list(caption_repeat = FALSE)) |>
+  flextable::colformat_int(j = "Year", big.mark = "") |>
+  flextable::fontsize(size = 8, part = "all") |>
+  flextable::align(j = 2:4, align = "right", part = "all") |>
+  flextable::autofit() |>
+  flextable::fit_to_width(max_width = 6.4) |>
+  flextable::set_caption(
+    caption = paste(
+      "Random-effects (REMA) smoothed survey biomass (1,000 t), 95 percent prediction interval in",
+      "parentheses, by maturity definition. The terminal year is the biomass the Tier 4 control rule",
+      "acts on; the mean over the series is the BMSY proxy. 2020 carries a fitted value although the",
+      "survey was cancelled, which is why the proxy averages the smoothed series, not the",
+      "observations."),
+    autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "rema-series"))
+```
+
+\newpage
+
 ```{r model-overview, echo=FALSE, warning=FALSE, message=F}
 # All three columns are keyed off the SAME names, so no positional list can
 # drift out of step (model_jittered lives in 0-models.R beside the definitions).
@@ -2578,7 +2708,12 @@ flextable::flextable(other_like) |>
   flextable::fontsize(size = 7, part = "all") |>
   flextable::autofit() |>
   flextable::set_caption(
-    caption = "Remaining likelihood components (negative log-likelihood, dimensionless), one row per component and one column per model. These are the penalties, priors and data components that are not catch, index or size composition. Note that Model 25.3 was fitted under GMACS 2.20.22, which reports the growth-increment likelihood in the Tagging row. Every model fitted under 2.20.34 reports it in the Growth row and reports zero for Tagging. The two are the same quantity under different version names (Model 25.3's 7965.08 and Model 26.1's 7970.26 are the same fit to the same growth data), and the row should not be read as Model 25.3 having a tagging likelihood the others lack. The fall to about 4881 from Model 26.1a onward is the correction of the growth transcription error, not a change of component.",
+    caption = paste("Remaining likelihood components (negative log-likelihood, dimensionless), one row",
+      "per component and one column per model. These are the penalties, priors and data components",
+      "that are not catch, index or size composition. Model 25.3 was fitted under GMACS 2.20.22, which",
+      "reports the growth-increment likelihood in the Tagging row; 2.20.34 reports it under Growth.",
+      "The two are the same quantity, so Model 25.3 does not have a tagging likelihood the others",
+      "lack. The fall to about 4881 from Model 26.1a onward is the growth transcription fix."),
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "like-other-tot")
   )
 ```
@@ -2679,6 +2814,8 @@ flextable::flextable(max_grad_df) |>
 
 ```
 
+\newpage
+
 ```{r retro-rho, echo=FALSE, warning=FALSE, message=F}
 
 # Mohn's rho, written by 06_run_retrospective.R (retro_rho loaded in retro-setup).
@@ -2722,21 +2859,19 @@ if (is.null(.rt)) {
     ## wider than the page and clipped the right-hand columns (2026-09-08).
     flextable::fit_to_width(max_width = 6.4) |>
     flextable::set_caption(
-      caption = paste("Retrospective statistics for the four models with retrospective",
-                      "sweeps this cycle. Mohn's rho and Ralston's sigma are dimensionless.",
-                      "Mohn's rho is the mean over peels of",
-                      "(peel - full model) / full model at each peel's terminal year, so a",
-                      "positive value means terminal estimates are revised downward as data",
-                      "accumulate. Ralston's sigma is the log-scale RMSE of the same",
-                      "terminal-year pairs. The dropped-terminal-survey peels are compared",
-                      "to the full model fit to all data. Model 26.1c's peels are",
-                      "relative to its own 2019 terminal year, and Model 26.1's to its",
-                      "2024 terminal year."),
+      caption = paste("Retrospective statistics for the four models with retrospective sweeps this cycle. Mohn's rho",
+      "and Ralston's sigma are dimensionless. Mohn's rho is the mean over peels of (peel - full",
+      "model) / full model at each peel's terminal year, so a positive value means terminal estimates",
+      "are revised downward as data accumulate. Ralston's sigma is the log-scale RMSE of the same",
+      "pairs. Dropped-terminal-survey peels are compared with the full model. Peels for Models 26.1c",
+      "and 26.1 are relative to their own terminal years, 2019 and 2024."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "retro-rho")
     )
 }
 
 ```
+
+\newpage
 
 <!---BLOCK_LANDSCAPE_STOP--->
 \elandscape
@@ -3028,10 +3163,18 @@ flextable::flextable(ref_table) |>
   ## wider than the page and clipped the right-hand columns (2026-09-08).
   flextable::fit_to_width(max_width = 6.4) |>
   flextable::set_caption(
-    caption = "Management quantities by model, derived from maximum likelihood estimates using Tier 3 reference points. Biomass and OFL in 1,000 t; natural mortality per year; average recruitment in billions of crab. Reported natural mortality is for immature and mature males in the terminal year of each model. Note that Model 26.1c terminates in 2019, which is itself a mortality-event year, so its M is an event value and not comparable with the post-event values reported for the other models. MMB is mature male biomass at mating in that terminal year, which differs across models and is given alongside it. Status is Bcurr/BMSY, in which Bcurr is the projected mature male biomass the control rule acts on. Average recruitment is GMACS's Spr_rbar for males, the mean over the window the spawning-biomass-per-recruit reference points are computed on. The Fmsy and Fofl columns are GMACS's fleet-1 values and are not on the scale of an annual instantaneous fishing mortality; the 2025 assessment reported the same quantity the same way.",
+    caption = paste("Management quantities by model, from maximum likelihood estimates using Tier 3",
+      "reference points. Biomass and OFL in 1,000 t; natural mortality per year; average recruitment",
+      "in billions. M is for immature and mature males in each model's terminal year; Model 26.1c",
+      "terminates in 2019, itself a mortality-event year, so its M is an event value and not",
+      "comparable. MMB is at mating in that terminal year. Status is Bcurr/BMSY, Bcurr being the",
+      "projected biomass the control rule acts on. Average recruitment is GMACS Spr_rbar for males.",
+      "The Fmsy and Fofl columns are GMACS fleet-1 values, not annual instantaneous rates."),
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "stepchange")
   )
 ```
+
+\newpage
 <!---BLOCK_LANDSCAPE_STOP--->
 \elandscape
 
@@ -3152,6 +3295,8 @@ flextable::flextable(PlotTab) |>
 
 ```
 
+\newpage
+
 
 
 ```{r predtotnum, echo=FALSE, warning=FALSE, message=FALSE}
@@ -3214,6 +3359,8 @@ flextable::flextable(tmp_mat2) |>
   )
 
 ```
+
+\newpage
 
 
 
@@ -3289,6 +3436,8 @@ flextable::flextable(sum_mat) |>
   )
 
 ```
+
+\newpage
 
 
 \blandscape
@@ -3532,7 +3681,7 @@ if (file.exists(jitter_conv_png)) {
 \newpage
 
 
-```{r jitt-attrib, echo=FALSE, warning=FALSE, message=F, out.width="46%", fig.cap="Parameters that most separate the jitter minima, ranked by the standardized difference in fitted value between the best-fitting mode and each alternative mode. A large value means the two optima disagree about that parameter."}
+```{r jitt-attrib, echo=FALSE, warning=FALSE, message=F, out.width="46%", fig.cap="Parameters that most separate the jitter minima, ranked by the standardized difference in fitted value between the best-fitting mode and each alternative mode. A large value means the two minima disagree about that parameter."}
 
 jitter_attr_png <- "plots/jitter_param_attribution.png"
 if (file.exists(jitter_attr_png)) {
@@ -3564,9 +3713,13 @@ One step of this sweep adds no survey information. The peels withhold the survey
 knitr::include_graphics("plots/rema_tier_4_ssc.png")
 ```
 
+\newpage
+
 ```{r tier4-status-series, echo=FALSE, out.width="88%", fig.cap="Tier 4 stock status (biomass relative to the B~MSY~ proxy) computed on the raw survey series for the two large-male definitions. The red line is the closure threshold beta, below which the OFL is zero. The green line is half the proxy, the minimum stock size threshold. The series is shown on the raw observations rather than the smoothed fit, so it is more variable than the status reported for the specification, which is computed from the REMA fit in Figure \\@ref(fig:rema-fit)."}
 knitr::include_graphics("plots/tier4_status.png")
 ```
+
+\newpage
 
 ```{r retro-drop-survey, echo=FALSE, warning=FALSE, message=F, out.width="100%", fig.cap="Retrospective analysis with the terminal survey year withheld in addition to the peeled years, isolating the leverage of the most recent survey observation on the terminal biomass estimate. Peels are compared to the model fit to all data."}
 
@@ -3604,7 +3757,7 @@ The chunk that stood here read plots/retro_refpoints.png if present. On any
 working copy still carrying a pre-2026-08-27 copy of that file, it embedded a
 plot of zeros under the caption "Management quantities recomputed for each
 retrospective peel" -- a plausible-looking figure of nothing, which is the
-failure CLAUDE.md rule 1 exists to prevent. Do not reinstate it.
+failure docs/assessment_conventions.md rule 1 exists to prevent. Do not reinstate it.
 
 The retrospective reports MMB and recruitment. The terminal fit's reference
 points are in the model directory and retro/base_run.csv.
@@ -3779,6 +3932,8 @@ p_imm_final <- dfrImmFit_plot %>%
 print(p_imm_final)
 
 ```
+
+\newpage
 <!---BLOCK_LANDSCAPE_STOP--->
 \elandscape
 \newpage
@@ -4025,6 +4180,8 @@ print(p)
 
 ```
 
+\newpage
+
 \blandscape
 <!---BLOCK_LANDSCAPE_START--->
 
@@ -4057,6 +4214,8 @@ p <- ggplot(fish_mdf) +
 
 print(p)
 ```
+
+\newpage
 <!---BLOCK_LANDSCAPE_STOP--->
 \elandscape
 \newpage
@@ -4483,7 +4642,7 @@ conv_row <- function(lab, path) {
     Model = lab,
     Converged = sprintf("%d/%d", sm$n_converged[1], sm$n_runs[1]),
     `Meets 1e-3` = sprintf("%d/%d", sm$n_meets_conventional[1], sm$n_runs[1]),
-    Optima = nmodes,
+    Minima = nmodes,
     `Best fit found` = sprintf("%d (%.1f%%)", n_at_best, 100 * n_at_best / sum(ok)),
     `Best lettered mode` = sprintf("%.1f%%", sm$pct_at_best_mode[1]),
     `OFL spread, near-optimal` = if (is.na(ofl_sp)) sprintf("- (n=%d)", n_near)
@@ -4606,7 +4765,7 @@ if (xm_have) {
     cls <- function(cl) sum(d$total_range[d$class %in% cl])
     data.frame(
       Model = unname(.mv_lab[d$model[1]]),
-      Optima = d$n_optima[1],
+      Minima = d$n_optima[1],
       `Total movement` = tot,
       `Sex allocation (%)` = 100 * cls("sex allocation") / tot,
       `Female + sex allocation (%)` = 100 * cls(c("female", "female (F offsets)", "sex allocation")) / tot,
@@ -4626,7 +4785,7 @@ if (xm_have) {
   xm_fp_eqm    <- .xg("Female + sex allocation (%)", "26.d3 eqmdevs")
   xm_tot_acc   <- .xg("Total movement", "Model 26.1b (accepted)")
   xm_tot_male  <- .xg("Total movement", "Model 26.2 (male-only)")
-  xm_optima_lab <- paste(xm$Optima, collapse = ", ")   # table row order, not sorted
+  xm_optima_lab <- paste(xm$Minima, collapse = ", ")   # table row order, not sorted
 } else {
   xm_male_acc <- xm_male_eqm <- xm_sa_eqm <- xm_fp_eqm <- NA_real_
   xm_tot_acc <- xm_tot_male <- NA_real_; xm_optima_lab <- "NA"
@@ -4635,6 +4794,8 @@ conv_have <- !is.null(conv_tab) && nrow(conv_tab) > 0
 if (conv_have) stopifnot(
   "a convergence row lost its model label" = !any(is.na(conv_tab$Model)))
 ```
+
+\newpage
 
 The June 2026 SSC asked that a focused convergence section identify which parameters separate the jitter minima. This appendix collects the jitter evidence for every model jittered this cycle, together with four structural experiments built specifically to diagnose the multimodality: `26.d1 stability`, `26.d3 eqmdevs`, `26.d4 combined`, and `26.d5`, the male-only model with the equilibrium-backbone initialization. A fifth, `26.d2 initscaled`, was set aside without jittering. None of the experiments is an assessment model and none is proposed for any purpose other than diagnosis. They are registered separately from the model set in `0-models.R` for that reason.
 
@@ -4669,24 +4830,20 @@ if (conv_have) {
     flextable::fit_to_width(max_width = 6.4) |>
     flextable::set_caption(
       caption = paste(
-        "Jitter convergence statistics, 100 runs per model. 'Best fit found' is the number of runs",
-        "recovering that model's own lowest objective function. This is not the same as the best lettered",
-        "mode: clusters are lettered in order of likelihood, best first, but only once a cluster holds at",
-        "least three runs, so a best fit reached by one or two runs is bucketed as minor and the lettered",
-        "figure then describes a different and worse optimum. No likelihood is tabulated because none is",
-        "comparable across these rows: the models are fit to different data (different terminal years, a",
-        "truncated series, males only) and two of them run on modified source. The nll span is the spread",
-        "within each model.",
-        "The OFL spread is taken over NEAR-OPTIMAL runs only, those within two likelihood units of each",
-        "model's best fit, which is how much the OFL moves among solutions the data cannot separate. Taken",
-        "over all converged runs instead it would rank the models in the opposite order, because it would",
-        "then measure the spread of poorly converged runs rather than the repeatability of the reported solution.",
-        "Model 26.d1's entry is not meaningful: only two of its runs qualify."),
+        "Jitter convergence statistics, 100 runs per model. 'Best fit found' counts runs recovering",
+        "that model's own lowest objective function. Modes are lettered by likelihood but need three",
+        "runs, so a best fit reached once or twice is bucketed as minor and the lettered figure then",
+        "describes a worse minimum. No likelihood is tabulated: the models are fit to different data",
+        "and two run on modified source. Spans are within-model. The OFL spread covers only runs",
+        "within two likelihood units of each model's best fit. Model 26.d1 rests on two such runs and",
+        "is not meaningful."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "conv-table"))
 } else {
   cat("*No per-model jitter files found; see `05_run_jitter.R`.*")
 }
 ```
+
+\newpage
 \elandscape
 
 
@@ -4711,18 +4868,19 @@ if (mv_have) {
     flextable::fit_to_width(max_width = 6.4) |>
     flextable::set_caption(
       caption = paste(
-        "Where the accepted model's alternative optima differ, by parameter class. Movement is the range",
-        "(maximum minus minimum) of each parameter across the", mv_n_opt, "retained optima, summed within class",
-        "and expressed as a share of the total. Range rather than variance because these are alternative",
-        "solutions rather than draws from a distribution. Retained optima are runs that both converged and sit",
-        "within 2 likelihood units of the best found. The likelihood window restricts this to a description of",
-        "the likelihood surface near the optimum rather than of optimizer failure. 'Sex allocation' is kept",
-        "separate from male and female because it is neither: it is the split between them."),
+      "Where the accepted model's alternative minima differ, by parameter class. Movement is the range",
+      "of each parameter across the", mv_n_opt, "retained minima, summed within class and shown as a share of",
+      "the total. Range rather than variance because these are alternative solutions, not draws from a",
+      "distribution. Retained minima both converged and sit within 2 likelihood units of the best",
+      "found, which keeps this a description of the likelihood surface rather than of optimizer",
+      "failure. 'Sex allocation' is separate from male and female because it is the split between them."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "movement-table"))
 } else {
   cat("*Movement decomposition not found; run `05b_jitter_movement_decomposition.R`.*")
 }
 ```
+
+\newpage
 
 \Needspace{9\baselineskip}
 
@@ -4732,8 +4890,8 @@ if (mv_have) {
 if (xm_have) {
   flextable::flextable(xm) |>
     flextable::set_table_properties(opts_pdf = list(caption_repeat = FALSE)) |>
-    flextable::colformat_int(j = "Optima", big.mark = "") |>
-    flextable::colformat_double(j = setdiff(names(xm), c("Model", "Optima")), digits = 2) |>
+    flextable::colformat_int(j = "Minima", big.mark = "") |>
+    flextable::colformat_double(j = setdiff(names(xm), c("Model", "Minima")), digits = 2) |>
     flextable::fontsize(size = 8, part = "all") |>
     flextable::autofit() |>
     ## Rescale to the 6.5 in portrait line; autofit alone sized this table
@@ -4741,15 +4899,17 @@ if (xm_have) {
     flextable::fit_to_width(max_width = 6.4) |>
     flextable::set_caption(
       caption = paste(
-        "Movement between optima across four configurations, from the same decomposition.",
+        "Movement between minima across four configurations, from the same decomposition.",
         "Shares are comparable across rows. The absolute totals are ranges taken over different numbers of",
-        "retained optima and should be read as indicative only. The equilibrium backbone",
+        "retained minima and should be read as indicative only. The equilibrium backbone",
         "cut male-parameter movement sharply while leaving the sex allocation untouched, so the sex allocation's",
         "share rose, whereas the male-only model removes the sex allocation and with it almost all the movement.",
         "Model 26.d1 is absent because too few of its runs cluster near its best fit to decompose."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "xmodel-table"))
 }
 ```
+
+\newpage
 \elandscape
 
 
@@ -4768,10 +4928,14 @@ knitr::include_graphics(c("plots/_twosex_jitter_backup/jittered_results_ofl.png"
                           "plots/_twosex_jitter_backup/jitter_convergence.png"))
 ```
 
+\newpage
+
 ```{r conv-fig-attrib, echo=FALSE, out.width="46%", fig.cap="Parameter attribution for the accepted model (left) and the male-only sensitivity, Model 26.2 (right): the parameters that most separate the jitter minima, ranked by the standardized difference in fitted value between modes. This is the ranking the June 2026 SSC asked for."}
 knitr::include_graphics(c("plots/_twosex_jitter_backup/jitter_param_attribution.png",
                           "plots/_male_only_jitter/jitter_param_attribution_male_only.png"))
 ```
+
+\newpage
 
 ```{r conv-fig-maleonly, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for the male-only sensitivity, Model 26.2, in the same panel order as the accepted model above. The minima are better separated in likelihood and the best fit is recovered far more often than in the accepted model."}
 knitr::include_graphics(c("plots/_male_only_jitter/jittered_results_ofl_male_only.png",
@@ -4780,12 +4944,16 @@ knitr::include_graphics(c("plots/_male_only_jitter/jittered_results_ofl_male_onl
                           "plots/_male_only_jitter/jitter_convergence_male_only.png"))
 ```
 
+\newpage
+
 ```{r conv-fig-stability, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for the structural experiment 26.d1 (stability), which fixes the non-identified 2019 immature-female mortality deviation and tightens the recruitment sex-ratio penalty. Panel order as above. It did not improve recovery of the best fit and met the gradient criterion less often than the model it was built from."}
 knitr::include_graphics(c("plots/jittered_results_ofl_stability.png",
                           "plots/jittered_results_rec_stability.png",
                           "plots/jittered_results_ssb_stability.png",
                           "plots/jitter_convergence_stability.png"))
 ```
+
+\newpage
 
 ```{r conv-fig-eqmdevs, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for the structural experiment 26.d3 (eqmdevs), which replaces the unpenalized 1982 initial numbers with an unfished equilibrium scaled by penalized deviations. Panel order as above. The spread in likelihood is visibly tighter than the accepted model's, but the best fit is still recovered by a single run."}
 knitr::include_graphics(c("plots/jittered_results_ofl_eqmdevs.png",
@@ -4794,6 +4962,8 @@ knitr::include_graphics(c("plots/jittered_results_ofl_eqmdevs.png",
                           "plots/jitter_convergence_eqmdevs.png"))
 ```
 
+\newpage
+
 ```{r conv-fig-combined, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d4 (combined), which applies all three fixes to the two-sex model at once. Panel order as above. It converged less often than any other configuration and no run met the gradient criterion. The dense cluster visible well above the best fit is the mode whose 16.7 percent share must not be read as a recovery rate."}
 knitr::include_graphics(c("plots/jittered_results_ofl_combined.png",
                           "plots/jittered_results_rec_combined.png",
@@ -4801,12 +4971,16 @@ knitr::include_graphics(c("plots/jittered_results_ofl_combined.png",
                           "plots/jitter_convergence_combined.png"))
 ```
 
+\newpage
+
 ```{r conv-fig-d5, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d5, the male-only model with the equilibrium-backbone initialization. Panel order as above. This is the only configuration tested that improved on the model it was derived from. Runs span about six likelihood units, compared with several hundred in the preceding figures, so the separated groups of runs visible in the other panels are absent."}
 knitr::include_graphics(c("plots/jittered_results_ofl_male_only_eqmdevs.png",
                           "plots/jittered_results_rec_male_only_eqmdevs.png",
                           "plots/jittered_results_ssb_male_only_eqmdevs.png",
                           "plots/jitter_convergence_male_only_eqmdevs.png"))
 ```
+
+\newpage
 
 
 ## Caveats

@@ -17,6 +17,11 @@
 #   data/derived/survey_size_comps.csv    year, sex, maturity, m27.5..m132.5
 #                                         (male + female, mature + immature; rows sum 1)
 #   data/derived/survey_indices.csv       year, sex, maturity, biomass (kt), cv
+#   data/derived/survey_total_abundance.csv  year, abundance (millions), cv
+#                                         TOTAL survey abundance, all sizes and
+#                                         both sexes, INCLUDING crab < 25 mm.
+#                                         Reporting output for the PSC table;
+#                                         not a model input.
 #   data/derived/male_maturity_ogive.csv  year, m27.5..m132.5  (prob terminal molt)
 #   plots/size_bins_comp_Kodiak_m.png, size_bins_comp_Kodiak_f.png,
 #   plots/maturity_facet.png,
@@ -99,6 +104,27 @@ mat_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                             region  = "EBS",
                                             crab_category   = c("mature_female"),
                                             female_maturity = "morphometric")
+
+# Immature-female survey biomass index, same pull with the other maturity state.
+# Added 2026-09 so survey_indices.csv carries all four sex x maturity blocks and
+# a TOTAL survey biomass can be summed from it. Until now the immature females
+# were pulled only as a size composition (Section 6b), so any "total" summed from
+# this file silently omitted them.
+imm_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
+                                            species = "SNOW",
+                                            region  = "EBS",
+                                            crab_category   = c("immature_female"),
+                                            female_maturity = "morphometric")
+
+# TOTAL survey abundance -- every crab the survey caught, both sexes, all sizes.
+# 50 CFR 679.21(e)(1)(iii) sets the C. opilio PSC limit from "total abundance of
+# C. opilio as indicated by the NMFS annual bottom trawl survey", so this is the
+# one index in this script that must INCLUDE crab < 25 mm. No crab_category and
+# no size_min: both filters would drop exactly the animals the limit counts.
+# (Added 2026-09 at the request of the PSC-setting analyst.)
+total_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
+                                          species = "SNOW",
+                                          region  = "EBS")
 
 # (Female biomass + CV, the male MMB, and the immature-male index are assembled
 #  together into data/derived/survey_indices.csv in Section 6, once male_mat_bio
@@ -459,9 +485,30 @@ survey_indices <- rbind(
   data.frame(year = mmb_df$year, sex = "male", maturity = "mature",
              biomass = mmb_df$biomass, cv = mmb_df$cv),
   data.frame(year = as.numeric(names(male_imm_bio)), sex = "male", maturity = "immature",
-             biomass = as.numeric(male_imm_bio), cv = NA_real_)
+             biomass = as.numeric(male_imm_bio), cv = NA_real_),
+  data.frame(year = imm_fem_snow_ind$YEAR, sex = "female", maturity = "immature",
+             biomass = imm_fem_snow_ind$BIOMASS_MT / 1000, cv = imm_fem_snow_ind$BIOMASS_MT_CV)
 )
+stopifnot("survey_indices must carry all four sex x maturity blocks" =
+            nrow(unique(survey_indices[, c("sex", "maturity")])) == 4L)
 write.csv(survey_indices, "data/derived/survey_indices.csv", row.names = FALSE)
+
+# ---- total survey abundance -> data/derived/survey_total_abundance.csv -------
+# year, abundance (millions of crab), cv. A REPORTING output, not part of the
+# six-file model-input contract: nothing in 00_advance_model.R reads it. It backs
+# the PSC abundance table in the SAFE, which pairs it with the model's own total.
+total_abundance <- data.frame(
+  year      = total_snow_ind$YEAR,
+  abundance = total_snow_ind$ABUNDANCE / 1e6,      # crab -> millions
+  cv        = total_snow_ind$ABUNDANCE_CV
+)
+total_abundance <- total_abundance[order(total_abundance$year), ]
+stopifnot(
+  "total abundance must exceed the mature-male index (it includes both sexes and all sizes)" =
+    all(total_abundance$abundance > 0),
+  "2020 must be absent from the survey series (survey cancelled)" =
+    !(2020 %in% total_abundance$year))
+write.csv(total_abundance, "data/derived/survey_total_abundance.csv", row.names = FALSE)
 
 # ---- 6a. Diagnostic figure: mature vs immature numbers-at-size --------------
 lng_mat <- melt(as.matrix(male_mature));   lng_mat$maturity <- "mature"
