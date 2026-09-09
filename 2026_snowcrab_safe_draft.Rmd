@@ -1415,7 +1415,7 @@ if (file.exists(.si_path)) {
 
   flextable::flextable(obsbio_df) |>
     flextable::fontsize(size = 8, part = "all") |>
-    flextable::align(j = 2:6, align = "right", part = "all") |>
+    flextable::align(j = 2:5, align = "right", part = "all") |>
     ## Explicit widths (0.55 + 1.35 + 1.35 = 3.25 in per block, 6.3 in total,
     ## inside the 6.5 in portrait line). autofit() sized the six columns wider
     ## than the line, which pushed the right block off the page in Word and PDF
@@ -2318,67 +2318,50 @@ svy_series <- Reduce(function(a, b) merge(a, b, by = "year", all = TRUE),
 svy_series <- svy_series[order(svy_series$year), ]
 stopifnot("survey series must not contain a 2020 row (survey cancelled)" =
             !(2020 %in% svy_series$year))
-## Total abundance, the quantity the PSC limit is set from. 50 CFR
+## Total survey abundance, the quantity the PSC limit is set from. 50 CFR
 ## 679.21(e)(1)(iii) sets the C. opilio limit from "total abundance of C. opilio
-## as indicated by the NMFS annual bottom trawl survey", so the survey column
-## must include crab < 25 mm. The model column is the same total as Table
-## \@ref(tab:predtotnum) and EXCLUDES them, because the model's first size bin
-## has a midpoint of 27.5 mm. The two are not interchangeable and the caption
-## says so (added 2026-09 for the PSC-setting analyst).
+## as indicated by the NMFS annual bottom trawl survey", so this column is the
+## DESIGN-BASED survey estimate and includes crab < 25 mm.
+##
+## The model's own total is deliberately NOT shown here (Grant, 2026-09). It is
+## not subject to survey selectivity and runs a median 2.1x the survey estimate,
+## so putting the two side by side invites the wrong one being used to set the
+## limit. The model total remains available on its own in Table
+## \@ref(tab:predtotnum).
 .ta <- read.csv("data/derived/survey_total_abundance.csv", stringsAsFactors = FALSE)
-.xd <- function(lines, header) {
-  st <- grep(header, lines, fixed = TRUE) + 1
-  en <- grep("EOD", lines[st:length(lines)])[1] + st - 2
-  read.table(text = lines[st:en])
-}
-.gl <- readLines(file.path(report_model, "Gmacsall.out"))
-.nm <- .xd(.gl, "N(males): dataframe"); .nf <- .xd(.gl, "N(females): dataframe")
-.mod <- data.frame(year = as.integer(as.character(.nm[-1, 1])),
-                   model_mill = (rowSums(as.matrix(.nm[-1, -1])) +
-                                 rowSums(as.matrix(.nf[-1, -1]))) / 1e3)
 svy_series <- merge(svy_series, .ta[, c("year", "abundance")], by = "year", all.x = TRUE)
-svy_series <- merge(svy_series, .mod, by = "year", all.x = TRUE)
-stopifnot(
-  ## any() would pass on a single joined year; a key-type drift leaving 43 of 44
-  ## rows as "--" would sail through. Require every survey year to carry a total.
-  "total survey abundance failed to join onto the survey series" =
-    !anyNA(svy_series$abundance),
-  ## The model estimates the population; the survey estimates what it catches. The
-  ## model total is therefore the larger in every year. If that inverts, one of the
-  ## two columns is the wrong quantity.
-  "model total should exceed survey total in every year" =
-    all(svy_series$model_mill >= svy_series$abundance, na.rm = TRUE))
+## any() would pass on a single joined year; a key-type drift leaving 43 of 44
+## rows as "--" would sail through. Require every survey year to carry a total.
+stopifnot("total survey abundance failed to join onto the survey series" =
+            !anyNA(svy_series$abundance))
 
 svy_tab_full <- data.frame(
   Year                          = as.integer(svy_series$year),
   `Morphometrically mature`     = .fmtbc(svy_series$b_mm,  svy_series$cv_mm),
   `Males >= 95 mm`              = .fmtbc(svy_series$b_95,  svy_series$cv_95),
   `Males > 101 mm`              = .fmtbc(svy_series$b_101, svy_series$cv_101),
-  `Total, survey`               = ifelse(is.na(svy_series$abundance), "--",
+  `Total abundance`             = ifelse(is.na(svy_series$abundance), "--",
                                          sprintf("%.1f", svy_series$abundance)),
-  `Total, model`                = ifelse(is.na(svy_series$model_mill), "--",
-                                         sprintf("%.1f", svy_series$model_mill)),
   check.names = FALSE, stringsAsFactors = FALSE)
 
 flextable::flextable(svy_tab_full) |>
   flextable::set_table_properties(opts_pdf = list(caption_repeat = FALSE)) |>
   flextable::colformat_int(j = "Year", big.mark = "") |>
   flextable::fontsize(size = 8, part = "all") |>
-  flextable::align(j = 2:6, align = "right", part = "all") |>
+  flextable::align(j = 2:5, align = "right", part = "all") |>
   ## Same page-width guard as the other wide tables: autofit sizes columns from
   ## content, fit_to_width rescales to the 6.5 in portrait line (2026-09-09).
   flextable::autofit() |>
   flextable::fit_to_width(max_width = 6.4) |>
   flextable::set_caption(
     caption = paste(
-      "Survey biomass and total abundance. Columns 2-4 are design-based survey male biomass",
-      "(1,000 t) by maturity definition, coefficient of variation in parentheses; the morphometric",
-      "CV is the legal-male (>= 78 mm) value, carried as a proxy. Columns 5-6 are total abundance",
-      "(millions of crab, both sexes, all maturity stages). 'Survey' is design-based, includes crab",
-      "< 25 mm, and is the input 50 CFR 679.21(e)(1)(iii) specifies for the C. opilio PSC limit.",
-      "'Model' is Model 26.1b's population estimate (Table \\@ref(tab:predtotnum)), which is not",
-      "subject to survey selectivity and exceeds the survey total in every year, median 2.1 times.",
-      "No survey in 2020."),
+      "Survey biomass and total abundance, from the NMFS summer bottom trawl survey. All values are",
+      "design-based survey estimates; no assessment model is involved. Columns 2-4 are male biomass",
+      "(1,000 t) by maturity definition, coefficient of variation in parentheses, and are the series",
+      "the random-effects (REMA) model of Section F is fit to; the morphometric CV is the legal-male",
+      "(>= 78 mm) value, used as a proxy. Column 5 is total abundance (millions of crab, both",
+      "sexes, all maturity stages, including crab < 25 mm), the quantity 50 CFR 679.21(e)(1)(iii)",
+      "specifies for the C. opilio prohibited species catch limit. No survey in 2020."),
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "survey-series"))
 ```
 
@@ -2416,7 +2399,7 @@ flextable::flextable(rema_tab) |>
     caption = paste(
       "Random-effects (REMA) smoothed survey biomass (1,000 t), 95 percent prediction interval in",
       "parentheses, by maturity definition. The terminal year is the biomass the Tier 4 control rule",
-      "acts on; the mean over the series is the BMSY proxy. 2020 carries a fitted value although the",
+      "acts on; the mean over the series is the BMSY proxy. 2020 has a fitted value although the",
       "survey was cancelled, which is why the proxy averages the smoothed series, not the",
       "observations."),
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "rema-series"))
