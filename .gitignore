@@ -20,6 +20,13 @@ Thumbs.db
 *.lof
 *.lot
 *.out
+# ...except the GMACS fit summary, which the SAFE reads for nearly every model
+# quantity. Without it the document cannot be rebuilt from the repository.
+!**/Gmacsall.out
+# ...but NOT the superseded fits kept in backup folders. Those are prior
+# optima retained for provenance; committing them puts a second, wrong
+# Gmacsall.out beside the real one (see the known traps).
+**/_*backup*/Gmacsall.out
 *.synctex.gz
 *.toc
 SAFE_snow_gmacs_files/
