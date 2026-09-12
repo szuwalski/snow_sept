@@ -41,9 +41,10 @@ Hurtado-Ferro bounds: short-lived [−0.22, 0.30] per Grant (paper: `Reports/fsu
 **Status at end of 2026-09-12:** complete. Rendered PDF + DOCX (14/14 post-render checks; three
 adversarial reviews — data/refits, jitters, retrospectives/Appendix B — plus a final document review).
 Committed `abf9477` + `0148522` here and `3aafbf4` in `afsc-assessments/snow_crab` (neither pushed).
-Open for Grant: the fishery paragraph's 2024 discard/bycatch figures (his TODO; 2025 values 2.52 / 0.42
-kt); re-promoting 26.d5 from `jitter/048` (same minimum, gradient 0.0004 vs 0.029); whether the specimen
-`.rds` should be published in the AFSC repo; the untracked `2026_snowcrab_safe_v2.pdf` there.
+Follow-up `557feb9` (Grant): Tier 3 OFLs compared with the 2026 survey; fishery history moved to 2025;
+Table 1/Table 4 notes and precision fixed; one caption per multi-panel figure; counts print as numerals.
+Open for Grant: re-promoting 26.d5 from `jitter/048` (same minimum, gradient 0.0004 vs 0.029); whether
+the specimen `.rds` should be published in the AFSC repo; the untracked `2026_snowcrab_safe_v2.pdf` there.
 
 ## TL;DR — where we are (superseded 2026-09-12 — see above)
 **The assessment now runs on macOS** (GMACS 2.20.34 built from source; see `docs/MACOS_GMACS.md`), and
