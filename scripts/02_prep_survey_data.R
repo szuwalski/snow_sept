@@ -2,8 +2,9 @@
 # 02_prep_survey_data.R  --  EBS snow crab, September 2026 SAFE
 #
 # PURPOSE
-#   Pull the EBS summer bottom-trawl SURVEY specimen data from crabpack and
-#   derive the survey-side model inputs:
+#   Read the EBS summer bottom-trawl SURVEY specimen data (the crabpack specimen
+#   object, staff-delivered as data/survey/SNOW_specimen_EBS.rds) and derive the
+#   survey-side model inputs:
 #     * male size compositions by shell condition (new / old), 5-mm bins
 #     * male terminal-molt (maturity) ogive
 #     * mature / immature male survey size comps and biomass indices
@@ -29,8 +30,8 @@
 #
 # PREREQUISITES
 #   * R 4.5.1; run from the repo root.
-#   * crabpack API access (channel = 'API') AND the target survey year loaded in
-#     the API. The terminal survey year is the 2026 in get_specimen_data() below.
+#   * data/survey/SNOW_specimen_EBS.rds -- staff-delivered specimen pull, 1982-2026,
+#     with the 2024-2026 net-mensuration correction (Section 1). No API needed.
 #   * data/maturity/snow_ogives.csv -- Ryznar's smoothed maturity ogive (Section 5).
 #     Must cover the same terminal year as the survey pull, or Section 6 misaligns.
 #
@@ -49,31 +50,20 @@ library(dplyr); library(tidyr); library(reshape2)   # data wrangling
 library(ggplot2); library(ggridges); library(patchwork)  # figures
 library(png); library(grid)              # raster/image helpers
 
-# ---- Helpers ----------------------------------------------------------------
-# annotation_custom2(): place a grob (e.g. a background image) on a ggplot facet.
-# NOTE: currently UNUSED in this script (kept from a prior version that overlaid
-#       a snow-crab image; see the commented readPNG below). Safe to delete if
-#       the background image is not coming back.
-annotation_custom2 <- function(grob, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, data) {
-  layer(data = data,
-        stat = StatIdentity,
-        position = PositionIdentity,
-        geom = ggplot2:::GeomCustomAnn,
-        inherit.aes = TRUE,
-        params = list(grob = grob, xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax))
-}
-# in_png_opie <- readPNG('continuity/snowcrab.png')   # (background image; unused)
-
 
 # =============================================================================
-# 1. PULL SURVEY SPECIMEN DATA  (crabpack API)
+# 1. READ SURVEY SPECIMEN DATA  (staff-delivered crabpack object)
 # =============================================================================
-# years = 1982:2026  ->  terminal year = the 2026 summer survey (advance each
-# cycle). Requires API access; everything below derives from `specimen_data`.
-specimen_data <- crabpack::get_specimen_data(species = "SNOW",
-                                             region  = "EBS",
-                                             years   = c(1982:2026),
-                                             channel = 'API')
+# Staff-delivered specimen pull (2026-09, per Grant): same object as
+# crabpack::get_specimen_data(), but with the net-mensuration correction to
+# 2024-2026 EBS area swept (~4% lower biomass/abundance in those years only).
+# Terminal year = the 2026 summer survey. Everything below derives from it.
+# The API call it replaces, for the next cycle once the API carries the fix:
+#   crabpack::get_specimen_data(species = "SNOW", region = "EBS",
+#                               years = c(1982:2026), channel = 'API')
+specimen_data <- readRDS("data/survey/SNOW_specimen_EBS.rds")
+stopifnot("specimen file must span the 1982-2026 surveys" =
+            identical(range(specimen_data$specimen$YEAR), c(1982L, 2026L)))
 
 
 # =============================================================================
@@ -456,6 +446,37 @@ pf <- pf + geom_density_ridges(aes(x = SIZE_1MM, y = YEAR, height = tot_n,
 
 png("plots/size_bins_comp_Kodiak_f.png", height = 9, width = 6, res = 400, units = 'in')
 print(pf)
+dev.off()
+
+# ---- 6d. SAFE figure: FEMALE numbers-at-size by maturity (plots/n_at_l_f.png) --
+# The SAFE's female size-structure figure (Rmd chunk n-at-len-f). Until 2026-09 it
+# was a static July export with no producer here, so it missed the 2024-2026 survey
+# correction; now drawn from the same pull (2026-09, per Grant). Ported from
+# snow_crab/02_make_DAT_file_hybrid.R without the hybrid facets (hybrids are not in
+# any model, per CPT/SSC). 5-mm bins, right = FALSE as in the model comps: a crab
+# on a cutoff goes to the upper bin. Heights are survey abundance (crab).
+fem_nal5 <- dplyr::bind_rows(lapply(names(fem_nas), function(fm)
+    fem_nas[[fm]] %>% mutate(maturity = ifelse(fm == "mature_female", "mature", "immature")))) %>%
+  mutate(mid_pts = 25 + 5 * floor((SIZE_1MM - 25) / 5) + 2.5) %>%
+  group_by(YEAR, maturity, mid_pts) %>%
+  summarize(n = sum(ABUNDANCE), .groups = "drop")
+stopifnot("female 5-mm binning lost abundance" =
+            abs(sum(fem_nal5$n) - sum(dplyr::bind_rows(fem_nas)$ABUNDANCE)) < 1e-6 * sum(fem_nal5$n))
+
+pn <- ggplot(dat = fem_nal5)
+pn <- pn + geom_density_ridges(aes(x = mid_pts, y = YEAR, height = n, group = YEAR),
+                               stat = "identity", scale = 5, fill = "salmon", alpha = 0.55) +
+  theme_bw() +
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90)) +
+  labs(x = "Carapace width (mm)") +
+  xlim(25, 85) +
+  facet_wrap(~maturity)
+
+png("plots/n_at_l_f.png", height = 7, width = 8, res = 400, units = 'in')
+print(pn)
 dev.off()
 
 # ---- consolidated survey size comps -> survey_size_comps.csv -----------------

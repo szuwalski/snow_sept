@@ -204,6 +204,19 @@ Verified against source, 2026-08. Details and line numbers in `docs/CLEANUP_BACK
   eigenvalue 34.6, condition 1.4e06). `gmacs.pin` is present and legitimate — it is the winner's
   parameter vector, and `jitter/PROMOTION.md` is what documents it. Do not delete it.
 
+  **Superseded 2026-09-12 by the refit on the corrected survey** (net-mensuration fix to
+  2024–2026 area swept, `data/survey/SNOW_specimen_EBS.rds`). Seeded from the same `gmacs.pin`, then
+  `-hess_step` polished; the pre-correction fit is in `_pre_netcorr_backup/`. A 100-run jitter on
+  the new data found nothing better (1 of 78 converged runs recover it; six lettered modes):
+
+  | nll | max\|grad\| (before / after polish) | BMSY | OFL(tot) | Bcurr/BMSY | terminal MMB |
+  |---|---|---|---|---|---|
+  | -23548.6971760082 | 0.0037 / 0 | 144.055652 | 82.462726 | 1.287784 | 137.4372 |
+
+  Hessian smallest eigenvalue 33.95, condition 1.45e06, none non-positive. Five fully selected
+  trawl-survey selectivity parameters sit at their upper bound of 0 (full selection) — in the old
+  fit too. The nll is not comparable to the pre-correction fit (different data).
+
   Two superseded fits, both cold starts stuck in an inferior local optimum where `M_pars_est[15]`
   runs away to its bound (see backlog item 5b) — **do not treat either as evidence this directory
   is stale**: Windows nll -23545.5363970914 / BMSY 149.51794249 / MMB 144.27194, and macOS

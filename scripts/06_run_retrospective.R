@@ -633,7 +633,22 @@ if (!STAGE %in% c("all", "collect")) {
 
 cat("--- STAGE collect: parsing runs ---\n")
 
+## A peel that failed verification (e.g. an uninvertible Hessian) still leaves
+## the Gmacsall.out of its unconverged fit. Exclude it, so an unconverged MMB
+## never reaches Mohn's rho; n_peels in mohns_rho.csv records how many were used.
+## (Added 2026-09-12: two male-only drop_survey peels failed on the corrected data.)
+diag_f <- file.path(RETRO_DIR, "retro_diagnostics.csv")
+failed_peels <- if (file.exists(diag_f)) {
+  dg <- read.csv(diag_f, stringsAsFactors = FALSE)
+  dg[!dg$ok, c("mode", "peel")]
+} else NULL
+if (!is.null(failed_peels) && nrow(failed_peels))
+  cat(sprintf("  EXCLUDED (failed verification in retro_diagnostics.csv): %s\n",
+              paste(sprintf("%s/%d", failed_peels$mode, failed_peels$peel), collapse = ", ")))
+
 read_peel <- function(mode, peel) {
+  if (!is.null(failed_peels) &&
+      any(failed_peels$mode == mode & failed_peels$peel == peel)) return(NULL)
   ga <- file.path(peel_dir(mode, peel), "Gmacsall.out")
   if (!file.exists(ga)) return(NULL)
   s  <- read_gmacsall_summary(ga)

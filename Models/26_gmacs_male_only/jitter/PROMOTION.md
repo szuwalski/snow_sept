@@ -19,3 +19,17 @@ run in this directory.
 
 **Downstream work must be re-run against this fit** -- `03_build_results_object.R`,
 the retrospective peels, Tier 4, and the report.
+
+## 2026-09-12: refit on the corrected survey (this pin is now a STARTING point)
+
+The 2024-2026 survey was corrected (net mensuration; `data/survey/SNOW_specimen_EBS.rds`). The model was
+refit on the new `.dat` with this `gmacs.pin` as the starting vector, then polished with
+`./gmacs -binp gmacs.bar -hess_step 5 -nox`:
+
+- nll -14011.7954411254 (not comparable to the values above: different data)
+- max|grad| 0.0046 before the polish, 0 after (step 0 of `hess_step.log`)
+- BMSY 130.465, OFL(tot) 74.029, terminal MMB 112.328
+
+A 100-run jitter on the new data (`--force`) found no better fit and did not promote: 12 of 79
+converged runs recover it. So the pin above no longer IS the fit; the fit is `gmacs.par`. The
+pre-correction fit is in `../_pre_netcorr_backup/`.

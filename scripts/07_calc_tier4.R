@@ -79,9 +79,9 @@ ALPHA <- 0.10
 ## "No ramp" is taken to mean the LINEAR RAMP between beta and 1 is removed, not
 ## that the beta closure is removed: below beta directed fishing is still
 ## prohibited. This assumption changes nothing in 2026 -- all three currencies
-## sit above beta (morphometric 0.777, >95 mm 0.288, >101 mm 0.264) -- but note
-## that >101 mm clears beta by only 0.014, so the two readings could diverge in
-## a future year.
+## sit above beta (morphometric 0.747, >95 mm 0.276, >101 mm 0.253, after the
+## 2026-09 survey correction) -- but >101 mm clears beta by only 0.003 and its
+## lower status bound is already below it, so the two readings could diverge.
 HCR_RAMP <- TRUE
 
 ## Which OFL equation the REPORTED column uses (backlog 7e).
@@ -177,8 +177,12 @@ tier4_ofl <- function(fofl, biomass, m = NAT_M) {
 ## ---------------------------------------------------------------------------
 ## 3. Survey biomass by currency
 ## ---------------------------------------------------------------------------
-specimen_data <- crabpack::get_specimen_data(species = "SNOW", region = "EBS",
-                                             years = SURVEY_YEARS, channel = 'API')
+## Staff-delivered pull with the 2024-2026 net-mensuration correction (2026-09,
+## per Grant); same file as 02. Replaces get_specimen_data(channel = 'API').
+specimen_data <- readRDS("data/survey/SNOW_specimen_EBS.rds")
+stopifnot("specimen file years must match SURVEY_YEARS (less the 2020 gap)" =
+            identical(sort(unique(specimen_data$specimen$YEAR)),
+                      setdiff(SURVEY_YEARS, 2020L)))
 
 male_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                          species = "SNOW", region = "EBS",

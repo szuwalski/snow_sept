@@ -575,6 +575,23 @@ hygiene.
   **To reproduce:** copy the model dir without `gmacs.pin`, run `./gmacs -nox -verbose 0`, and read
   `admodel.hes`; the pin is what makes the difference between a cold start and the accepted fit.
 
+- [ ] **1g. After ANY data change, `06` needs two peel sweeps, and nothing says so.** The shape
+  cache (`retro/_shapes/`) is keyed to the data file's md5 (`shape_identity()`), so a new `.DAT`
+  clears it and the whole first sweep cold-starts. Found 2026-09-12 on the net-mensuration rerun
+  of `26_gmacs_male_only`: all 22 peels cold-started, standard peel 0 missed the parent fit by
+  **2.15%** in MMB (nll -14011.60 vs -14011.7954) and two drop_survey peels (3, 4) stopped at
+  max|grad| 0.31 / 0.068 and failed to invert the Hessian. The stage completes and `collect` writes
+  a plausible Mohn's rho off the cold-started peel 0. The peel-0 warning is the only tell.
+  **Fix:** run `peels` twice after a data change (the second sweep is seeded), or rebuild shapes
+  without the Hessian first. A failed peel caches no shape, so it cold-starts again on the second
+  sweep. Since 2026-09-12, `collect` excludes peels that failed verification (`retro_diagnostics.csv`
+  `ok == FALSE`); before that it averaged their unconverged MMB into rho.
+  **Manual intervention, 2026-09-12:** 26.2's drop_survey peels 3 and 4 failed on both sweeps (cold, no
+  shape), so their failed runs' `gmacs.par` were copied into `retro/_shapes/drop_survey/{3,4}.par` by
+  hand. A shape carries block LENGTHS only, which the Hessian failure does not affect. Validated first:
+  block names identical to peels 2 and 5, every block length between theirs (302 and 299 values
+  against 305 and 295). A wrong length would abort ADMB on the pin count, not mislead.
+
 ## Tier 2 — hygiene, as you pass through
 
 - [ ] **9b. A flextable caption is emitted twice for any table that breaks across a page, so its
