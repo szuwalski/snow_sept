@@ -591,6 +591,15 @@ hygiene.
   hand. A shape carries block LENGTHS only, which the Hessian failure does not affect. Validated first:
   block names identical to peels 2 and 5, every block length between theirs (302 and 299 values
   against 305 and 295). A wrong length would abort ADMB on the pin count, not mislead.
+  **Seeding can land WORSE than a cold start (2026-09-12).** 26.1b drop_survey peel 1: seeded
+  nll -22509.58 (Hessian not invertible) vs the cold sweep's -22517.92 for the same peel (its .par
+  survives as `retro/_shapes/drop_survey/1.par`). 06 keeps only the latest sweep; keeping the
+  better of cold and seeded per peel is a method change for Grant. Per Grant, that one peel was
+  recovered instead with `scripts/06c_recover_peel.R`, which re-runs a single peel from a supplied
+  .par and records it through 06's own `run_gmacs()`/`verify_run()`; the failed seeded run is kept
+  in the peel's `_seeded_failed/`. Run `06 collect` afterwards.
+  **`retro/base_run.csv` is stale** for 26.1b and 26.2 after the 2026-09 refit: only stage `base`
+  writes it, and the refit bypassed that stage. No code reads it, but Rmd comments point readers to it.
 
 ## Tier 2 — hygiene, as you pass through
 

@@ -680,6 +680,9 @@ jit_multimodal <- !is.na(jit_nmodes) && jit_nmodes > 1
 ## Hurtado-Ferro et al. (2015) Mohn's rho bounds for a SHORT-lived stock, the pair
 ## 06_run_retrospective.R reports first and the one the narrative tests against.
 HF_LO <- -0.22; HF_HI <- 0.30
+## The paper's LONGER-lived pair (flatfish-like base case, M = 0.2), reported
+## alongside so the reader sees what the choice of convention changes (2026-09, per Grant).
+HF_LO_LONG <- -0.15; HF_HI_LONG <- 0.20
 .in_hf <- function(x) isTRUE(all(!is.na(x) & x >= HF_LO & x <= HF_HI))
 ## Small counts are spelled out in the narrative ("six minima"); numerals above twelve.
 .nw <- function(n) if (length(n) != 1 || is.na(n)) "NA" else if (n >= 1 && n <= 12)
@@ -869,7 +872,7 @@ The stock was determined to be overfished for 2024/25, when mature male biomass 
 ## The CPT's rule pairs reference points from TWO assessments on purpose: MSST
 ## from the most recent (this one) and B_MSY from the previous. The B_MSY
 ## carried here is therefore the 142.79 kt the SSC specified for 2025/26, not
-## this cycle's 146.56 kt.
+## this cycle's 146.29 kt (after the 2026-09 survey correction).
 ##
 ## MMB is where the Tier 4 basis and the required column do not meet, and the
 ## table is footnoted for it rather than fudged: the CPT asks for mature male
@@ -1017,7 +1020,7 @@ This assessment evaluated `r n_models` Tier 3 models. `Model 26.1b` is the autho
 
 1. **Management:** The eastern Bering Sea snow crab population was declared overfished in October 2021 and the directed fishery was closed by the State of Alaska for the 2022 and 2023 seasons. A small fishery occurred in 2024, with 2.15 kt retained, and a larger one in 2025, with 4.13 kt retained. The stock remains under a rebuilding plan.
 
-2. **Input data:** The 2026 NMFS summer trawl survey and the 2025/26 fishery data were added. Four corrections were made to the input data. The total-male size composition was corrected, resolving a discrepancy between the file used in September 2025 and the file produced by the script that processes the ADF&G data. The plus group was expanded to include all crab greater than 135 mm carapace width, which the previous assessments excluded. The size-composition bin convention was changed so that a crab falling exactly on a 5 mm cutoff is assigned to the upper bin. A transcription error in the growth data was corrected (a 26.3 mm crab's molt increment was recorded as 73 mm instead of 7.3 mm). Hybrid *Chionoecetes* catch and survey data were evaluated in the May 2026 preliminary assessment and are not included in any model presented here, following CPT and SSC advice. An immature survey index was likewise evaluated and is not brought forward.
+2. **Input data:** The 2026 NMFS summer trawl survey and the 2025/26 fishery data were added. The NMFS survey program applied a net-mensuration correction to the 2024–2026 area-swept estimates, lowering biomass and abundance in those years by about 4 percent; earlier years are unchanged. The Tier 4 model, `Model 26.1b`, `Model 26.2` and the structural experiments in Appendix B use the corrected estimates. `Model 25.3`, `Model 26.1` and `Model 26.1a`, whose data end in 2024, retain the 2024 and 2025 survey estimates as used in May, so the step from `Model 26.1a` to `Model 26.1b` includes the correction. Four corrections were made to the input data by the authors. The total-male size composition was corrected, resolving a discrepancy between the file used in September 2025 and the file produced by the script that processes the ADF&G data. The plus group was expanded to include all crab greater than 135 mm carapace width, which the previous assessments excluded. The size-composition bin convention was changed so that a crab falling exactly on a 5 mm cutoff is assigned to the upper bin. A transcription error in the growth data was corrected (a 26.3 mm crab's molt increment was recorded as 73 mm instead of 7.3 mm). Hybrid *Chionoecetes* catch and survey data were evaluated in the May 2026 preliminary assessment and are not included in any model presented here, following CPT and SSC advice. An immature survey index was likewise evaluated and is not brought forward.
 
 3. **Assessment methodology:** The Tier 4 model is a random-effects (REMA) model in which the averaging period for the Tier 4 B~MSY~ proxy was extended to the full survey time series, 1982 to 2026 (the September 2025 assessment averaged 1982 to 2024). This changes the proxy for morphometrically mature males to `r .f(bmsy_2026, 2)` kt and stock status to `r .f(status_2026, 3)`, compared with `r .f(bmsy_w24, 2)` kt and `r .f(status_w24, 3)` on the earlier window, and lowers the minimum stock size threshold. Under the ramped control rule the proxy enters the OFL through stock status, so the wider window also changes the recommended OFL slightly (Section F). Following the June 2026 SSC recommendation, the Tier 4 model is recommended as the basis for the harvest specification until a simpler and more stable Tier 3 model is developed. The Tier 3 models are presented to document progress and are not proposed for specification.
 
@@ -1620,9 +1623,9 @@ The base ('rolled forward') model:
 
 Models brought forward from the May 2026 assessment:
 
-* **Model 26.1**: the model accepted by the CPT in May 2026. `Model 25.3` updated to GMACS 2.20.34, with the total-male size composition corrected and the plus group enlarged to include all crab greater than 135 mm carapace width, and with the molting probability controls replaced by the new maturity workflow developed by the Kodiak lab (E. Ryznar, in prep). That workflow fits an `sdmTMB` spatiotemporal model to chela-based maturity classifications to produce a smoothed probability of being mature at size and location, integrated to a population-level annual ogive. The updated series shows a weaker temporal trend in the probability of terminal molt at intermediate sizes. As in May, the model includes fishery data through the 2023/24 season and survey data through the 2024 survey.
+* **Model 26.1**: the model accepted by the CPT in May 2026. `Model 25.3` updated to GMACS 2.20.34, with the total-male size composition corrected and the plus group enlarged to include all crab greater than 135 mm carapace width, and with the molting probability controls replaced by the new maturity workflow developed by the Kodiak lab (E. Ryznar, in prep). That workflow fits an `sdmTMB` spatiotemporal model to chela-based maturity classifications to produce a smoothed probability of being mature at size and location, integrated to a population-level annual ogive. The updated series shows a weaker temporal trend in the probability of terminal molt at intermediate sizes. As in May, the model includes fishery data through the 2024/25 season and survey data through the 2025 survey.
 
-* **Model 26.1a**: as `Model 26.1`, but with the size-composition bin convention changed so that a crab falling exactly on a 5 mm cutoff is assigned to the upper bin, and with a transcription error in the growth data corrected (a 26.3 mm crab's molt increment recorded as 73 mm where the specimen master gives 7.3 mm). Fishery data run through the 2023/24 season and survey data through the 2024 survey. Presented to isolate the effect of the two data corrections against the May baseline.
+* **Model 26.1a**: as `Model 26.1`, but with the size-composition bin convention changed so that a crab falling exactly on a 5 mm cutoff is assigned to the upper bin, and with a transcription error in the growth data corrected (a 26.3 mm crab's molt increment recorded as 73 mm where the specimen master gives 7.3 mm). Fishery data run through the 2024/25 season and survey data through the 2025 survey. Presented to isolate the effect of the two data corrections against the May baseline.
 
 The September 2026 models:
 
@@ -1642,7 +1645,7 @@ Time series of data used in the assessment are visualized in Figures \@ref(fig:i
      SEPTEMBER 2026 PORT (narrative) — Introduction + Data ported from
      archive_2025/2026_snowcrab_safe_draft_2025_reference.Rmd (faithful to the 2025 SAFE).
      (1) DONE 2026-08-29: the 2025-dialect \autoref{} cross-references were wired
-     to bookdown \@ref(fig:)/\@ref(tab:) and the sixteen figures they pointed at
+     to bookdown figure/table references and the sixteen figures they pointed at
      were ported from continuity/background/ and plots/. (2) inline catch values are repointed to reslst[[accepted_model]]
      and populate only once the 2026 results object exists. (3) verify terminal-year
      references (survey/crab-year convention) against the 2026 data pull.
@@ -1669,7 +1672,7 @@ The practical cost of the multiple minima is visible in `Model 26.1`. The jitter
 
 `r if (jit_have && !is.null(jitter$attribution)) sprintf("The parameters that separate the minima are summarized in Table \\@ref(tab:jitter-attribution) and Figure \\@ref(fig:jitt-attrib). Identifying which parameters differ between the minima, rather than only observing that they exist, was requested by the SSC and is intended to direct the structural work needed to resolve the multiple minima.")` Differences in multiple parameters resulted in local minima, making a quick solution to the convergence problems challenging. Of the `r jit_attr_n` parameters that most separate the minima, the types are `r jit_attr_kinds`.
 
-Removing the female population improves the numerical behavior of the model. `Model 26.2` estimates 234 parameters compared with 412 for `Model 26.1b`. Its accepted fit attains a maximum absolute gradient of zero to reported precision after additional Newton steps, and its Hessian is markedly better conditioned than that of `Model 26.1b` (condition number 3.3e05 compared with 1.4e06; smallest eigenvalue 120 compared with 34), with no non-positive eigenvalues. The condition number is the ratio of the largest to the smallest eigenvalue of the Hessian. A smaller value indicates a better-determined minimum, and very large values indicate near-flat directions in the likelihood along which the parameters are poorly determined. Jittering the male-only model over 100 runs recovered its accepted fit in `r .f(jit_mo_pct, 1)` percent of the runs that reached a minimum, compared with `r .f(jit_pct_at_base, 1)` percent for `Model 26.1b`, so dropping the females reduced, but did not remove, the multimodality that has characterized this assessment. The retrospective pattern is also smaller: Mohn's rho for mature male biomass is `r .f(.rho_of(.dir_mo, "standard", "mature_male_biomass"), 2)` (`r .f(.rho_of(.dir_mo, "drop_survey", "mature_male_biomass"), 2)` when the terminal survey year is withheld) compared with `r .f(.rho_of(.dir_acc, "standard", "mature_male_biomass"), 2)` for `Model 26.1b`, and `r if (.in_hf(c(.rho_of(.dir_mo, "standard", "mature_male_biomass"), .rho_of(.dir_mo, "drop_survey", "mature_male_biomass"), .rho_of(.dir_acc, "standard", "mature_male_biomass")))) "both remain inside" else "not all remain inside"` the Hurtado-Ferro et al. (2015) bounds. Mohn's rho for male recruitment falls from `r .f(.rho_of(.dir_acc, "standard", "recruitment_male"), 1)` to `r .f(.rho_of(.dir_mo, "standard", "recruitment_male"), 2)`. These improvements are consistent with removing the females reducing the confounding among growth, natural mortality, and selectivity.
+Removing the female population improves the numerical behavior of the model. `Model 26.2` estimates 234 parameters compared with 412 for `Model 26.1b`. Its accepted fit attains a maximum absolute gradient of zero to reported precision after additional Newton steps, and its Hessian is markedly better conditioned than that of `Model 26.1b` (condition number 3.3e05 compared with 1.4e06; smallest eigenvalue 120 compared with 34), with no non-positive eigenvalues. The condition number is the ratio of the largest to the smallest eigenvalue of the Hessian. A smaller value indicates a better-determined minimum, and very large values indicate near-flat directions in the likelihood along which the parameters are poorly determined. Jittering the male-only model over 100 runs recovered its accepted fit in `r .f(jit_mo_pct, 1)` percent of the runs that reached a minimum, compared with `r .f(jit_pct_at_base, 1)` percent for `Model 26.1b`, so dropping the females reduced, but did not remove, the multimodality that has characterized this assessment. `r if (isTRUE(abs(.rho_of(.dir_mo, "standard", "mature_male_biomass")) < abs(.rho_of(.dir_acc, "standard", "mature_male_biomass")))) "The retrospective pattern is also smaller" else "The retrospective pattern is not smaller"`: Mohn's rho for mature male biomass is `r .f(.rho_of(.dir_mo, "standard", "mature_male_biomass"), 2)` (`r .f(.rho_of(.dir_mo, "drop_survey", "mature_male_biomass"), 2)` when the terminal survey year is withheld) compared with `r .f(.rho_of(.dir_acc, "standard", "mature_male_biomass"), 2)` for `Model 26.1b`, and `r if (.in_hf(c(.rho_of(.dir_mo, "standard", "mature_male_biomass"), .rho_of(.dir_mo, "drop_survey", "mature_male_biomass"), .rho_of(.dir_acc, "standard", "mature_male_biomass")))) "all three remain inside" else "not all three remain inside"` the Hurtado-Ferro et al. (2015) bounds. Mohn's rho for male recruitment falls from `r .f(.rho_of(.dir_acc, "standard", "recruitment_male"), 1)` to `r .f(.rho_of(.dir_mo, "standard", "recruitment_male"), 2)`. These improvements are consistent with removing the females reducing the confounding among growth, natural mortality, and selectivity.
 
 One caveat applies. In `Model 26.2` the base natural mortality offset for immature males is estimated at its lower bound of -1, with a standard error of 2e-05. Because M is specified as relative for that group, the bound puts immature-male M at exp(-1) times the mature-male rate, or 0.106 yr^-1^. The same parameter in the accepted two-sex model is estimated at -0.219 with a standard error of 0.116, well inside its range, giving 0.234 yr^-1^. Removing the females results in the model estimating immature-male mortality at about a third of the mature rate, and the estimate would go lower if allowed. Because that parameter is pinned at its bound, it no longer contributes a direction of uncertainty to the Hessian, so part of the improvement in conditioning reflects the bound rather than a better-determined likelihood. The implied immature-male mortality should also not be adopted in a specification model without further examination. The other parameters at bounds in `Model 26.2` are the three fully-selected trawl-survey size classes, which are at bounds in the two-sex model as well and are not diagnostic. Dropping the females also lowers the reference points: $B_{MSY}$ falls from 144.06 to 130.47 kt, the total-catch OFL from 82.46 to 74.03 kt, and terminal mature male biomass from 137.44 to 112.33 kt (Table \@ref(tab:stepchange)).
 
@@ -1691,8 +1694,8 @@ if (jit_have) {
       # 05_run_jitter.R:679 summarises ofl_directed, not ofl_tot. Labelled
       # accordingly: for the 2019-data model the two differ materially
       # (directed min is exactly 0, total min 0.054 kt).
-      "Directed OFL, range across runs (1,000 t)",
-      sprintf("MMB in %s, range across runs (1,000 t)", jit_fmt(jit_term_yr, 0))),
+      "Directed OFL, range across converged runs (1,000 t)",
+      sprintf("MMB in %s, range across converged runs (1,000 t)", jit_fmt(jit_term_yr, 0))),
     Value = c(
       jit_fmt(jit_n, 0),
       jit_fmt(jit_complete, 0),
@@ -1703,8 +1706,8 @@ if (jit_have) {
       jit_fmt(jit_pct_at_base, 1),
       jit_fmt(jit_base_nll, 3),
       jit_fmt(jit_best_nll, 3),
-      sprintf("%s - %s", jit_fmt(jit_ofl_min, 2), jit_fmt(jit_ofl_max, 2)),
-      sprintf("%s - %s", jit_fmt(jit_mmb_min, 1), jit_fmt(jit_mmb_max, 1))),
+      sprintf("%s - %s", jit_fmt(jit_ofl_min_u, 2), jit_fmt(jit_ofl_max_u, 2)),
+      sprintf("%s - %s", jit_fmt(jit_mmb_min_u, 1), jit_fmt(jit_mmb_max_u, 1))),
     stringsAsFactors = FALSE)
 
   flextable::flextable(jsum_df) |>
@@ -1817,6 +1820,21 @@ retro_have <- !is.null(retro_rho)
 }
 .fmt <- function(x, d = 3) if (is.na(x)) "NA" else formatC(x, format = "f", digits = d)
 
+## Peel convergence quoted in the narrative, from retro_diagnostics.csv: gradients
+## over peels that completed verification (peel 0 is the refit of the full model),
+## and the peels that failed and are therefore excluded from Mohn's rho.
+.rd_ok <- if (!is.null(retro_diag)) retro_diag[retro_diag$ok & retro_diag$peel > 0, ] else NULL
+retro_n_ok    <- if (!is.null(.rd_ok)) nrow(.rd_ok) else NA_integer_
+retro_n_meet  <- if (!is.null(.rd_ok)) sum(.rd_ok$max_grad < 1e-3) else NA_integer_
+retro_grad_lo <- if (!is.null(.rd_ok) && nrow(.rd_ok)) min(.rd_ok$max_grad) else NA_real_
+retro_grad_hi <- if (!is.null(.rd_ok) && nrow(.rd_ok)) max(.rd_ok$max_grad) else NA_real_
+.rd_bad <- if (!is.null(retro_diag)) retro_diag[!retro_diag$ok, ] else NULL
+retro_n_fail  <- if (!is.null(.rd_bad)) nrow(.rd_bad) else 0L
+retro_fail_lab <- if (retro_n_fail > 0) paste(sprintf("%s peel %d",
+  ifelse(.rd_bad$mode == "drop_survey", "terminal-survey-dropped", "standard"), .rd_bad$peel),
+  collapse = " and ") else ""
+.g2 <- function(x) if (is.na(x)) "NA" else trimws(formatC(x, format = "g", digits = 2))
+
 retro_npeel <- if (!is.null(retro_rel)) max(retro_rel$peel) else NA_integer_
 retro_yr1   <- if (!is.null(retro_rel)) max(retro_rel$terminal_year) else NA_integer_
 retro_yrN   <- if (!is.null(retro_rel)) min(retro_rel$terminal_year) else NA_integer_
@@ -1848,6 +1866,13 @@ if (!is.null(retro_all)) retro_all <- retro_all[order(retro_all$Model), ]
 }
 rho_rng_mmb <- .rng("mature_male_biomass")
 rho_rng_rec <- .rng("recruitment_male")
+## MMB values that would fall outside the LONGER-lived pair, for the sentence
+## stating which Hurtado-Ferro convention is applied.
+.lo <- if (!is.null(retro_all)) retro_all[retro_all$quantity == "mature_male_biomass" &
+         (retro_all$mohns_rho < HF_LO_LONG | retro_all$mohns_rho > HF_HI_LONG), ] else NULL
+rho_long_out <- if (!is.null(.lo) && nrow(.lo)) paste(sprintf("\x60%s\x60%s (%.2f)", .lo$Model,
+  ifelse(.lo$mode == "drop_survey", " with the terminal survey dropped", ""), .lo$mohns_rho),
+  collapse = " and ") else ""
 ```
 
 The guidelines also ask whether any parameters were inestimable or reached their bounds. In the accepted fit of `Model 26.1b` the only parameters at a bound are five trawl-survey selectivity parameters for fully selected size classes, which sit at their upper bound of zero (full selection). Its Hessian is well conditioned: its smallest eigenvalue is 34.0, and none is non-positive. Twenty-four of the 412 estimated parameters have a standard error larger than the absolute value of the estimate. Fourteen of those are estimated within 0.1 of zero, where a large ratio is expected rather than diagnostic: four selectivity offsets, three fishing mortality deviations, two fishing mortality offsets, two recruitment deviations, one recruitment proportion parameter, one growth parameter, and one natural mortality parameter, `M_pars_est[10]`, estimated at 0.015 with a standard error of 0.85. That last parameter is near zero but poorly determined, so it raises an identifiability question. The remainder are three recruitment deviations, five recruitment proportion parameters, a fishing mortality deviation, and `M_pars_est[2]`, the natural mortality deviation for mature males in the first event block, estimated at 0.30 with a standard error of 0.61.
@@ -1857,13 +1882,13 @@ These results describe the accepted fit of `Model 26.1b`, not every fit of that 
 ### Retrospective analysis
 `r if (!retro_have) "*Retrospective results not yet generated; run 06_run_retrospective.R to produce them.*"`
 
-Retrospective analyses were performed by sequentially removing the terminal year of data from the model, re-fitting, and comparing the resulting time series of estimated mature male biomass with the estimates from the model fit to the full data set. A retrospective pattern is a consistent directional change in an assessment estimate for a given year as additional years of data are added. `r if (retro_have) sprintf("A total of %d retrospective model runs (peels) were made, giving terminal years from %d to %d.", retro_npeel, retro_yr1, retro_yrN)` The peels did not meet the maximum-gradient criterion of 0.001 applied to the accepted fit; the maximum absolute gradient ranged from 0.0015 to 0.020. Each peel is near a local minimum and none received additional Newton steps.
+Retrospective analyses were performed by sequentially removing the terminal year of data from the model, re-fitting, and comparing the resulting time series of estimated mature male biomass with the estimates from the model fit to the full data set. A retrospective pattern is a consistent directional change in an assessment estimate for a given year as additional years of data are added. `r if (retro_have) sprintf("%s peels were made in each of two retrospective modes, the standard sweep and one that also withholds the terminal survey year, giving terminal years from %d to %d.", {w <- .nw(retro_npeel); paste0(toupper(substring(w, 1, 1)), substring(w, 2))}, retro_yr1, retro_yrN)` `r if (retro_have) sprintf("Of the %d peels that completed, %s met the maximum-gradient criterion of 0.001 applied to the accepted fit; the maximum absolute gradient ranged from %s to %s.", retro_n_ok, .nw(retro_n_meet), .g2(retro_grad_lo), .g2(retro_grad_hi))` `r if (retro_have && retro_n_fail > 0) sprintf("The %s failed to invert the Hessian and %s excluded from Mohn's rho.", retro_fail_lab, if (retro_n_fail == 1) "is" else "are") else ""` Each peel is near a local minimum and none received additional Newton steps.
 
 Mohn's $\rho$ is reported here as the mean across peels of the relative difference between each peel's terminal-year estimate and the estimate for that same year from the model fit to all of the data,
 
 $$\rho = \frac{1}{P}\sum_{p=1}^{P}\frac{X_{T_p,\,p}-X_{T_p,\,0}}{X_{T_p,\,0}},$$
 
-where $T_p$ is the terminal year of peel $p$ and $X_{\cdot,0}$ is the unpeeled fit. A positive $\rho$ means the peels sit above the full model, i.e. that terminal biomass is revised downward as data accumulate. Hurtado-Ferro et al. (2015) suggest that $\rho$ outside $[-0.22,\,0.30]$ for a short-lived stock indicates a retrospective pattern worth reporting.
+where $T_p$ is the terminal year of peel $p$ and $X_{\cdot,0}$ is the unpeeled fit. A positive $\rho$ means the peels sit above the full model, i.e. that terminal biomass is revised downward as data accumulate. Hurtado-Ferro et al. (2015) propose a rule of thumb from the 90 percent simulation intervals of their base cases: $\rho$ outside $[-0.22,\,0.30]$ for shorter-lived species (a sardine-like life history, M = 0.4) or outside $[-0.15,\,0.20]$ for longer-lived species (flatfish-like, M = 0.2) indicates a retrospective pattern that should be addressed. A value inside the bounds does not confirm that the model is correctly specified. Snow crab mature-male M (`r NAT_M`) lies between the two cases, and the shorter-lived bounds are applied here. `r if (nzchar(rho_long_out)) sprintf("Under the longer-lived bounds, %s would also fall outside for mature male biomass.", rho_long_out) else "No mature male biomass value falls outside the longer-lived bounds either."`
 
 Two retrospective analyses are presented. First, the standard retrospective removes the last $p$ years of all data streams, including the survey. Because an assessment with fishery data through season $N$ includes the summer survey from year $N+1$, each standard peel still retains one survey year beyond its terminal fishery season. Second, the dropped-terminal-survey retrospective also withholds that final survey year, isolating the influence of the single most recent survey observation on the terminal estimate.
 
@@ -1873,7 +1898,7 @@ Retrospectives were also run for the other three jittered models, and Table \@re
 
 Management quantities are not recomputed for each peel. GMACS calculates reference points only when the retrospective peel count is zero (`gmacsbase.TPL` 2.20.34 gates both call sites on `nyrRetroNo == 0`), so every peeled run returns $B_{MSY}$, $B/B_{MSY}$ and the OFL as exactly zero rather than as estimates. This is a property of GMACS, not of the runs presented here, and it applies equally to the 2025 assessment. The retrospective therefore characterizes only mature male biomass and recruitment.
 
-The mature male biomass pattern is modest. In `Model 26.1b` the peels sit below the full model, so terminal biomass has tended to be revised upward as data accumulated. These retrospectives are of the Tier 3 models. The 2026/27 specification is calculated under Tier 4 from the REMA-smoothed survey series, so they have little bearing on the ABC buffer recommended here.
+The mature male biomass pattern is modest. In `Model 26.1b` the peels sit `r if (isTRUE(.rho("standard", "mature_male_biomass") < 0)) "below the full model, so terminal biomass has tended to be revised upward" else "above the full model, so terminal biomass has tended to be revised downward"` as data accumulated. These retrospectives are of the Tier 3 models. The 2026/27 specification is calculated under Tier 4 from the REMA-smoothed survey series, so they have little bearing on the ABC buffer recommended here.
 
 ### Historical analysis
 
@@ -2056,7 +2081,7 @@ Under the Tier 4 control rule, the fishing mortality rate above which the stock 
 
 The recommended acceptable biological catch (ABC) is calculated by subtracting a buffer from the OFL to account for scientific uncertainty. The buffer applied here is `r sprintf("%.0f", 100*(1-ABC_buffer))` percent, giving an ABC of `r .f(abc_2026, 2)` kt against an OFL of `r .f(ofl_2026, 2)` kt.
 
-The buffer accounts for the considerable scientific uncertainty in the Tier 4 OFL: the 95 percent confidence interval on the OFL ranges from `r .f(ofl_2026_lci, 2)` to `r .f(ofl_2026_uci, 2)` kt, and the choice of maturity definition changes the OFL by more than that interval (Section F). A larger buffer was not considered necessary for two reasons. The ESP indicates favorable conditions for juvenile snow crab (Table \@ref(tab:risk-table)), and the Tier 4 OFL of `r .f(ofl_2026, 2)` kt is considerably lower than the Tier 3 OFLs, which range from 43.8 to 147.3 kt across the models presented (Table \@ref(tab:stepchange)).
+The buffer accounts for the considerable scientific uncertainty in the Tier 4 OFL: the 95 percent confidence interval on the OFL ranges from `r .f(ofl_2026_lci, 2)` to `r .f(ofl_2026_uci, 2)` kt, and the OFLs under the alternative maturity definitions fall outside that interval (Section F). A larger buffer was not considered necessary for two reasons. The ESP indicates favorable conditions for juvenile snow crab (Table \@ref(tab:risk-table)), and the Tier 4 OFL of `r .f(ofl_2026, 2)` kt is considerably lower than the Tier 3 OFLs, which range from 43.8 to 147.3 kt across the models presented (Table \@ref(tab:stepchange)).
 
 The June 2026 SSC supported reporting a stock-specific history of the buffers applied to the OFL, and supported the CPT's suggestion that a historical buffer could initially be set at the average buffer from the previous five assessments (Table \@ref(tab:buffer-history)).
 
@@ -2538,7 +2563,7 @@ flextable::flextable(model_overview) |>
   flextable::width(j = c("Model", "Type", "Jittered"), width = c(0.95, 0.85, 0.75)) |>
   flextable::width(j = "Purpose", width = 3.7) |>
   flextable::set_caption(
-    caption = "Overview of the models presented in the September 2026 assessment, with the type and purpose of each. 'Jittered' records whether a jitter analysis was run for that model this cycle. The same four models received retrospective sweeps (Table \\@ref(tab:retro-rho)).",
+    caption = "Overview of the models presented in the September 2026 assessment, with the type and purpose of each. 'Jittered' records whether a jitter analysis was run for that model this cycle. The same four models received retrospective sweeps; their statistics are tabulated in Section E.",
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "model-overview")
   )
 
@@ -2949,7 +2974,9 @@ if (is.null(.rt)) {
       "model) / full model at each peel's terminal year, so a positive value means terminal estimates",
       "are revised downward as data accumulate. Ralston's sigma is the log-scale RMSE of the same",
       "pairs. Dropped-terminal-survey peels are compared with the full model. Peels for Models 26.1c",
-      "and 26.1 are relative to their own terminal years, 2019 and 2024."),
+      "and 26.1 are relative to their own terminal years, 2019 and 2024. Model 26.1 is fit to the survey",
+      "estimates before the 2024-2026 net-mensuration correction; the other models either use the corrected",
+      "estimates or end before 2024."),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "retro-rho")
     )
 }
@@ -3791,16 +3818,13 @@ if (file.exists(retro_mmb_png)) {
 
 \newpage
 
-
-One step of this sweep adds no survey information. The peels withhold the survey through `END_YEAR` minus the peel count, so peel five ends the survey in 2020 and peel six in 2019. The 2020 survey was cancelled, and the two peels are therefore fit to the same survey series and differ only in the fishery years GMACS truncates. Their data files are byte-identical. The step between those two points on the figure should not be read as the effect of removing a survey year.
-
 ```{r rema-fit, echo=FALSE, out.width="72%", fig.cap="Random-effects (REMA) fit to the survey biomass series for each of the three Tier 4 maturity definitions: morphometrically mature males (top), males >= 95 mm (middle) and males > 101 mm (bottom). Points are the survey observations with their sampling intervals. The line and shaded band are the smoothed series and its 95 percent confidence interval. The smoothed terminal value is the biomass the control rule acts on, and the average of the smoothed series over the full time series is the B~MSY~ proxy. There is no 2020 observation because the survey was cancelled. The random-effects model supplies a value for it, which is why the average is taken over the smoothed series rather than the observations."}
 knitr::include_graphics("plots/rema_tier_4_ssc.png")
 ```
 
 \newpage
 
-```{r tier4-status-series, echo=FALSE, out.width="88%", fig.cap="Tier 4 stock status (biomass relative to the B~MSY~ proxy) computed on the raw survey series for the two large-male definitions. The red line is the closure threshold beta, below which the OFL is zero. The green line is half the proxy, the minimum stock size threshold. The series is shown on the raw observations rather than the smoothed fit, so it is more variable than the status reported for the specification, which is computed from the REMA fit in Figure \\@ref(fig:rema-fit)."}
+```{r tier4-status-series, echo=FALSE, out.width="88%", fig.cap="Tier 4 stock status (biomass relative to the B~MSY~ proxy) computed on the raw survey series for the two large-male definitions. The red line is the closure threshold beta, below which the OFL is zero. The green line is half the proxy, the minimum stock size threshold. The series is shown on the raw observations rather than the smoothed fit, so it is more variable than the status reported for the specification, which is computed from the REMA fit."}
 knitr::include_graphics("plots/tier4_status.png")
 ```
 
@@ -3815,6 +3839,8 @@ if (file.exists(retro_drop_png)) {
   cat("*Dropped-terminal-survey retrospective figure not yet generated; see `06_run_retrospective.R` to produce `plots/retro_mmb_drop_survey.png`.*")
 }
 ```
+
+One step of the terminal-survey-dropped sweep adds no survey information. Its peels withhold the survey through `END_YEAR` minus the peel count, so peel five ends the survey in 2020 and peel six in 2019. The 2020 survey was cancelled, and the two peels are therefore fit to the same survey series and differ only in the fishery years GMACS truncates. Their data files are byte-identical. The step between those two points on the figure should not be read as the effect of removing a survey year.
 
 \newpage
 
@@ -4689,7 +4715,7 @@ conv_files <- c(
   "Model 26.1b (accepted)" = "Models/rda_jitter.RData",
   "Model 26.2 (male-only)" = "Models/rda_jitter_male_only.RData",
   "Model 26.1c (2019 data)" = "Models/rda_jitter_data2019.RData",
-  "Model 26.1 (2025 base)"  = "Models/rda_jitter_25.2c.RData",
+  "Model 26.1 (May 2026)"  = "Models/rda_jitter_25.2c.RData",
   "26.d1 stability"         = "Models/rda_jitter_stability.RData",
   "26.d3 eqmdevs"           = "Models/rda_jitter_eqmdevs.RData",
   "26.d4 combined"          = "Models/rda_jitter_combined.RData",
@@ -4709,7 +4735,9 @@ conv_row <- function(lab, path) {
   ## solution found: when the true best fit is reached by one or two runs it is
   ## bucketed minor and A is a worse optimum entirely. That is the accepted
   ## model's case exactly. Computed directly here for every model.
-  best <- min(rs$objFun[ok], na.rm = TRUE)
+  ## The reported fit counts as a candidate for "own best": a base that beats every
+  ## jitter run (26.d3 on the 2026-09 data) was otherwise scored as recovered.
+  best <- min(c(rs$objFun[ok], sm$base_nll[1]), na.rm = TRUE)
   n_at_best <- sum(abs(rs$objFun[ok] - best) < 0.01)
   nmodes <- length(setdiff(unique(rs$mode[ok]), "minor"))
   ## OFL spread across NEAR-OPTIMAL runs (within 2 nll of the best), not across
@@ -4744,7 +4772,7 @@ conv_tab <- do.call(rbind, Map(conv_row, names(conv_files), conv_files))
 .rate <- function(path) {
   if (!file.exists(path)) return(c(NA, NA))
   e <- new.env(); load(path, envir = e); rs <- e$jitter$results
-  ok <- !is.na(rs$mode); best <- min(rs$objFun[ok], na.rm = TRUE)
+  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], e$jitter$summary$base_nll[1]), na.rm = TRUE)
   c(sum(abs(rs$objFun[ok] - best) < 0.01), sum(ok))
 }
 .r_acc <- .rate(conv_files[["Model 26.1b (accepted)"]])
@@ -4777,6 +4805,35 @@ cv_ci_d5   <- .ci(conv_files[["26.d5 male-only+eqmdevs"]])
 cv_ci_mo   <- .ci(conv_files[["Model 26.2 (male-only)"]])
 cv_ci_stab <- .ci(conv_files[["26.d1 stability"]])
 cv_ci_eqm  <- .ci(conv_files[["26.d3 eqmdevs"]])
+
+## Further per-configuration statistics the concluding paragraphs quote. Added
+## 2026-09-12: the rerun on the corrected survey turned several literals here false
+## (spans, gaps, gradient counts), so they are computed like the rates above.
+.jstat <- function(path) {
+  e <- new.env(); load(path, envir = e); j <- e$jitter; rs <- j$results
+  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], j$summary$base_nll[1]), na.rm = TRUE)
+  lett <- rs$objFun[ok & rs$mode != "minor"]
+  list(span  = diff(range(rs$objFun[ok])),                       # nll span, usable runs
+       gap   = if (length(lett)) min(lett) - best else NA_real_,  # best fit to best lettered mode
+       pbm   = j$summary$pct_at_best_mode[1],                    # share in the best lettered mode
+       meets = j$summary$n_meets_conventional[1],                # runs meeting 1e-3
+       base_grad = j$summary$base_max_grad[1],
+       near  = sum(ok & (rs$objFun - best) <= 2),                 # runs within 2 nll of the best
+       base_hits = sum(abs(rs$objFun[ok] - j$summary$base_nll[1]) < 0.01),  # runs reaching the reported fit
+       impr  = j$summary$nll_improvement[1],                     # < 0: reported fit beats every run
+       best_run_grad = min(rs$maxGrad[ok & abs(rs$objFun - best) < 0.01]))  # gradient of runs at the best
+}
+cv_js <- lapply(conv_files[file.exists(conv_files)], .jstat)
+.cvs  <- function(lab, what) if (lab %in% names(cv_js)) cv_js[[lab]][[what]] else NA_real_
+## The two-sex rows, for "every two-sex configuration spans more than ...".
+cv_twosex <- c("Model 26.1b (accepted)", "Model 26.1c (2019 data)", "Model 26.1 (May 2026)",
+               "26.d1 stability", "26.d3 eqmdevs", "26.d4 combined")
+cv_span_twosex_min <- min(vapply(cv_js[intersect(cv_twosex, names(cv_js))], `[[`, 0, "span"))
+## Rows whose best fit IS the best lettered mode (gap below the 0.01 clustering tolerance).
+cv_same_best <- names(cv_js)[vapply(cv_js, function(s) isTRUE(s$gap < 0.01), TRUE)]
+## Rows with fewer than two runs within 2 nll of the best: no near-optimal OFL spread.
+cv_near_lt2 <- names(cv_js)[vapply(cv_js, function(s) s$near < 2, TRUE)]
+.ci_overlap <- function(a, b) isTRUE(a[1] <= b[2] && b[1] <= a[2])
 
 ## Where the movement between optima actually sits, by parameter class. Written
 ## by 05b_jitter_movement_decomposition.R; movement is the RANGE (max - min) of
@@ -4823,10 +4880,10 @@ if (mv_have) {
 
 ## Cross-model comparison. Shares are the safe currency here: movement is a RANGE
 ## across retained optima, and range is not independent of how many optima were
-## retained (40 / 20 / 31 across these models), so absolute totals carry a caveat
-## that shares do not. `26.d1 stability` is absent by necessity, not oversight --
-## only 2 of its runs land within 2 nll of its best fit, below the 3 the
-## decomposition needs, because its optima are too dispersed to form a cluster.
+## retained (n_optima in each 05b file), so absolute totals carry a caveat that
+## shares do not. `26.d1 stability` is absent by necessity, not oversight -- too few
+## of its runs land within 2 nll of its best fit (cv_js[["26.d1 stability"]]$near),
+## below the 3 the decomposition needs, because its optima are too dispersed.
 .mv_lab <- c("26_gmacs_update_newmat_plus_group" = "Model 26.1b (accepted)",
              "26_gmacs_eqmdevs"                  = "26.d3 eqmdevs",
              "26_gmacs_male_only"                = "Model 26.2 (male-only)",
@@ -4887,16 +4944,16 @@ The June 2026 SSC asked that a focused convergence section identify which parame
 The diagnostic identified three independent pathologies in the accepted model:
 
 1. `M_pars_est[15]`, the 2019 immature-female natural mortality deviation, is structurally non-identified. It is the only one of the 412 parameters that moves while the objective function does not.
-2. The recruitment sex ratio is controlled by 44 logit parameters bounded at plus or minus 100, whose only effective restraint is a penalty standard deviation of 2.0 hardcoded in the source rather than read from the control file. Thirteen of the 44 are estimated beyond two standard deviations of that penalty. They are nowhere near the plus or minus 100 bounds (the estimates span -3.6 to +4.2), so it is the penalty, not the bound, that is failing to restrain them.
+2. The recruitment sex ratio is controlled by 44 logit parameters bounded at plus or minus 100, whose only effective restraint is a penalty standard deviation of 2.0 hardcoded in the source rather than read from the control file. Thirteen of the 44 are estimated beyond one standard deviation of that penalty, and one beyond two. They are nowhere near the plus or minus 100 bounds (the estimates span -3.6 to +4.2), so it is the penalty, not the bound, that is failing to restrain them.
 3. The 1982 initial numbers at length are 83 parameters whose overall level is entirely unpenalized. The only term touching them is a first-difference smoothness penalty, and first differences are invariant to shifting a whole group.
 
-Among the parameters that most separate the jitter minima (Table \@ref(tab:jitter-attribution)), the largest is `r sprintf("\x60%s\x60", jit_attr_top)`. `r if (is.na(jit_attr_sa_rank)) sprintf("The recruitment sex allocation, which led this ranking on the pre-correction data, is not among the %d highest-ranked parameters. The leading ten separate the minima by standardized differences of %.2f to %.2f, so the attribution does not isolate a single determinant; the decomposition by parameter class below is the more informative measure.", jit_attr_n, min(abs(head(jitter$attribution$std_difference, 10))), max(abs(head(jitter$attribution$std_difference, 10)))) else sprintf("The recruitment sex allocation ranks %d of the %d parameters tabulated.", jit_attr_sa_rank, jit_attr_n)` This addresses the SSC's request, and it is consistent with the male-only simplification, which removes the sex allocation entirely, being the only configuration in Table \@ref(tab:conv-table) that reliably recovers its own best fit.
+Among the parameters that most separate the jitter minima (Table \@ref(tab:jitter-attribution)), the largest is `r sprintf("\x60%s\x60", jit_attr_top)`. `r if (is.na(jit_attr_sa_rank)) sprintf("The recruitment sex allocation, which led this ranking on the pre-correction data, is not among the %d highest-ranked parameters. The leading ten separate the minima by standardized differences of %.2f to %.2f, so the attribution does not isolate a single determinant; the decomposition by parameter class below is the more informative measure.", jit_attr_n, min(abs(head(jitter$attribution$std_difference, 10))), max(abs(head(jitter$attribution$std_difference, 10)))) else sprintf("The recruitment sex allocation ranks %d of the %d parameters tabulated.", jit_attr_sa_rank, jit_attr_n)` This addresses the SSC's request, and it is consistent with the two male-only configurations, which remove the sex allocation entirely, being the only ones in Table \@ref(tab:conv-table) that recover their own best fit in more than a few percent of runs.
 
-Decomposing the movement between minima by parameter class quantifies this (Table \@ref(tab:movement-table)). Across the `r mv_n_opt` near-equivalent minima, the recruitment sex allocation alone accounts for `r .f(mv_sexalloc, 1)` percent of all parameter movement, and the female and sex-allocation parameters together account for `r .f(mv_fem_plus, 1)` percent. The male parameters account for `r .f(mv_male, 1)` percent across `r mv_npar_m` parameters, whereas the sex allocation reaches `r .f(mv_sexalloc, 1)` percent on just `r mv_npar_sa` parameters, about `r .f(mv_dens_ratio, 0)` times as much movement per parameter. The alternative minima are therefore largely disagreements about the female population and the split of recruitment between the sexes, rather than about the male population the assessment exists to manage. This is the clearest quantitative case for the male-only direction, and it is measured on the accepted model itself rather than inferred from the sensitivity.
+Decomposing the movement between minima by parameter class quantifies this (Table \@ref(tab:movement-table)). Across the `r mv_n_opt` near-equivalent minima, the recruitment sex allocation alone accounts for `r .f(mv_sexalloc, 1)` percent of all parameter movement, and the female and sex-allocation parameters together account for `r .f(mv_fem_plus, 1)` percent. The male parameters account for `r .f(mv_male, 1)` percent across `r mv_npar_m` parameters, whereas the sex allocation reaches `r .f(mv_sexalloc, 1)` percent on just `r mv_npar_sa` parameters, about `r .f(mv_dens_ratio, 1)` times as much movement per parameter. The alternative minima are therefore largely disagreements about the female population and the split of recruitment between the sexes, rather than about the male population the assessment exists to manage. This is the clearest quantitative case for the male-only direction, and it is measured on the accepted model itself rather than inferred from the sensitivity.
 
-Running the same decomposition on the structural experiments explains these results (Table \@ref(tab:xmodel-table)). The equilibrium backbone in `26.d3 eqmdevs` had its intended effect and no other: the male parameters' share of movement fell from `r .f(mv_male, 1)` to `r .f(xm_male_pct_eqm, 1)` percent, because anchoring the 1982 structure removes the freedom that had been propagating through the male side. It does not affect the sex ratio, and sex-allocation movement barely changed, so its share rose from `r .f(mv_sexalloc, 1)` to `r .f(xm_sa_eqm, 1)` percent and the female-and-sex-allocation total from `r .f(mv_fem_plus, 1)` to `r .f(xm_fp_eqm, 1)` percent. Fixing the initialization made the sex allocation more dominant, not less, which explains why it did not improve the recovery rate.
+Running the same decomposition on the structural experiments explains these results (Table \@ref(tab:xmodel-table)). The equilibrium backbone in `26.d3 eqmdevs` had its intended effect and no other: the male parameters' share of movement fell from `r .f(mv_male, 1)` to `r .f(xm_male_pct_eqm, 1)` percent, because anchoring the 1982 structure removes the freedom that had been propagating through the male side. It does not affect the sex ratio: sex-allocation movement rose from `r .f(xm_tot_acc * mv_sexalloc / 100, 2)` to `r .f(.xg("Total movement", "26.d3 eqmdevs") * xm_sa_eqm / 100, 2)`, so its share rose from `r .f(mv_sexalloc, 1)` to `r .f(xm_sa_eqm, 1)` percent and the female-and-sex-allocation total from `r .f(mv_fem_plus, 1)` to `r .f(xm_fp_eqm, 1)` percent. Fixing the initialization gave the sex allocation a larger share of the movement, not a smaller one, which is consistent with it not improving the recovery rate.
 
-`Model 26.2` removes the sex allocation altogether, and total movement falls from `r .f(xm_tot_acc, 1)` to `r .f(xm_tot_male, 2)`, with the remainder dominated by the shared recruitment deviations. The parameters `Model 26.2` removes are the ones responsible for almost all of the movement between minima, which is the source of its advantage rather than the parameter count itself. Two qualifications apply. The absolute movement totals are ranges taken across different numbers of retained minima (`r xm_optima_lab` across the models shown), and a range depends on how many runs enter it, so the totals should be read as indicative while the shares, which are unaffected, are the basis for the comparison. `26.d1 stability` cannot appear in this table because only two of its runs land within two likelihood units of its best fit, fewer than the decomposition requires. Its minima are too dispersed to form a cluster of near-equivalent solutions, consistent with its likelihood span being among the widest in Table \@ref(tab:conv-table) (311.8 compared with the accepted model's 301.6).
+`Model 26.2` removes the sex allocation altogether, and total movement falls from `r .f(xm_tot_acc, 1)` to `r .f(xm_tot_male, 2)`, with the remainder dominated by the shared recruitment deviations. The parameter classes `Model 26.2` removes carry `r .f(mv_fem_plus, 0)` percent of the movement between minima in the accepted model, which is the source of its advantage rather than the parameter count itself. Two qualifications apply. The absolute movement totals are ranges taken across different numbers of retained minima (`r xm_optima_lab` across the models shown), and a range depends on how many runs enter it, so the totals should be read as indicative while the shares, which are unaffected, are the basis for the comparison. `26.d1 stability` cannot appear in this table because `r if (isTRUE(.cvs("26.d1 stability", "near") == 1)) "only its best fit lies" else sprintf("only %s of its runs land", .nw(.cvs("26.d1 stability", "near")))` within two likelihood units of its best fit, fewer than the decomposition requires. Its minima are too dispersed to form a cluster of near-equivalent solutions, consistent with its likelihood span being among the widest in Table \@ref(tab:conv-table) (`r .f(.cvs("26.d1 stability", "span"), 1)` compared with the accepted model's `r .f(.cvs("Model 26.1b (accepted)", "span"), 1)`).
 
 Each experiment addressed a different subset of the pathologies. `26.d1 stability` fixed the first two and left the third. `26.d3 eqmdevs` replaced the third with an equilibrium backbone times penalized deviations and left the first two. `26.d2 initscaled` rescaled the initial-condition parameterization and was set aside without jittering when its fit to the data proved 138 likelihood units worse. A configuration with all three fixed at once, `26.d4`, was then built and jittered, and it did not resolve the multimodality either. What did work was applying the equilibrium-backbone initialization to the male-only model rather than to the two-sex one.
 
@@ -4920,8 +4977,9 @@ if (conv_have) {
         "runs, so a best fit reached once or twice is bucketed as minor and the lettered figure then",
         "describes a worse minimum. No likelihood is tabulated: the models are fit to different data",
         "and two run on modified source. Spans are within-model. The OFL spread covers only runs",
-        "within two likelihood units of each model's best fit. Model 26.d1 rests on two such runs and",
-        "is not meaningful."),
+        "within two likelihood units of each model's best fit.",
+        if (length(cv_near_lt2)) sprintf("%s %s fewer than two such runs, so no spread is computed.",
+          paste(cv_near_lt2, collapse = " and "), if (length(cv_near_lt2) > 1) "each have" else "has") else ""),
       autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "conv-table"))
 } else {
   cat("*No per-model jitter files found; see `05_run_jitter.R`.*")
@@ -4996,11 +5054,11 @@ if (xm_have) {
 \elandscape
 
 
-The pattern across the table is that the two-sex reconfigurations did not work and the male-only one did. The accepted model recovers its own best fit in `r .f(cv_pct_acc, 1)` percent of converged runs and `26.d3 eqmdevs` in `r .f(cv_pct_eqm, 1)` percent. Those differences, and `26.d1 stability`'s `r .f(cv_pct_stab, 1)` percent, are too small to be resolved by 100 runs. The 95 percent confidence interval on the accepted model's `r .f(.r_acc[1], 0)`-in-`r cv_n_acc` rate runs from zero to about `r .f(cv_ci_hi, 0)` percent, and the intervals for `eqmdevs` (to `r .f(cv_ci_eqm[2], 0)` percent) and `stability` (to `r .f(cv_ci_stab[2], 0)` percent) sit almost entirely inside it. Separating rates of this size would take several hundred runs. None of these experiments improved recovery detectably. The apparent declines are within what 100 runs can resolve. `26.d4 combined`, which applies all three fixes at once, is no better: `r .f(cv_pct_d4, 1)` percent, well inside the range the accepted model's own rate could take, and it converged less often than any other configuration. Its printed "best mode" share of 16.7 percent must not be quoted as a recovery rate. That mode sits 5.9 likelihood units above its own best fit, which only `r .f(.r_d4[1], 0)` of `r .f(.r_d4[2], 0)` converged runs reached. Fixing all three pathologies in the two-sex model therefore does not resolve the multimodality.
+The pattern across the table is that the two-sex reconfigurations did not work and the male-only one did. The accepted model recovers its own best fit in `r .f(cv_pct_acc, 1)` percent of converged runs and `26.d3 eqmdevs` in `r .f(cv_pct_eqm, 1)` percent. Those differences, and `26.d1 stability`'s `r .f(cv_pct_stab, 1)` percent, are too small to be resolved by 100 runs. The 95 percent confidence interval on the accepted model's `r .f(.r_acc[1], 0)`-in-`r cv_n_acc` rate runs from zero to about `r .f(cv_ci_hi, 0)` percent, and the intervals for `eqmdevs` (to `r .f(cv_ci_eqm[2], 0)` percent) and `stability` (to `r .f(cv_ci_stab[2], 0)` percent) sit almost entirely inside it. Separating rates of this size would take several hundred runs. None of these experiments improved recovery detectably. `r if (isTRUE(.cvs("26.d3 eqmdevs", "base_hits") == 0 && .cvs("26.d3 eqmdevs", "impr") < 0)) sprintf("The fit reported for \x6026.d3\x60 is %.2f likelihood units better than any of its jitter runs reached, so none of them recovered it.", -.cvs("26.d3 eqmdevs", "impr")) else ""` `26.d4 combined`, which applies all three fixes at once, is no better: `r .f(cv_pct_d4, 1)` percent, well inside the range the accepted model's own rate could take. Its printed "best mode" share of `r .f(.cvs("26.d4 combined", "pbm"), 1)` percent must not be quoted as a recovery rate. That mode sits `r .f(.cvs("26.d4 combined", "gap"), 1)` likelihood units above its own best fit, which only `r .f(.r_d4[1], 0)` of `r .f(.r_d4[2], 0)` converged runs reached. Fixing all three pathologies in the two-sex model therefore does not resolve the multimodality.
 
-Two configurations perform better than the rest, and both remove the female population. `Model 26.2` recovers its best fit in `r .f(cv_pct_mo, 1)` percent of converged runs (`r .f(.r_mo[1], 0)` of `r .f(.r_mo[2], 0)`). The accepted model recovers its own in `r .nw(.r_acc[1])` of `r cv_n_acc`. That gap is far larger than 100 runs could produce by chance. `26.d5`, which adds the equilibrium-backbone initialization to the male-only model, reaches `r .f(cv_pct_d5, 1)` percent (`r .f(.r_d5[1], 0)` of `r .f(.r_d5[2], 0)` runs), the only configuration tested that improved on the model it was derived from. Its likelihood span across usable runs is `r .f(diff(range(local({e<-new.env(); load(conv_files[["26.d5 male-only+eqmdevs"]], envir=e); r<-e$jitter$results; r$objFun[!is.na(r$mode)]}))), 1)` units, whereas every other configuration in the table spans more than a hundred, and its promoted fit is the only one in this study to meet the 0.001 gradient criterion. Two qualifications apply. The 95 percent confidence intervals on the two recovery rates overlap (`r .f(cv_ci_d5[1], 0)` to `r .f(cv_ci_d5[2], 0)` percent against `r .f(cv_ci_mo[1], 0)` to `r .f(cv_ci_mo[2], 0)`), so the improvement is real on this evidence but not decisive, and it rests on a single set of 100 runs. It also met the gradient criterion in only 3 runs of 100 against `Model 26.2`'s `r .mo$jitter$summary$n_meets_conventional[1]`, so the two convergence measures disagree and both are reported. The recovery measure concerns which minimum a run finds, the gradient measure how precisely it stops.
+Two configurations perform better than the rest, and both remove the female population. `Model 26.2` recovers its best fit in `r .f(cv_pct_mo, 1)` percent of converged runs (`r .f(.r_mo[1], 0)` of `r .f(.r_mo[2], 0)`). The accepted model recovers its own in `r .nw(.r_acc[1])` of `r cv_n_acc`. That gap is far larger than 100 runs could produce by chance. `26.d5`, which adds the equilibrium-backbone initialization to the male-only model, reaches `r .f(cv_pct_d5, 1)` percent (`r .f(.r_d5[1], 0)` of `r .f(.r_d5[2], 0)` runs), the only configuration tested that improved on the model it was derived from. Its likelihood span across usable runs is `r .f(.cvs("26.d5 male-only+eqmdevs", "span"), 1)` units, comparable to `Model 26.2`'s `r .f(.cvs("Model 26.2 (male-only)", "span"), 1)`, whereas the two-sex configurations span `r .f(cv_span_twosex_min, 1)` units or more. Two qualifications apply. The 95 percent confidence intervals on the two recovery rates `r if (.ci_overlap(cv_ci_d5, cv_ci_mo)) "overlap" else "do not overlap"` (`r .f(cv_ci_d5[1], 0)` to `r .f(cv_ci_d5[2], 0)` percent against `r .f(cv_ci_mo[1], 0)` to `r .f(cv_ci_mo[2], 0)`), so `r if (.ci_overlap(cv_ci_d5, cv_ci_mo)) "100 runs do not establish the improvement" else "the improvement is distinguishable"`, and it rests on a single set of 100 runs. It met the gradient criterion in `r .cvs("26.d5 male-only+eqmdevs", "meets")` runs of 100 against `Model 26.2`'s `r .cvs("Model 26.2 (male-only)", "meets")``r if (isTRUE(.cvs("26.d5 male-only+eqmdevs", "meets") >= .cvs("Model 26.2 (male-only)", "meets"))) ", so on this jitter the two convergence measures agree." else ", so the two convergence measures disagree; the recovery measure concerns which minimum a run finds, the gradient measure how precisely it stops."` `r if (isTRUE(.cvs("26.d5 male-only+eqmdevs", "base_grad") > 0.01)) sprintf("Its reported fit stopped at a maximum gradient of %s, above the 0.01 screen, although jitter runs that reached the same minimum stopped at %s.", .g2(.cvs("26.d5 male-only+eqmdevs", "base_grad")), .g2(.cvs("26.d5 male-only+eqmdevs", "best_run_grad"))) else ""`
 
-The two changes are complementary. Removing the sex allocation removes the largest share of the movement between minima, and anchoring the initial condition removes most of what remains. Neither is enough on its own: the same initialization applied to the two-sex model, `26.d3`, changed nothing detectable. `eqmdevs` did halve the likelihood span across runs and roughly halve the penalty burden, which are real improvements in conditioning, but they did not translate into finding one minimum reliably. The male-only simplification is the configuration that materially improves recovery, at `r .f(cv_pct_mo, 1)` percent, and it is one of only two rows in the table where the best fit and the best lettered mode are the same solution (`Model 26.1`, the 2025 base, is the other). In the accepted model they are different solutions `r .f(jit_modeA_gap, 2)` likelihood units apart, and in `26.d3 eqmdevs` they also differ. In those configurations a single run from default starting values is more likely to reach a reproducible but inferior minimum than the best one. For this reason the male-only configuration is in the model set as `Model 26.2` and the structural experiments are not.
+Removing the female population, including the sex allocation, removes `r .f(mv_fem_plus, 0)` percent of the movement between minima in the accepted model. Adding the equilibrium initialization to the male-only model leaves the movement essentially unchanged (total `r .f(xm_tot_male, 2)` against `r .f(.xg("Total movement", "26.d5 male-only + eqmdevs"), 2)`), and its recovery rate is `r .f(cv_pct_d5, 1)` percent against `r .f(cv_pct_mo, 1)`. The same initialization applied to the two-sex model, `26.d3`, changed nothing detectable. `eqmdevs` did halve the likelihood span across runs and roughly halve the penalty burden, which are real improvements in conditioning, but they did not translate into finding one minimum reliably. The male-only simplification is the configuration that materially improves recovery, at `r .f(cv_pct_mo, 1)` percent, and the best fit and the best lettered mode are the same solution in only `r .nw(length(cv_same_best))` rows of the table (`r paste(cv_same_best, collapse = "; ")`). In the accepted model they are different solutions `r .f(jit_modeA_gap, 2)` likelihood units apart, and in `26.d3 eqmdevs` they also differ. In those configurations a single run from default starting values is more likely to reach a reproducible but inferior minimum than the best one. For this reason the male-only configuration is in the model set as `Model 26.2` and the structural experiments are not.
 
 \newpage
 
@@ -5047,7 +5105,7 @@ knitr::include_graphics(c("plots/jittered_results_ofl_eqmdevs.png",
 
 \newpage
 
-```{r conv-fig-combined, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d4 (combined), which applies all three fixes to the two-sex model at once. Panel order as above. It converged less often than any other configuration and no run met the gradient criterion. The dense cluster well above the best fit holds 16.7 percent of runs but is not the best fit."}
+```{r conv-fig-combined, echo=FALSE, out.width="46%", fig.cap=sprintf("Jitter diagnostics for 26.d4 (combined), which applies all three fixes to the two-sex model at once. Panel order as above. Runs meeting the gradient criterion: %d of 100. The best lettered cluster holds %.1f percent of usable runs and lies %.1f likelihood units above the best fit, which it does not include.", .cvs("26.d4 combined", "meets"), .cvs("26.d4 combined", "pbm"), .cvs("26.d4 combined", "gap"))}
 knitr::include_graphics(c("plots/jittered_results_ofl_combined.png",
                           "plots/jittered_results_rec_combined.png",
                           "plots/jittered_results_ssb_combined.png",
@@ -5056,7 +5114,7 @@ knitr::include_graphics(c("plots/jittered_results_ofl_combined.png",
 
 \newpage
 
-```{r conv-fig-d5, echo=FALSE, out.width="46%", fig.cap="Jitter diagnostics for 26.d5, the male-only model with the equilibrium-backbone initialization. Panel order as above. This is the only configuration tested that improved on the model it was derived from. Runs span about six likelihood units, compared with several hundred in the preceding figures, so the separated groups of runs visible in the other panels are absent."}
+```{r conv-fig-d5, echo=FALSE, out.width="46%", fig.cap=sprintf("Jitter diagnostics for 26.d5, the male-only model with the equilibrium-backbone initialization. Panel order as above. It has the highest recovery rate of the configurations tested. Usable runs span %.1f likelihood units, similar to Model 26.2's %.1f, against %.0f or more for the two-sex configurations.", .cvs("26.d5 male-only+eqmdevs", "span"), .cvs("Model 26.2 (male-only)", "span"), cv_span_twosex_min)}
 knitr::include_graphics(c("plots/jittered_results_ofl_male_only_eqmdevs.png",
                           "plots/jittered_results_rec_male_only_eqmdevs.png",
                           "plots/jittered_results_ssb_male_only_eqmdevs.png",
@@ -5070,7 +5128,7 @@ knitr::include_graphics(c("plots/jittered_results_ofl_male_only_eqmdevs.png",
 
 Three qualifications apply to the experiments above.
 
-**The equilibrium backbone is unfished.** `26.d3 eqmdevs` anchors the 1982 population on an unfished equilibrium, following the formulation it was ported from, but the eastern Bering Sea snow crab stock had been fished since the late 1970s. The effect is visible in the result: 1982 mature male biomass moves from 212.9 to 300.9 kt. Switching the backbone to a fished equilibrium is a small change to the same code, and it has not been made, so this experiment should not be judged finally on the results reported here.
+**The equilibrium backbone is unfished.** `26.d3 eqmdevs` anchors the 1982 population on an unfished equilibrium, following the formulation it was ported from, but the eastern Bering Sea snow crab stock had been fished since the late 1970s. The effect is visible in the result: 1982 mature male biomass moves from 213.0 to 301.1 kt. Switching the backbone to a fished equilibrium is a small change to the same code, and it has not been made, so this experiment should not be judged finally on the results reported here.
 
 **Several of the experiments require modified source code.** `26.d1 stability`, `26.d3 eqmdevs`, `26.d4 combined` and `26.d5` were run with forked GMACS source trees rather than the stock 2.20.34 binary used for every model in the assessment. This matters most for `26.d5`, the configuration these results point toward: it cannot be reproduced, or brought forward as a candidate, until the initialization mode is merged into the released version. `stability` changes a penalty standard deviation that is hardcoded in the source rather than read from the control file. `eqmdevs` adds an initialization mode and a deviation penalty occupying a control-file slot that is dead code in the released version. The results in this appendix are therefore not reproducible with the stock binary, and the forks are recorded with the models. The shared source tree the assessment itself is built from is unmodified and is checked against its hash at every build.
 

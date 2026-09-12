@@ -8,7 +8,40 @@ repo layout and run commands; this file tracks *state and next steps*.
 > `PHASE1_SECTION_SKETCHES.md` (draft Rmd per section) and `SEPT2026_SNOW_CRAB_BUILD_PLAN.md` (scope,
 > direction, guideline reconciliation).
 
-## TL;DR — where we are
+## 2026-09-12 — rerun on the net-mensuration-corrected survey (READ THIS FIRST)
+
+The NMFS survey program corrected 2024–2026 EBS area swept (net mensuration). Staff delivered the
+crabpack specimen object as `data/survey/SNOW_specimen_EBS.rds`; 02 and 07 now read it instead of the
+API. Only 2024–2026 moved (indices −4.0 to −4.1%, comps ≤0.3%). Everything below the TL;DR predates
+this and its numbers are **superseded**. Commit `abf9477` (branch `grant`) holds the first half.
+
+| Quantity | Before | After |
+|---|---|---|
+| Tier 4 morphometric MMB 2026 | 113.94 kt | 109.30 kt |
+| Tier 4 status (95% CI upper) | 0.777 (1.04) | 0.747 (0.997) → text now says "not rebuilt" |
+| Tier 4 F_OFL / OFL / ABC | 0.2032 / 18.449 / 14.759 kt | 0.1941 / 16.977 / 13.582 kt |
+| Survey total abundance 2024/25/26 (M) | 6849.5 / 7234.9 / 6364.2 | 6578.1 / 6945.5 / 6102.9 |
+| 26.1b BMSY / OFL(tot) / MMB | 144.97 / 85.65 / 141.53 | 144.06 / 82.46 / 137.44 |
+| 26.2 BMSY / OFL(tot) / MMB | 131.34 / 77.00 / 115.90 | 130.47 / 74.03 / 112.33 |
+| 26.1b jitter own-best recovery | 1/79 | 1/78 (six modes; base stands) |
+| 26.2 jitter own-best recovery | 25.3% | 15.2% (12/79) |
+| 26.1b rho MMB std / drop | −0.109 / −0.110 | −0.110 / −0.108 (10 peels each) |
+| 26.2 rho MMB std / drop | −0.092 / −0.083 | −0.090 / −0.081 |
+| 26.d5 recovery | 41.2% | 23.3% (20/86) |
+
+Appendix B models (26.d1–d5) refit and jittered on the corrected data; every base fit stands (no
+promotion). 26.1c (data to 2019) and 25.x were not refit: 26.1c's inputs are unaffected; 26.1/26.1a/25.3
+keep the May survey values, which the SAFE now says (input-data changes, retro table caption).
+
+Traps hit, now documented: first `06 peels` after a data change cold-starts (backlog 1g); seeding can
+land a peel in a worse optimum than a cold start (26.1b drop_survey peel 1, recovered with
+`scripts/06c_recover_peel.R`); a guard that compares against `HEAD` breaks as soon as you commit mid-run.
+Hurtado-Ferro bounds: short-lived [−0.22, 0.30] per Grant (paper: `Reports/fsu198.pdf`).
+
+Still to do at the time of writing: Appendix B prose against the new jitters, render PDF + DOCX, commit,
+sync to `afsc-assessments/snow_crab`.
+
+## TL;DR — where we are (superseded 2026-09-12 — see above)
 **The assessment now runs on macOS** (GMACS 2.20.34 built from source; see `docs/MACOS_GMACS.md`), and
 the 26 model's accepted fit was **replaced on 2026-08-27** by a jitter winner: **nll -23546.3457934123,
 OFL(tot) 85.649 kt, terminal MMB 141.528**. Jitter, retrospective and Tier 4 have all been re-run

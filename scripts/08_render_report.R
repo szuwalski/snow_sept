@@ -109,6 +109,18 @@ repair_docx_bookmarks <- function(path) {
 
   writeChar(xml, doc, eos = NULL, useBytes = TRUE)
 
+  ## Cross-references are REF fields whose cached text is empty until Word updates
+  ## them, so every "Table N" printed as "Table ." until the reader pressed F9. Ask
+  ## Word to update all fields when the file is opened (found by review, 2026-09-12).
+  st <- file.path(tmp, "word", "settings.xml")
+  if (file.exists(st)) {
+    s <- readChar(st, file.size(st), useBytes = TRUE)
+    if (!grepl("w:updateFields", s, fixed = TRUE))
+      s <- sub("(<w:settings[^>]*>)", "\\1<w:updateFields w:val=\"true\"/>", s)
+    stopifnot("could not set updateFields in word/settings.xml" = grepl("w:updateFields", s, fixed = TRUE))
+    writeChar(s, st, eos = NULL, useBytes = TRUE)
+  }
+
   ## Rezip from inside the extraction dir so the archive keeps its relative paths.
   owd <- setwd(tmp); on.exit(setwd(owd), add = TRUE)
   out <- file.path(owd, basename(path))

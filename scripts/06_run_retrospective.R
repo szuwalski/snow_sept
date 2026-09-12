@@ -640,8 +640,15 @@ cat("--- STAGE collect: parsing runs ---\n")
 diag_f <- file.path(RETRO_DIR, "retro_diagnostics.csv")
 failed_peels <- if (file.exists(diag_f)) {
   dg <- read.csv(diag_f, stringsAsFactors = FALSE)
+  ## A partial file (e.g. after a hand re-run of one peel) would exclude nothing.
+  stopifnot("retro_diagnostics.csv must list every mode x peel" =
+              nrow(dg) == length(MODES) * (N_PEELS + 1L))
   dg[!dg$ok, c("mode", "peel")]
 } else NULL
+## Standard peel 0 is the full-model refit EVERY rho is measured against; without
+## it rho_table() would silently skip both modes and the SAFE would print NA.
+if (!is.null(failed_peels) && any(failed_peels$mode == "standard" & failed_peels$peel == 0L))
+  stop("standard peel 0 failed verification -- no reference for Mohn's rho; re-run the peels")
 if (!is.null(failed_peels) && nrow(failed_peels))
   cat(sprintf("  EXCLUDED (failed verification in retro_diagnostics.csv): %s\n",
               paste(sprintf("%s/%d", failed_peels$mode, failed_peels$peel), collapse = ", ")))
@@ -814,6 +821,14 @@ rho_lab <- function(m, q) {
   r <- rho$mohns_rho[rho$mode == m & rho$quantity == q]
   if (!length(r)) "" else sprintf("Mohn's rho = %.3f", r)
 }
+## Subtitle peel range from the peels actually plotted, naming any excluded one
+## (a fixed "Peels 0-10" misdescribed a sweep with a failed peel, 2026-09-12).
+peel_span <- function(m) {
+  miss <- setdiff(0:N_PEELS, unique(series$peel[series$mode == m]))
+  sprintf("Peels 0-%d%s", N_PEELS,
+          if (length(miss)) sprintf(" (peel %s excluded: failed verification)",
+                                    paste(miss, collapse = ", ")) else "")
+}
 
 peel_plot <- function(mode, ycol, ylab, title, subtitle) {
   d <- series[series$mode == mode, ]
@@ -830,21 +845,21 @@ peel_plot <- function(mode, ycol, ylab, title, subtitle) {
 png(file.path(PLOT_DIR, "retro_mmb.png"), height = 6, width = 8, res = 400, units = "in")
 print(peel_plot("standard", "ssb", "Mature male biomass (1,000 t)",
                 sprintf("Retrospective analysis, %s", MODEL_LABEL),
-                sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "mature_male_biomass"))))
+                sprintf("%s.  %s", peel_span("standard"), rho_lab("standard", "mature_male_biomass"))))
 dev.off()
 
 png(file.path(PLOT_DIR, "retro_recruitment.png"), height = 6, width = 8, res = 400, units = "in")
 print(peel_plot("standard", "recruit_male", "Male recruitment (millions)",
                 sprintf("Recruitment retrospective, %s", MODEL_LABEL),
-                sprintf("Peels 0-%d.  %s", N_PEELS, rho_lab("standard", "recruitment_male"))))
+                sprintf("%s.  %s", peel_span("standard"), rho_lab("standard", "recruitment_male"))))
 dev.off()
 
 if ("drop_survey" %in% series$mode) {
   png(file.path(PLOT_DIR, "retro_mmb_drop_survey.png"), height = 6, width = 8, res = 400, units = "in")
   print(peel_plot("drop_survey", "ssb", "Mature male biomass (1,000 t)",
                   sprintf("Retrospective with the terminal survey year withheld, %s", MODEL_LABEL),
-                  sprintf("Peels 0-%d, compared with the full base fit.  %s",
-                          N_PEELS, rho_lab("drop_survey", "mature_male_biomass"))))
+                  sprintf("%s, compared with the full base fit.  %s",
+                          peel_span("drop_survey"), rho_lab("drop_survey", "mature_male_biomass"))))
   dev.off()
 }
 
