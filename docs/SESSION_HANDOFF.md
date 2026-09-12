@@ -29,8 +29,9 @@ this and its numbers are **superseded**. Commit `abf9477` (branch `grant`) holds
 | 26.2 rho MMB std / drop | −0.092 / −0.083 | −0.090 / −0.081 |
 | 26.d5 recovery | 41.2% | 23.3% (20/86) |
 
-Appendix B models (26.d1–d5) refit and jittered on the corrected data; every base fit stands (no
-promotion). 26.1c (data to 2019) and 25.x were not refit: 26.1c's inputs are unaffected; 26.1/26.1a/25.3
+Appendix B models (26.d1–d5) refit and jittered on the corrected data; every base fit stood. 26.d5 was
+then promoted from `jitter/048` (per Grant): the same optimum, gradient 0.00042 vs 0.029, via the new
+`05_run_jitter.R --promote-run`. 26.1c (data to 2019) and 25.x were not refit: 26.1c's inputs are unaffected; 26.1/26.1a/25.3
 keep the May survey values, which the SAFE now says (input-data changes, retro table caption).
 
 Traps hit, now documented: first `06 peels` after a data change cold-starts (backlog 1g); seeding can
@@ -43,8 +44,8 @@ adversarial reviews — data/refits, jitters, retrospectives/Appendix B — plus
 Committed `abf9477` + `0148522` here and `3aafbf4` in `afsc-assessments/snow_crab` (neither pushed).
 Follow-up `557feb9` (Grant): Tier 3 OFLs compared with the 2026 survey; fishery history moved to 2025;
 Table 1/Table 4 notes and precision fixed; one caption per multi-panel figure; counts print as numerals.
-Open for Grant: re-promoting 26.d5 from `jitter/048` (same minimum, gradient 0.0004 vs 0.029); whether
-the specimen `.rds` should be published in the AFSC repo; the untracked `2026_snowcrab_safe_v2.pdf` there.
+26.d5 re-promoted from `jitter/048` (same optimum, lower gradient). Open for Grant: whether the specimen
+`.rds` should be published in the AFSC repo; the untracked `2026_snowcrab_safe_v2.pdf` there.
 
 ## TL;DR — where we are (superseded 2026-09-12 — see above)
 **The assessment now runs on macOS** (GMACS 2.20.34 built from source; see `docs/MACOS_GMACS.md`), and

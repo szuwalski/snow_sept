@@ -4734,6 +4734,10 @@ conv_files <- c(
   "26.d5 male-only+eqmdevs" = "Models/rda_jitter_male_only_eqmdevs.RData"
 )
 
+## The nll of the fit now in the model directory: reported_nll after a promotion
+## (05 --promote-run, 2026-09-12), else the jitter's base.
+.rep_nll <- function(sm) if (!is.null(sm$reported_nll)) sm$reported_nll[1] else sm$base_nll[1]
+
 conv_row <- function(lab, path) {
   if (!file.exists(path)) return(NULL)
   e <- new.env(); load(path, envir = e); j <- e$jitter
@@ -4749,7 +4753,7 @@ conv_row <- function(lab, path) {
   ## model's case exactly. Computed directly here for every model.
   ## The reported fit counts as a candidate for "own best": a base that beats every
   ## jitter run (26.d3 on the 2026-09 data) was otherwise scored as recovered.
-  best <- min(c(rs$objFun[ok], sm$base_nll[1]), na.rm = TRUE)
+  best <- min(c(rs$objFun[ok], .rep_nll(sm)), na.rm = TRUE)
   n_at_best <- sum(abs(rs$objFun[ok] - best) < 0.01)
   nmodes <- length(setdiff(unique(rs$mode[ok]), "minor"))
   ## OFL spread across NEAR-OPTIMAL runs (within 2 nll of the best), not across
@@ -4784,7 +4788,7 @@ conv_tab <- do.call(rbind, Map(conv_row, names(conv_files), conv_files))
 .rate <- function(path) {
   if (!file.exists(path)) return(c(NA, NA))
   e <- new.env(); load(path, envir = e); rs <- e$jitter$results
-  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], e$jitter$summary$base_nll[1]), na.rm = TRUE)
+  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], .rep_nll(e$jitter$summary)), na.rm = TRUE)
   c(sum(abs(rs$objFun[ok] - best) < 0.01), sum(ok))
 }
 .r_acc <- .rate(conv_files[["Model 26.1b (accepted)"]])
@@ -4823,15 +4827,16 @@ cv_ci_eqm  <- .ci(conv_files[["26.d3 eqmdevs"]])
 ## (spans, gaps, gradient counts), so they are computed like the rates above.
 .jstat <- function(path) {
   e <- new.env(); load(path, envir = e); j <- e$jitter; rs <- j$results
-  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], j$summary$base_nll[1]), na.rm = TRUE)
+  ok <- !is.na(rs$mode); best <- min(c(rs$objFun[ok], .rep_nll(j$summary)), na.rm = TRUE)
   lett <- rs$objFun[ok & rs$mode != "minor"]
   list(span  = diff(range(rs$objFun[ok])),                       # nll span, usable runs
        gap   = if (length(lett)) min(lett) - best else NA_real_,  # best fit to best lettered mode
        pbm   = j$summary$pct_at_best_mode[1],                    # share in the best lettered mode
        meets = j$summary$n_meets_conventional[1],                # runs meeting 1e-3
-       base_grad = j$summary$base_max_grad[1],
+       ## the REPORTED fit's gradient: after a promotion base_max_grad is the pre-promotion fit's
+       base_grad = if (!is.null(j$summary$reported_max_grad)) j$summary$reported_max_grad[1] else j$summary$base_max_grad[1],
        near  = sum(ok & (rs$objFun - best) <= 2),                 # runs within 2 nll of the best
-       base_hits = sum(abs(rs$objFun[ok] - j$summary$base_nll[1]) < 0.01),  # runs reaching the reported fit
+       base_hits = sum(abs(rs$objFun[ok] - .rep_nll(j$summary)) < 0.01),  # runs reaching the reported fit
        impr  = j$summary$nll_improvement[1],                     # < 0: reported fit beats every run
        best_run_grad = min(rs$maxGrad[ok & abs(rs$objFun - best) < 0.01]))  # gradient of runs at the best
 }

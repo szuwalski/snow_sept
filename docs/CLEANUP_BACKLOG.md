@@ -259,6 +259,17 @@ hygiene.
   already are. A parameter the data cannot inform, free to reach a bound, is what put the base fit
   in an inferior optimum.
 
+- [ ] **5g. `05 --promote-run` and resume bookkeeping (2026-09-12).** `--promote-run NNN` promotes a
+  run at the SAME optimum (within NLL_TOL of the best and of the base) that has a LOWER gradient; it
+  goes through the ordinary promotion branch and must lower the gradient again after the pinned
+  re-fit. First used on 26.d5 (run 048: gradient 0.0294 -> 0.000418, reference points unchanged to
+  4 decimals). Two notes: (a) a resume that runs nothing used to NA the `exit_code` / `elapsed_s`
+  columns of every run; 05 now carries them forward from the previous `jitter_results.csv`.
+  (b) The promotion made 26.d5's Hessian WORSE-conditioned (smallest eigenvalue 139 -> 46.5,
+  condition 2.9e5 -> 8.6e5), entirely through `M_pars_est[5]` (`M_base_male_immature`), which sits
+  on its lower bound of -1 in both fits: a bound-transform artifact, not a flat direction (no
+  estimate moved more than 0.006 SE). Do not describe the promotion as improving conditioning.
+
 - [ ] **5c. `05`'s promotion should retry the sd phase before declaring failure.** The
   `Error reading stack identifer for b` that rejected the 2026-08-24 promotion is
   **non-deterministic**: the identical fit (same binary, same pin, same inputs) re-ran cleanly,

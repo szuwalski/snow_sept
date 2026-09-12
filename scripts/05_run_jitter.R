@@ -141,6 +141,14 @@ DRY_RUN     <- has_flag("--dry-run")
 PILOT       <- has_flag("--pilot")
 FORCE       <- has_flag("--force")
 PROMOTE     <- !has_flag("--no-promote")
+## --promote-run NNN: promote THAT run even though it does not beat the base by
+## NLL_TOL -- for a run at the same optimum with a better gradient (2026-09-12,
+## per Grant: 26.d5 run 048, max|grad| 0.00042 vs the base's 0.029). It must sit
+## within NLL_TOL of the best nll and not be worse than the base by more than
+## NLL_TOL; it then goes through the ordinary promotion branch (backup, pinned
+## Hessian re-fit, nll verification, rollback on failure).
+PROMOTE_RUN <- suppressWarnings(as.integer(opt_val("--promote-run", NA_character_)))
+if (has_flag("--promote-run") && is.na(PROMOTE_RUN)) stop("--promote-run needs a run number, e.g. 048")
 MODEL_NAME  <- opt_val("--model", MODEL_NAME)
 SEED_BASE   <- as.integer(opt_val("--seed-base", SEED_BASE))
 N_RUNS      <- as.integer(opt_val("--n", if (PILOT) PILOT_N else JITTER_N))
@@ -387,6 +395,19 @@ res <- do.call(rbind, lapply(seq_len(N_RUNS), function(i) {
 res$converged           <- res$complete & !is.na(res$maxGrad) & res$maxGrad < GRAD_USABLE
 res$meets_conventional  <- res$complete & !is.na(res$maxGrad) & res$maxGrad < GRAD_CONVENTIONAL
 
+## A run not executed in THIS invocation has no run_info, so collect_run() leaves
+## exit_code / elapsed_s NA. Carry them forward from the previous results file so a
+## resume (e.g. a promotion-only re-run) does not erase them (review, 2026-09-12).
+.prev_csv <- file.path(JITTER_DIR, "jitter_results.csv")
+if (file.exists(.prev_csv) && !FORCE) {
+  .prev <- read.csv(.prev_csv, stringsAsFactors = FALSE)
+  .m    <- match(res$idx, .prev$idx)
+  for (.col in intersect(c("exit_code", "elapsed_s"), names(.prev))) {
+    .fill <- is.na(res[[.col]]) & !is.na(.m) & !(run_ids %in% names(infos))
+    res[[.col]][.fill] <- .prev[[.col]][.m[.fill]]
+  }
+}
+
 ## Batch-level assertions.
 ok_runs <- res[res$complete, ]
 if (!nrow(ok_runs)) stop("No jitter run produced complete results.")
@@ -452,6 +473,24 @@ nll_bucket <- floor((ok_runs$objFun - best_nll) / NLL_TOL)
 nll_bucket[!is.finite(nll_bucket)] <- Inf   # unparsed nll can never win
 ord  <- order(nll_bucket, abs(ok_runs$maxGrad))
 best <- ok_runs[ord[1], ]
+## --promote-run: take the named run instead, if it is at the same optimum.
+forced <- FALSE
+if (!is.na(PROMOTE_RUN)) {
+  cand <- ok_runs[ok_runs$idx == PROMOTE_RUN, ]
+  if (nrow(cand) != 1L) stop("--promote-run ", PROMOTE_RUN, ": no complete run with that number")
+  if (!is.finite(cand$objFun) || cand$objFun - best_nll > NLL_TOL)
+    stop(sprintf("--promote-run %03d is not at the best optimum (nll %.6f vs best %.6f)",
+                 PROMOTE_RUN, cand$objFun, best_nll))
+  if (cand$objFun - BASE_NLL > NLL_TOL)
+    stop(sprintf("--promote-run %03d is worse than the base by more than %g nll", PROMOTE_RUN, NLL_TOL))
+  ## The only reason to promote at the same optimum is a lower gradient.
+  if (!(is.finite(cand$maxGrad) && abs(cand$maxGrad) < abs(base$max_grad)))
+    stop(sprintf("--promote-run %03d: max|grad| %.3g is not below the base's %.3g",
+                 PROMOTE_RUN, cand$maxGrad, base$max_grad))
+  best <- cand; forced <- TRUE
+  message(sprintf("--promote-run: run %03d (nll %.6f, max|grad| %.3g) is at the same optimum as the base",
+                  best$idx, best$objFun, best$maxGrad))
+}
 improvement <- BASE_NLL - best$objFun
 message(sprintf("best run %s: nll %.4f (base %.4f, improvement %.4f), max|grad| %.3g",
                 sprintf("%03d", best$idx), best$objFun, BASE_NLL, improvement, best$maxGrad))
@@ -459,13 +498,21 @@ message(sprintf("  OFL %.3f kt (base run's OFL is in the model dir), MMB %.3f kt
                 best$ofl_directed, best$mmb_terminal))
 
 promoted <- FALSE
-if (improvement > NLL_TOL) {
-  message("\n*** A jitter run fits better than the base by ", round(improvement, 4),
-          " nll units. The base fit was at an inferior local optimum. ***")
+## The fit left in the model directory, for the summary: the base unless promoted.
+reported <- list(nll = BASE_NLL, max_grad = base$max_grad)
+if (improvement > NLL_TOL || forced) {
+  if (forced)
+    message("\n*** Promoting the requested run: same optimum as the base, lower gradient. ***")
+  else
+    message("\n*** A jitter run fits better than the base by ", round(improvement, 4),
+            " nll units. The base fit was at an inferior local optimum. ***")
   if (!PROMOTE) {
     message("--no-promote: reporting only; the model directory is unchanged.")
   } else {
+    ## A second promotion must not overwrite the first one's backup.
     backup <- file.path(JITTER_DIR, "base_prepromotion")
+    if (dir.exists(backup)) backup <- paste0(backup, "_", format(Sys.Date(), "%Y%m%d"))
+    if (dir.exists(backup)) backup <- paste0(backup, format(Sys.time(), "_%H%M%S"))
     dir.create(backup, recursive = TRUE, showWarnings = FALSE)
 
     ## Snapshot EVERY file the fit wrote, not a hand-listed subset. The former
@@ -506,7 +553,7 @@ if (improvement > NLL_TOL) {
       stop("Could not back up ", length(unbacked), " file(s) before promoting, so a\n",
            "rollback could not restore them. Refusing to promote:\n  - ",
            paste(unbacked, collapse = "\n  - "))
-    message("  backed up the previous fit to jitter/base_prepromotion/ (",
+    message("  backed up the previous fit to jitter/", basename(backup), "/ (",
             length(backed_up), " files, md5-verified)")
 
     copy_checked(file.path(best$folder, "gmacs.par"), file.path(MODEL_DIR, "gmacs.pin"),
@@ -515,7 +562,8 @@ if (improvement > NLL_TOL) {
     after <- read_par_header(MODEL_DIR)
     good <- pi_$ok && !is.na(after$nll) &&
       abs(after$nll - best$objFun) <= NLL_TOL &&
-      file.exists(file.path(MODEL_DIR, "gmacs.std"))
+      file.exists(file.path(MODEL_DIR, "gmacs.std")) &&
+      (!forced || abs(after$max_grad) < abs(base$max_grad))   # a forced promotion must lower the gradient
 
     if (!good) {
       message("  promotion FAILED (exit ", pi_$status, ", nll ", after$nll,
@@ -564,7 +612,7 @@ if (improvement > NLL_TOL) {
       if (length(failed))
         stop("Promotion failed AND the rollback did not complete.\n",
              "These files still hold the REJECTED promotion run and must be restored\n",
-             "by hand from jitter/base_prepromotion/ before this model dir is used:\n  - ",
+             "by hand from jitter/", basename(backup), "/ before this model dir is used:\n  - ",
              paste(failed, collapse = "\n  - "))
 
       stop("Promotion failed and was rolled back (", length(restored),
@@ -572,32 +620,41 @@ if (improvement > NLL_TOL) {
     }
 
     promoted <- TRUE
+    reported <- list(nll = after$nll, max_grad = after$max_grad)
     message(sprintf("  promoted: model dir re-fit with Hessian, nll %.4f, max|grad| %.3g",
                     after$nll, after$max_grad))
+    prom_md <- file.path(JITTER_DIR, "PROMOTION.md")
+    earlier <- if (file.exists(prom_md)) readLines(prom_md, warn = FALSE) else character(0)
     writeLines(c(
       "# Promoted jitter fit",
       "",
-      sprintf("On %s, `05_run_jitter.R` found a jitter run that fit better than the base", Sys.Date()),
-      "fit, and promoted it into this model directory.",
+      if (forced) c(
+        sprintf("On %s, `05_run_jitter.R --promote-run %03d` promoted a jitter run at the SAME optimum as", Sys.Date(), best$idx),
+        "the base (nll within NLL_TOL) because it stopped at a lower gradient.")
+      else c(
+        sprintf("On %s, `05_run_jitter.R` found a jitter run that fit better than the base", Sys.Date()),
+        "fit, and promoted it into this model directory."),
       "",
       sprintf("- source run      : jitter/%s", sprintf("%03d", best$idx)),
       sprintf("- seed            : %d", best$seed),
       sprintf("- nll before      : %.6f", BASE_NLL),
-      sprintf("- nll after       : %.6f  (improvement %.6f)", after$nll, BASE_NLL - after$nll),
+      sprintf("- nll after       : %.6f  (improvement %.3g)", after$nll, BASE_NLL - after$nll),
+      sprintf("- max|grad| before: %.3g", base$max_grad),
       sprintf("- max|grad| after : %.3g", after$max_grad),
       sprintf("- jitter sd       : %s over %d runs", jspec$sd, N_RUNS),
       sprintf("- executable      : %s, md5 %s, %s",
               gmacs_exe_name(), exe$md5, gmacs_exe_version(MODEL_DIR)),
       "",
-      "The previous fit is in `jitter/base_prepromotion/`.",
+      sprintf("The previous fit is in `jitter/%s/`.", basename(backup)),
       "",
       "`gmacs.pin` is retained deliberately: it is the winner's parameter vector and",
       "is what makes this fit reproducible. ADMB reads it automatically on any further",
       "run in this directory.",
       "",
       "**Downstream work must be re-run against this fit** -- `03_build_results_object.R`,",
-      "the retrospective peels, Tier 4, and the report."),
-      file.path(JITTER_DIR, "PROMOTION.md"))
+      "the retrospective peels, Tier 4, and the report.",
+      if (length(earlier)) c("", "---", "", "## Earlier promotion record", "", sub("^# ", "### ", earlier))),
+      prom_md)
     message("  wrote jitter/PROMOTION.md")
   }
 } else {
@@ -681,12 +738,12 @@ png(file.path(REPO_ROOT, "plots", tagged("jitter_convergence.png")),
 print(ggplot(plt, aes(x = objFun, y = abs(maxGrad), colour = mode)) +
         geom_point(size = 2, alpha = 0.85) +
         geom_hline(yintercept = GRAD_CONVENTIONAL, linetype = 2, colour = "grey30") +
-        geom_hline(yintercept = base$max_grad, linetype = 3, colour = "firebrick") +
+        geom_hline(yintercept = reported$max_grad, linetype = 3, colour = "firebrick") +
         scale_y_log10() + theme_bw() +
         labs(x = "Negative log likelihood", y = "Maximum |gradient|", colour = "Mode",
              title = sprintf("Convergence of %d jitter runs", nrow(plt)),
-             subtitle = sprintf("dashed = conventional threshold %.0e; dotted = base fit (%.3g)",
-                                GRAD_CONVENTIONAL, base$max_grad)))
+             subtitle = sprintf("dashed = conventional threshold %.0e; dotted = reported fit (%.3g)",
+                                GRAD_CONVENTIONAL, reported$max_grad)))
 dev.off()
 
 if (!is.null(attribution)) {
@@ -729,6 +786,10 @@ summ <- data.frame(
   mmb_min          = min(ok_runs$mmb_terminal), mmb_max = max(ok_runs$mmb_terminal),
   terminal_year    = term_yr,
   promoted         = promoted,
+  ## The fit now in the model directory (differs from base_* only after a promotion).
+  reported_nll      = reported$nll,
+  reported_max_grad = reported$max_grad,
+  forced_run        = if (forced) best$idx else NA_integer_,   # --promote-run target, else NA
   stringsAsFactors = FALSE)
 
 git_sha <- tryCatch(system2("git", c("rev-parse", "--short", "HEAD"), stdout = TRUE)[1],
