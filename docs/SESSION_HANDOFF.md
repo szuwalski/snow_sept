@@ -44,8 +44,9 @@ adversarial reviews — data/refits, jitters, retrospectives/Appendix B — plus
 Committed `abf9477` + `0148522` here and `3aafbf4` in `afsc-assessments/snow_crab` (neither pushed).
 Follow-up `557feb9` (Grant): Tier 3 OFLs compared with the 2026 survey; fishery history moved to 2025;
 Table 1/Table 4 notes and precision fixed; one caption per multi-panel figure; counts print as numerals.
-26.d5 re-promoted from `jitter/048` (same optimum, lower gradient). Open for Grant: whether the specimen
-`.rds` should be published in the AFSC repo; the untracked `2026_snowcrab_safe_v2.pdf` there.
+26.d5 re-promoted from `jitter/048` (same optimum, lower gradient). Per Grant (2026-09-13): the specimen
+`.rds` is published in the AFSC repo too, and its stray untracked `2026_snowcrab_safe_v2.pdf` was deleted.
+Nothing open.
 
 ## TL;DR — where we are (superseded 2026-09-12 — see above)
 **The assessment now runs on macOS** (GMACS 2.20.34 built from source; see `docs/MACOS_GMACS.md`), and
