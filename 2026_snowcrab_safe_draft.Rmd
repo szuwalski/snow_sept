@@ -2672,10 +2672,20 @@ extract_likelihoods <- function(path) {
   vals <- sapply(parts, function(x) as.numeric(tail(x, 1)))
   names(vals) <- sapply(parts, function(x) x[1])
 
-  other_keys <- c("Stock_recruitment", "Tagging_data", "Growth_data",
+  # No model here fits tagging data. GMACS 2.20.22 (Model 25.3) reports the
+  # growth-increment likelihood as Tagging_data and has no Growth_data line;
+  # 2.20.34 reports it as Growth_data and Tagging_data = 0. Read it as growth
+  # and drop the Tag row (2026-09-14, per Grant).
+  if (is.na(vals["Growth_data"])) {
+    vals["Growth_data"] <- vals["Tagging_data"]
+  } else {
+    stopifnot("nonzero tagging likelihood in a 2.20.34 fit: tagging data present?" =
+                is.na(vals["Tagging_data"]) || vals["Tagging_data"] == 0)
+  }
+  other_keys <- c("Stock_recruitment", "Growth_data",
                   "Penalties", "Priors", "Positive_growth_penalty",
                   "Total", "Initial_size_structure")
-  other_lbls <- c("SRR", "Tag", "Growth", "Penalties", "Priors",
+  other_lbls <- c("SRR", "Growth", "Penalties", "Priors",
                   "Positive_growth_penalty", "Total", "Initial_size_structure")
   other_vals <- unname(vals[other_keys])
 
@@ -2829,10 +2839,10 @@ flextable::flextable(other_like) |>
   flextable::set_caption(
     caption = paste("Remaining likelihood components (negative log-likelihood, dimensionless), 1 row",
       "per component and one column per model. These are the penalties, priors and data components",
-      "that are not catch, index or size composition. Model 25.3 was fitted under GMACS 2.20.22, which",
-      "reports the growth-increment likelihood in the Tagging row; 2.20.34 reports it under Growth.",
-      "The two are the same quantity, so Model 25.3 does not have a tagging likelihood the others",
-      "lack. The fall to about 4881 from Model 26.1a onward is the growth transcription fix."),
+      "that are not catch, index or size composition. No model includes tagging data. Model 25.3 was",
+      "fitted under GMACS 2.20.22, which reports the growth-increment likelihood as a tagging",
+      "likelihood; it is shown here under Growth, where 2.20.34 reports it. The fall to about 4881",
+      "from Model 26.1a onward is the growth transcription fix."),
     autonum = officer::run_autonum(seq_id = "tab", pre_label = "Table ", bkm = "like-other-tot")
   )
 ```
