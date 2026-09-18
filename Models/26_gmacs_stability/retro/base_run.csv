@@ -1,0 +1,2 @@
+"label","ok","terminal_year","echo_end_year","last_survey_year","npar","nll","max_grad","converged","BMSY","OFL_tot","elapsed_sec","problems","warnings"
+"base",TRUE,2025,2025,2026,411,-23541.2191318329,0.00903995906433745,FALSE,155.81501114,84.17482484,387.5,"","exit status 134 -- macOS FP teardown abort, outputs complete; max gradient 0.00904 > 1e-03"

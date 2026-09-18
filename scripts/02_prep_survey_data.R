@@ -15,6 +15,10 @@
 #
 # OUTPUTS  (all .csv; header row + explicit `year` column; values in model units)
 #   data/survey/survey_large_male_index_derived.csv   large/preferred male index
+#   data/survey/survey_recruit_index_derived.csv     male abundance, [45, 55) mm
+#   data/survey/survey_prerecruit_index_derived.csv  male abundance by 3 contiguous
+#                                         pre-recruit windows: 45-55, 56-75, 76-99 mm,
+#                                         both all-male and immature-only (ogive-weighted)
 #   data/derived/survey_size_comps.csv    year, sex, maturity, m27.5..m132.5
 #                                         (male + female, mature + immature; rows sum 1)
 #   data/derived/survey_indices.csv       year, sex, maturity, biomass (kt), cv
@@ -25,8 +29,8 @@
 #                                         not a model input.
 #   data/derived/male_maturity_ogive.csv  year, m27.5..m132.5  (prob terminal molt)
 #   plots/size_bins_comp_Kodiak_m.png, size_bins_comp_Kodiak_f.png,
-#   plots/maturity_facet.png,
-#   plots/maturity_facet_all.png, plots/imm_v_mat.png
+#   plots/maturity_facet.png, plots/maturity_facet_all.png, plots/imm_v_mat.png,
+#   plots/n_at_l_f.png   the SAFE's female numbers-at-size figure (Section 6d)
 #
 # PREREQUISITES
 #   * R 4.5.1; run from the repo root.
@@ -36,12 +40,8 @@
 #     Must cover the same terminal year as the survey pull, or Section 6 misaligns.
 #
 # NOTES
-#   * Section 2's mature-female pull (`mat_fem_snow_ind`) was restored 2026-07
-#     from Cody's snow_crab hybrid script (it had been dropped when this script
-#     was copied into snow_sept).
-#   * Section 5 builds the maturity array by RESHAPING that ogive onto the model
-#     bins -- no GAM refit; the old pre-baked SNOW_male_pmolt_array.csv and the
-#     unused get_male_maturity() API pull were removed 2026-08.
+#   * Section 5 RESHAPES Ryznar's smoothed ogive onto the model bins. It does not
+#     refit a GAM: the smoothing is already done upstream.
 # =============================================================================
 
 # ---- Libraries --------------------------------------------------------------
@@ -84,22 +84,15 @@ big_male_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
 write.csv(big_male_snow_ind, "data/survey/survey_large_male_index_derived.csv", row.names = FALSE)
 
 # Mature-female survey biomass index (morphometric maturity).
-# RESTORED 2026-07: this definition was dropped when the script was copied into
-# snow_sept, which is why Section 2 previously errored on an undefined
-# `mat_fem_snow_ind`. Taken verbatim from Cody's working
-# snow_crab/02_make_DAT_file_hybrid.R (the `newmature` ancestor relied on this
-# object lingering in the session from a prior run of the hybrid script).
 mat_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                             species = "SNOW",
                                             region  = "EBS",
                                             crab_category   = c("mature_female"),
                                             female_maturity = "morphometric")
 
-# Immature-female survey biomass index, same pull with the other maturity state.
-# Added 2026-09 so survey_indices.csv carries all four sex x maturity blocks and
-# a TOTAL survey biomass can be summed from it. Until now the immature females
-# were pulled only as a size composition (Section 6b), so any "total" summed from
-# this file silently omitted them.
+# Immature-female index, same pull with the other maturity state, so
+# survey_indices.csv carries all 4 sex x maturity blocks and a total can be
+# summed from it without silently omitting immature females.
 imm_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                             species = "SNOW",
                                             region  = "EBS",
@@ -109,9 +102,8 @@ imm_fem_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
 # TOTAL survey abundance -- every crab the survey caught, both sexes, all sizes.
 # 50 CFR 679.21(e)(1)(iii) sets the C. opilio PSC limit from "total abundance of
 # C. opilio as indicated by the NMFS annual bottom trawl survey", so this is the
-# one index in this script that must INCLUDE crab < 25 mm. No crab_category and
-# no size_min: both filters would drop exactly the animals the limit counts.
-# (Added 2026-09 at the request of the PSC-setting analyst.)
+# one index here that must INCLUDE crab < 25 mm: no crab_category and no size_min,
+# since both filters would drop exactly the animals the limit counts.
 total_snow_ind <- crabpack::calc_bioabund(crab_data = specimen_data,
                                           species = "SNOW",
                                           region  = "EBS")
@@ -152,12 +144,7 @@ p <- p + geom_density_ridges(aes(x = SIZE_1MM, y = YEAR, height = tot_n,
   labs(x = "Carapace width (mm)") +
   xlim(25, 135)
 
-# NOTE: natl_viz_b (the >100 mm subset) is computed but not used -- the zoom
-#       panel `ap` below re-uses natl_viz with xlim(100,135). Kept as-is.
-natl_viz_b <- filter(male_snow, SIZE_1MM > 100) %>%
-  group_by(YEAR, SIZE_1MM) %>%
-  summarize(tot_n = sum(ABUNDANCE))
-
+# Zoom panel: the same data, restricted by xlim(100, 135).
 ap <- ggplot(dat = natl_viz)
 ap <- ap + geom_density_ridges(aes(x = SIZE_1MM, y = YEAR, height = tot_n,
                                    group = YEAR,
@@ -175,17 +162,13 @@ png("plots/size_bins_comp_Kodiak_m.png", height = 9, width = 6, res = 400, units
 dev.off()
 
 # ---- 3b. Survey recruitment index -------------------------------------------
-# Male abundance in the 45-55 mm window: the size at which snow crab recruit to
+# Male abundance in the [45, 55) mm window: the size at which snow crab recruit to
 # the survey, and the observational counterpart to the model's estimated
-# recruitment. Written for 04_plot_recruitment_comparison.R.
+# recruitment. Read by 04_plot_recruitment_comparison.R.
 #
-# Lives in data/survey/ beside survey_large_male_index_derived.csv, NOT in
-# data/derived/ -- that directory is the six-file model contract read by
-# 00_advance_model.R, and nothing here feeds the model.
-#
-# right = FALSE throughout this repo, so the window is [45, 55) mm. The retired
-# 04_plot_numbers_at_length.R used `>45 & <55`, which dropped both edges; the
-# closed-open form matches the binning convention used everywhere else.
+# Lives in data/survey/, NOT data/derived/ -- that directory is the 6-file model
+# contract read by 00_advance_model.R, and nothing here feeds the model.
+# right = FALSE throughout this repo, hence the closed-open window.
 survey_recruit <- male_snow %>%
   filter(SIZE_1MM >= 45, SIZE_1MM < 55) %>%
   group_by(YEAR) %>%
@@ -193,6 +176,7 @@ survey_recruit <- male_snow %>%
   rename(year = YEAR)
 
 write.csv(survey_recruit, "data/survey/survey_recruit_index_derived.csv", row.names = FALSE)
+
 
 # Quick interactive diagnostic (abundance by shell text over time); not saved.
 yarp <- male_snow %>%
@@ -250,8 +234,8 @@ in_new <- new_male_snow[, c(1, 3, 5)]
 new_male_wide <- dcast(in_new, YEAR ~ mid_pts, value.var = c("n"))
 
 # ---- constrain to the model size bins + 132.5 plus group --------------------
-# (Cody's note: this bin-constraining is awkward and should eventually move into
-#  the data pull.) Everything above 132.5 mm is summed into the top bin.
+# Everything above 132.5 mm is summed into the top bin. (Awkward here; it belongs
+# in the data pull eventually.)
 sizes <- seq(27.5, 132.5, 5)
 
 use_old_male <- old_male_wide[, which(!is.na(match(as.numeric(colnames(old_male_wide)), sizes)))]
@@ -280,11 +264,8 @@ MaleNew <- use_new_male / 1000000
 # above -- the same clamping the ogive itself applies). Years with no ogive at all
 # are filled further below with the across-year mean at size.
 #
-# Historical note: earlier cycles read a pre-baked SNOW_male_pmolt_array.csv that
-#   Cody produced by fitting a per-year GAM to this ogive (gam(PROP_MATURE ~
-#   s(SIZE_BIN, k = 20)) then predicting onto these bins). That smoothing now lives
-#   in Ryznar's product, so we no longer refit -- we only reshape. Re-check the
-#   column names if crabpack/Ryznar rename SIZE_5MM / PROP_MATURE.
+# Re-check the column names here if Ryznar's product renames SIZE_5MM or
+# PROP_MATURE.
 new_dat <- seq(27.5, 132.5, 5)                       # the 22 model size bins
 
 new_male_mat_dat <- read.csv("data/maturity/snow_ogives.csv") %>%
@@ -352,6 +333,57 @@ print(p)
 dev.off()
 
 
+# ---- 5b. Pre-recruit size windows (immature males) ---------------------------
+# Three exclusive male size windows below the large-male definition, for the
+# incoming-recruitment panel. SIZE_1MM is integer millimetres, so these bounds are
+# INCLUSIVE and the windows are contiguous over 45-99 mm:
+#   45-55 mm   3 to 4 molts from the > 101 mm preferred size
+#   56-75 mm   2 to 3 molts out
+#   76-99 mm   1 to 2 molts out
+# Molt counts come from the Model 26.1b male growth matrix (mean post-molt
+# increment 25 to 26 percent over this range); estimated molt probability is 1 for
+# every immature size class, so 1 molt is 1 year. The 45 mm floor is the survey
+# selectivity limit -- smaller crab are not sampled well enough to be a signal.
+#
+# IMMATURE ONLY: a terminally molted male never grows again, so a mature 90 mm
+# crab is not incoming recruitment. Each crab is weighted by 1 - PROP_MATURE for
+# its year and 5-mm bin from `allmat`, which is why this sits in Section 5 rather
+# than Section 3 -- it needs the ogive. The all-male column is kept alongside.
+#
+# NB these windows are inclusive, unlike the [45, 55) form in 3b, which also counts
+# mature crab and is left alone because 04_plot_recruitment_comparison.R reads it.
+prop_mature_long <- as.data.frame(as.table(allmat))
+names(prop_mature_long) <- c("YEAR", "BIN_5MM", "prop_mature")
+prop_mature_long$YEAR    <- as.integer(as.character(prop_mature_long$YEAR))
+prop_mature_long$BIN_5MM <- as.numeric(as.character(prop_mature_long$BIN_5MM))
+
+survey_prerecruit <- male_snow %>%
+  filter(SIZE_1MM >= 45, SIZE_1MM <= 99) %>%
+  mutate(BIN_5MM = 27.5 + 5 * floor((SIZE_1MM - 25) / 5),   # right = FALSE bins
+         window  = case_when(SIZE_1MM <= 55 ~ "45-55 mm",
+                             SIZE_1MM <= 75 ~ "56-75 mm",
+                             TRUE           ~ "76-99 mm")) %>%
+  left_join(prop_mature_long, by = c("YEAR", "BIN_5MM")) %>%
+  mutate(immature_abundance = ABUNDANCE * (1 - prop_mature)) %>%
+  group_by(YEAR, window) %>%
+  summarize(abundance          = sum(ABUNDANCE),
+            immature_abundance = sum(immature_abundance),
+            .groups = "drop") %>%
+  rename(year = YEAR) %>%
+  arrange(window, year)
+
+stopifnot("pre-recruit windows must cover 3 groups in every survey year" =
+            all(table(survey_prerecruit$year) == 3L),
+          "every crab must match a maturity ogive year and bin" =
+            !any(is.na(survey_prerecruit$immature_abundance)),
+          "immature abundance cannot exceed total abundance" =
+            all(survey_prerecruit$immature_abundance <=
+                  survey_prerecruit$abundance + 1e-8))
+
+write.csv(survey_prerecruit, "data/survey/survey_prerecruit_index_derived.csv",
+          row.names = FALSE)
+
+
 # =============================================================================
 # 6. MATURE / IMMATURE SIZE COMPOSITIONS + BIOMASS INDICES
 # =============================================================================
@@ -417,17 +449,10 @@ for (fm in c("mature_female", "immature_female")) {
 }
 
 # ---- 6c. Diagnostic figure: FEMALE numbers-at-size ridges --------------------
-# Companion to the male ridges in 3a, and the only figure that survived the
-# retirement of 04_plot_numbers_at_length.R (2026-08-27, per Grant). That script
-# read data/survey/EBSCrab_Abundance_Biomass_female.csv, which no longer exists;
-# this draws the same view from the crabpack pull already made above, so it
-# cannot go stale against a hand-placed export. It also removes the duplicate
-# writer of size_bins_comp_Kodiak_m.png (CLEANUP_BACKLOG item 4) -- 02 is now
-# the only script that writes either Kodiak figure.
-#
-# Mature and immature are pooled: this is the observed female size structure,
-# the same quantity the retired script plotted. xlim 25-75 mm follows it too --
-# female snow crab rarely exceed 75 mm CW, so the upper tail is empty, not cut.
+# Companion to the male ridges in 3a, drawn from the crabpack pull already made
+# above so it cannot go stale against a hand-placed export. Mature and immature are
+# pooled: this is the observed female size structure. xlim 25-75 mm because female
+# snow crab rarely exceed 75 mm CW, so the upper tail is empty, not cut.
 fem_natl_viz <- dplyr::bind_rows(fem_nas) %>%
   group_by(YEAR, SIZE_1MM) %>%
   summarize(tot_n = sum(ABUNDANCE), .groups = "drop")
@@ -449,12 +474,10 @@ print(pf)
 dev.off()
 
 # ---- 6d. SAFE figure: FEMALE numbers-at-size by maturity (plots/n_at_l_f.png) --
-# The SAFE's female size-structure figure (Rmd chunk n-at-len-f). Until 2026-09 it
-# was a static July export with no producer here, so it missed the 2024-2026 survey
-# correction; now drawn from the same pull (2026-09, per Grant). Ported from
-# snow_crab/02_make_DAT_file_hybrid.R without the hybrid facets (hybrids are not in
-# any model, per CPT/SSC). 5-mm bins, right = FALSE as in the model comps: a crab
-# on a cutoff goes to the upper bin. Heights are survey abundance (crab).
+# The SAFE's female size-structure figure (Rmd chunk n-at-len-f), drawn from the
+# same pull so it carries the 2024-2026 survey correction. No hybrid facets --
+# hybrids are in no model, per CPT/SSC. 5-mm bins, right = FALSE as in the model
+# comps. Heights are survey abundance (crab).
 fem_nal5 <- dplyr::bind_rows(lapply(names(fem_nas), function(fm)
     fem_nas[[fm]] %>% mutate(maturity = ifelse(fm == "mature_female", "mature", "immature")))) %>%
   mutate(mid_pts = 25 + 5 * floor((SIZE_1MM - 25) / 5) + 2.5) %>%

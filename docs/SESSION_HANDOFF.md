@@ -8,6 +8,92 @@ repo layout and run commands; this file tracks *state and next steps*.
 > `PHASE1_SECTION_SKETCHES.md` (draft Rmd per section) and `SEPT2026_SNOW_CRAB_BUILD_PLAN.md` (scope,
 > direction, guideline reconciliation).
 
+## 2026-09-17 — catch accounting corrected; full model rerun pending (READ THIS FIRST)
+
+The September ADF&G delivery of `data/new_catch/bssc_discards.csv` (now through 2025) exposed 2
+accounting errors in `scripts/01_prep_fishery_data.R`, both inherited from the 2025 script and
+confirmed with C. Szuwalski on 2026-09-17. The agreed accounting, in tonnes for 2025/26 males:
+
+```r
+retained    <- tot_retained_wt                 # kept in the snow crab fishery + kept incidentally in other crab fisheries (4125.5)
+dir_discard <- QO_total - dir_retained_wt      # snow crab fishery's own discard (6643.2 - 3950.9 = 2692.4; was QO_total - tot_retained_wt = 2517.7)
+inc_discard <- QT_total - inc_retained_wt      # other crab fisheries' discard of snow crab (1261.1 - 174.6; QT_total is really the sum over all non-QO codes)
+dir_mort    <- 0.3 * dir_discard               # applied INSIDE GMACS (discard_mortality = 0.3 on fleet-1 rows); the .dat carries dir_discard
+inc_mort    <- 0.3 * inc_discard               # applied in 01 (was 0.3 * QT_total, which counted the retained crab a second time)
+nondirected <- inc_mort + 0.8 * trawl_bycatch  # fleet-2 series in the .dat, discard_mortality = 1
+```
+
+Effects: directed discard rises by `inc_retained_wt` in 11 crab years (2005-07, 2013-15, 2017-18,
+2021, 2024-25; 0.376 kt total, +6.9% in 2025/26); non-directed bycatch mortality falls by
+0.7 x inc (0.052 kt in 2025/26, <= 0.016 kt earlier). Retained series unchanged. 2025/26 total
+catch 7.10 -> 7.22 kt; non-directed bycatch mortality 0.422 -> 0.369 kt (the 0.422 figure was sent to
+C. Allen on 2026-09-17 and needs correcting). `dir_retained_wt` is NA for 1989-2004, where 01 falls
+back to `tot_retained_wt` (equals the ADF&G file in all 16 years). 01 now validates the directed
+retained and discard series against `bssc_discards.csv` in every shared year.
+
+Rmd updated (Section A items 1-2, Section D catch data and handling mortality, Section F overfishing
+paragraph, Executive Summary overfishing line now computed from `.dc`/`.bc`).
+
+**Total catch convention (GA, 2026-09-18): the overfishing determination uses TOTAL FISHING MORTALITY**,
+retained + 0.3 x directed discards (both sexes) + non-directed bycatch mortality, computed at knit
+time by `.total_mort()` in the mgmt-performance chunk for all 5 crab years: 3.15, 0.06, 0.11, 2.44,
+5.31 kt. Tables 1 and 2 show it beside "Total catch (SSC)", the adopted values (3.60, 0.05, 0.07, 2.81,
+NA), whose 2024/25 entry is retained + full male discard with no handling mortality and no bycatch
+(the 2016/17-2018/19 rows of the same SSC table were mortalities). `management_performance.csv`
+2025/26 total_catch is NA (no adopted value yet). 2025/26 on the old convention would be 7.22 kt.
+
+Reconciliation of the adopted "Total catch" (traced 2026-09-18 through the 2022, 2024 and 2025 SAFEs):
+| Crab year | Adopted | Built as (SAFE vintage) | Recomputed mortality |
+|---|---|---|---|
+| 2016/17-2019/20 | 11.0-20.8 | retained + 0.3 x discards + bycatch (2022 SAFE Table 9, mortalities applied) | same convention |
+| 2020/21 | 26.2 | 20.41 + 5.8 RAW discard + 0.07 bycatch (2022 SAFE; the 5.8 is raw although the table header says mortalities applied) | n/a (not in our 5-year window) |
+| 2021/22 | 3.6 | 2.48 + 1.16 raw discard, no bycatch (2022 SAFE) | 3.15 (2.52 + 0.3 x 1.69 + 0.13; 2025-vintage data) |
+| 2022/23 | 0.05 | bycatch only, 2024 SAFE value | 0.06 (2025 data) |
+| 2023/24 | 0.07 | bycatch only, 2024 SAFE value | 0.11 (2025 data; the 2025 SAFE Table 14 already showed 0.11) |
+| 2024/25 | 2.81 | 2.15 + 0.66 raw discard, no bycatch (2025 SAFE Table 14, header "no mortalities applied") | 2.44 |
+The 2024 SAFE Table 9 has its "Discarded females" and "Discarded males" headers swapped (1982: 1.27 under females).
+
+**Table 2 (current-status) rebuilt 2026-09-18 to the CPT whiteboard layout:** one assessment per row,
+keyed to the crab year it specified (2022/23 .. 2026/27), columns Crab year, Assessment, Tier, MSST, MMB,
+MMB/B_MSY, F_OFL, OFL, ABC. The 2025/26 row is the SSC-adopted October 2025 values; the 2026/27 row is
+this assessment ("G" on the board). Catch and mortality columns live in Table 1 only. The 2025/26
+overfished determination (109.30 vs 73.14) is read off the 2026/27 row and the text says so. Table 3
+(basis-ofl) keeps the same row structure with B_MSY, its window, M and the buffer.
+
+**Full document review 2026-09-18** (4 reviewers over the Executive Summary, A-D, E-F, G-J + captions; findings applied): year-convention paragraph corrected (the September assessment sets the crab year already under way since 1 July); Table 1 caption timing fixed the same way; Table 1 "Total catch (SSC)" caption now says the adopted values are on 3 different conventions; Table 3 caption no longer claims a one-row offset from Table 2; Tier 3 projection is now labelled as MMB at mating in crab year 2026/27 (was "February 2026"); Executive Summary states the rule and equation behind the OFL; OFL-distribution text corrected (density steps up, does not "change slope"); Section A item 4 comparison rewritten on the 2025/26 basis (ramped + linear), item 2 says 6 corrections; B_MSY window is 1982-2026 (07 BMSY_WINDOW_END = 2027), which the text already said; `ofl_w24` switched to the linear equation (was Baranov, so the window comparison mixed equations); Section C maturity and B_MSY text no longer describe the legacy method as current; Section D non-directed mortality sentence corrected (was "taken as total"); discard series start described as 1982/83 with ADF&G files from 1990/91; Section F ramp description fixed (rule steps to zero at beta = 0.25, ramp does not reach zero there); Baranov gap quoted one way (20% below linear); pulse-fishery formula explained; "sloped" -> "ramped" everywhere; "Model 26.1b (accepted)" -> "(author-preferred)" in Appendix B labels and captions; risk-table caption untangled; Section H names the 2024/25 determination; recruitment years and jitter/retro terminal years print as crab years.
+
+**Numbers still typed that must be refreshed after the model rerun:** 26.1c jitter (10 minima, 1.1%) at Section B; "1.1 to 6.1 percent" (Section B); 26.1b/26.2 B_MSY and OFL pairs (144.06/130.47, 82.46/74.03 in Section E; 172.7/162.5/143.5, 43.8/54.0/80.4/72.5 in Section F); Tier 3 OFL range 43.8-80.4/146.9 (Section G); risk-table "1.27 units ... 12.8 percent"; Section H recruitment series (0.086 ... 1.23 billion); Model 25.3 gradient 0.00134.
+
+**GA edit 2026-09-18 (merged):** the catch-accounting correction is carried by 26.1a, 26.1b, 26.2, 26.1c and Appendix B; 25.3 and 26.1 KEEP their earlier catch series (roll-forward and May baselines). So 00g_patch_catch_accounting.R is to be run on 4 directories, not 6. **Table 1 (mgmt-performance) dropped MSST and MMB the same day** (they were the following-October determination, one row offset from Table 2); its columns are now Crab year, Tier, OFL, ABC, TAC, Retained, Total catch (SSC), Total mortality. The basis-ofl chunk asserts that Tables 2 and 3 agree on Crab year, MMB, F_OFL, OFL and ABC row for row.
+
+**Model-result numbers in the prose are now derived, not typed (2026-09-18).** A new
+`model-results-setup` chunk (just before the lists of tables) builds `ref_table` (moved from the
+`stepchange` chunk, which now only formats it) and reads gmacs.par (`.par_header`: npar, nll, max
+gradient), gmacs.eva (`.eva`: min/max/condition number/non-positive count), gmacs.std joined to the
+"Estimated parameters" table of Gmacsall.out (`.partab`: ADMB name, GMACS name, bounds, status flag
+"*+"/"*-"), the SE diagnostic (`.se_diag`), parameters at bounds (`.sel_at_ub`), the immature-male M
+offset and implied rate, `M_pars_est[15]`/[14], the sex-allocation logits, the Summary block
+(`.gmacs_summary`: terminal MMB, first-year SSB, recruitment in billions), the Model 26.1 promotion
+(`_pre078_backup` against the current fit), and the per-model jitter block (`conv_files`, `conv_tab`,
+`.jstat`/`cv_js`, moved up from `conv-appendix-setup`; `.jstat` gained nmodes, n_at_best, n_ok,
+n_runs). About 45 typed values in Sections B, E, F, G, H, the risk table and Appendix B were replaced
+with inline code; several were already stale (B_MSY 144.06 vs 143.53 in the file, 26.2 smallest
+eigenvalue 120 vs 116, M_pars_est[2] 0.30 vs 0.22, recruitment 0.086/0.062 vs 0.083/0.056, 26.1c now 6
+minima and 0 runs at its best fit on the 2026-09-17 jitter). Sentences whose VERBS depend on the
+numbers ("lowered", "raised", "among the lowest", "better conditioned", "at its lower bound") print a
+visible `[[CHECK: ...]]` flag when the refit no longer supports them; grep the knit for `[[CHECK`.
+Recruitment in Section H now reads the Gmacsall.out Summary of the author-preferred model (the same
+block 03 copies into reslst). The chunk and every new inline expression were evaluated against the
+2026-09-17/18 model files outside the knit; all resolve. Still typed: nothing model-derived that the
+review listed; GMACS versions now come from Gmacsall.out line 1.
+
+**All 6 models are to be rebuilt on the corrected catch** (decision 2026-09-17), with the 4 jitters and
+4 retrospectives. The 3 September directories are backed up as `Models/_pre_discardfix_*`. The
+May-era models (25.3, 26.1, 26.1a) must NOT be regenerated through `00_advance_model.R` as it stands:
+it rebuilds every block from `data/derived`, which would replace their May survey data and binning.
+A catch-only mode is being added to 00 for them. The CPT deck (`docs/2026_snowcrab_CPT_presentation_v3.pptx`)
+is left as presented (7.10 kt, 0.42 kt bycatch, "trawl bycatch 100%" on slide 17; the code uses 0.8).
+
 ## 2026-09-12 — rerun on the net-mensuration-corrected survey (READ THIS FIRST)
 
 The NMFS survey program corrected 2024–2026 EBS area swept (net mensuration). Staff delivered the

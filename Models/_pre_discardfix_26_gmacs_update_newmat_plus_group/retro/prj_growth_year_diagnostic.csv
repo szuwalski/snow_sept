@@ -1,0 +1,3 @@
+"spr_grow_yr_compensated","ok","nll","max_grad","BMSY","OFL_tot","B_BMSY","problems"
+FALSE,TRUE,-22833.682381672,0.000404086349626419,0,0,0,""
+TRUE,FALSE,NA,NA,NA,NA,NA,"exit status 1; no Gmacsall.out"

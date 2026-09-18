@@ -97,7 +97,7 @@ Number of std variables: 430
 initialize model AEP
 initialize model AEP
 Finished PRELIMINARY_CALCS_SECTION
-Starting optimization of 'gmacs' in phase 1 of 4 at Sun Aug 30 08:53:42 2026
+Starting optimization of 'gmacs' in phase 1 of 4 at Thu Sep 17 22:29:01 2026
 
 #--BETWEEN_PHASES_SECTION---------------------
 #----Starting phase 1 of 4
@@ -106,7 +106,7 @@ Finished BETWEEN_PHASES_SECTION
 DEBUG: Total gradient stack used is 231548 out of 10000000
 DEBUG: Total dvariable address used is 2077 out of 150000
 DEBUG: Total dvariable address used is 3873808 out of 50000000
-phase= 1 | nvar=260 | iter=  0 | nll=-2.40e+04 | mag=2.28e-03 | par[  2]=T_pars_est[3]
+phase= 1 | nvar=260 | iter=  0 | nll=-2.40e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
 DEBUG: Total gradient stack used is 0 out of 10000000
 DEBUG: Total dvariable address used is 2077 out of 150000
 DEBUG: Total dvariable address used is 3873808 out of 50000000
@@ -126,7 +126,7 @@ Finished BETWEEN_PHASES_SECTION
 DEBUG: Total gradient stack used is 232357 out of 10000000
 DEBUG: Total dvariable address used is 2077 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
-phase= 2 | nvar=304 | iter=  0 | nll=-2.40e+04 | mag=2.28e-03 | par[  2]=T_pars_est[3]
+phase= 2 | nvar=304 | iter=  0 | nll=-2.40e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
 DEBUG: Total gradient stack used is 0 out of 10000000
 DEBUG: Total dvariable address used is 2077 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
@@ -146,8 +146,8 @@ Finished BETWEEN_PHASES_SECTION
 DEBUG: Total gradient stack used is 449546 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
-phase= 3 | nvar=394 | iter=  0 | nll=-2.39e+04 | mag=2.28e-03 | par[  2]=T_pars_est[3]
-DEBUG: Total gradient stack used is 449526 out of 10000000
+phase= 3 | nvar=394 | iter=  0 | nll=-2.39e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
+DEBUG: Total gradient stack used is 449294 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
 DEBUG: Total gradient stack used is 449546 out of 10000000
@@ -240,7 +240,7 @@ DEBUG: Total dvariable address used is 3999296 out of 50000000
 DEBUG: Total gradient stack used is 449546 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
-phase= 3 | nvar=394 | iter=  1 | nll=-2.39e+04 | mag=2.28e-03 | par[  2]=T_pars_est[3]
+phase= 3 | nvar=394 | iter=  1 | nll=-2.39e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
 DEBUG: Total gradient stack used is 0 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
@@ -260,8 +260,8 @@ Finished BETWEEN_PHASES_SECTION
 DEBUG: Total gradient stack used is 449973 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
-phase= 4 | nvar=412 | iter=  0 | nll=-2.39e+04 | mag=2.27e-03 | par[  2]=T_pars_est[3]
-DEBUG: Total gradient stack used is 449953 out of 10000000
+phase= 4 | nvar=412 | iter=  0 | nll=-2.39e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
+DEBUG: Total gradient stack used is 449721 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
 DEBUG: Total gradient stack used is 449973 out of 10000000
@@ -354,14 +354,14 @@ DEBUG: Total dvariable address used is 3999296 out of 50000000
 DEBUG: Total gradient stack used is 449973 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 3999296 out of 50000000
-phase= 4 | nvar=412 | iter=  1 | nll=-2.39e+04 | mag=2.27e-03 | par[  2]=T_pars_est[3]
-Optimization completed after 2.8 s with final statistics:
-  nll=-23886.048986 | mag=2.27215e-03 | par[  2]=T_pars_est[3]
+phase= 4 | nvar=412 | iter=  1 | nll=-2.39e+04 | mag=5.21e-03 | par[  2]=T_pars_est[3]
+Optimization completed after 2.7 s with final statistics:
+  nll=-23885.113278 | mag=5.21434e-03 | par[  2]=T_pars_est[3]
 
 Warning: the following parameters had issues
-  S_pars_est[46] is within 1% of upper bound: -11.5129 < -0.11326 < 0
-  S_pars_est[47] is within 1% of upper bound: -11.5129 < -0.0694374 < 0
-  S_pars_est[48] is within 1% of upper bound: -11.5129 < -0.0548469 < 0
+  S_pars_est[46] is within 1% of upper bound: -11.5129 < -0.112187 < 0
+  S_pars_est[47] is within 1% of upper bound: -11.5129 < -0.0683453 < 0
+  S_pars_est[48] is within 1% of upper bound: -11.5129 < -0.0532126 < 0
   S_pars_est[71] is within 1% of upper bound: -11.5129 < -0.080601 < 0
   S_pars_est[93] is within 1% of upper bound: -11.5129 < -0.0806009 < 0
 
@@ -5324,12 +5324,12 @@ DEBUG: Total dvariable address used is 4013584 out of 50000000
 DEBUG: Total gradient stack used is 449973 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 4013584 out of 50000000
- done (58 s) 
-Differentiating 4 derived quantities: DEBUG: Total gradient stack used is 2563530 out of 10000000
+ done (54 s) 
+Differentiating 4 derived quantities: DEBUG: Total gradient stack used is 2563572 out of 10000000
 DEBUG: Total dvariable address used is 2087 out of 150000
 DEBUG: Total dvariable address used is 4013584 out of 50000000
-1, 2, 3, 4 done (5 m 40 s) 
-Inverting Hessian (412 variables): 20%, 40%, 60%, 80%, 100% done (0.44 s) 
+1, 2, 3, 4 done (5 m 23 s) 
+Inverting Hessian (412 variables): 20%, 40%, 60%, 80%, 100% done (0.43 s) 
 Starting standard error calculations... 
  Warning: Non-positive variance of sdreport variables: 921, 922, 925, 926, 929, 930
  done (1.4 s) 
@@ -5368,14 +5368,14 @@ Starting time statistics
 
 
 -------------------------------------------
---Start time: Sun Aug 30 08:53:42 2026
+--Start time: Thu Sep 17 22:29:01 2026
 
---Finish time: Sun Aug 30 09:00:26 2026
+--Finish time: Thu Sep 17 22:35:24 2026
 
---Runtime: 0 hours, 6 minutes, 44 seconds
+--Runtime: 0 hours, 6 minutes, 23 seconds
 --Number of function evaluations: 1720
 *******************************************
 
-Finished running model 'gmacs' after 6 m 44 s.
+Finished running model 'gmacs' after 6 m 23 s.
 
-./gmacs elapsed time is 403923136 microseconds.
+./gmacs elapsed time is 382826565 microseconds.

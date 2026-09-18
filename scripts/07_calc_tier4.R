@@ -29,7 +29,8 @@
 ##                     retained in the OFL_flat_* columns (OFL_linear and
 ##                     OFL_baranov are back-compat aliases for the flat-rule
 ##                     results).
-##   OFL_EQN  = baranov  the author recommendation as of 2026-08-29. F_OFL is an
+##   OFL_EQN  = linear   the CPT decision of 2026-09-16 (was baranov, the author
+##                        recommendation of 2026-08-29). F_OFL is an
 ##                     instantaneous rate and M acts over the same year, so the
 ##                     yield is F's share of Z = F + M. The linear form F*B is
 ##                     reported alongside as OFL_linear.
@@ -89,7 +90,15 @@ HCR_RAMP <- TRUE
 ## of the reported OFL. "linear" = F_OFL*B is what other BSAI crab Tier 4
 ## assessments use; it is reported alongside as OFL_linear either way, so the
 ## cross-stock comparison is not lost.
-OFL_EQN <- "baranov"
+## CHANGED 2026-09-16 after the September CPT meeting: the CPT adopted the
+## ramped control rule with the LINEAR catch equation, F_OFL x B, and a 50
+## percent buffer, and asked that the Baranov result be reported alongside it.
+## Both equations are computed every run regardless, so the Baranov columns are
+## still written; this switch only decides which one populates `OFL` and, with
+## it, the OFL confidence interval (which re-applies the selected equation at
+## each biomass bound). The author view that F_OFL x B overstates the catch is
+## unchanged and is now argued in Section F rather than applied here.
+OFL_EQN <- "linear"
 stopifnot("OFL_EQN must be 'linear' or 'baranov'" = OFL_EQN %in% c("linear", "baranov"))
 
 ## B_MSY proxy = mean biomass over years strictly before this one. Deliberately
@@ -163,12 +172,14 @@ tier4_ofl_linear <- function(fofl, biomass, m = NAT_M) {
   out[fofl <= 0] <- 0
   out
 }
+
 tier4_ofl_baranov <- function(fofl, biomass, m = NAT_M) {
   z   <- fofl + m
   out <- (fofl / z) * biomass * (1 - exp(-z))
   out[fofl <= 0] <- 0            # also clears any NaN from z == 0
   out
 }
+
 tier4_ofl <- function(fofl, biomass, m = NAT_M) {
   if (OFL_EQN == "baranov") tier4_ofl_baranov(fofl, biomass, m)
   else                      tier4_ofl_linear(fofl, biomass, m)
@@ -197,6 +208,7 @@ surv_yr <- unique(male_snow_ind$YEAR)
   male_snow_ind[[field]][which(male_snow_ind$CATEGORY == category &
                                male_snow_ind$YEAR > 1981)]
 }
+
 com_male    <- .cat("preferred_male", "BIOMASS_MT")      # >101 mm
 com_male_cv <- .cat("preferred_male", "BIOMASS_MT_CV")
 lg_male     <- .cat("large_male",     "BIOMASS_MT")      # >95 mm

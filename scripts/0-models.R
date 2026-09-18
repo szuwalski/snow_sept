@@ -205,10 +205,10 @@ diagnostic_models <- c(
 # which is why none of them resolved the multimodality.
 diagnostic_purpose <- c(
   "26.d1 stability"  = "Fixes the non-identified 2019 immature-female M deviation and the recruitment sex-ratio penalty; leaves the unpenalised 1982 initial numbers.",
-  "26.d2 initscaled" = "Rescales the initial-condition parameterisation (GMACS mode 3). Not jittered: the data fit was 138 nll units worse and it was set aside.",
+  "26.d2 initscaled" = "Rescales the initial-condition parameterisation (GMACS mode 3). Not jittered: the data fit is 665 nll units worse than Model 26.1b and it was set aside.",
   "26.d3 eqmdevs"    = "Replaces the 83 unpenalised 1982 initial numbers with an equilibrium backbone times penalised deviations; leaves the other two.",
-  "26.d4 combined"   = "All 3 fixes at once on the two-sex model. Its best-lettered-mode share is NOT the recovery rate: mode A sits 5.8 nll above its own best fit, which only 1 of 75 converged runs reached (2026-09 corrected data).",
-  "26.d5 male-only + eqmdevs" = "Model 26.2 with the 26.d3 equilibrium backbone. Highest recovery of its own best fit (23.3% vs 26.2's 15.2% on the 2026-09 corrected data; the intervals overlap); usable runs span 6.2 nll against 92.7-337.3 for the two-sex configurations. Fit promoted from jitter/048 on 2026-09-12 (same optimum, lower gradient)."
+  "26.d4 combined"   = "All 3 fixes at once on the two-sex model. Its best-lettered-mode share is NOT the recovery rate: mode A sits 2.9 nll above its own best fit, which only 1 of 76 converged runs reached (2026-09 corrected catch).",
+  "26.d5 male-only + eqmdevs" = "Model 26.2 with the 26.d3 equilibrium backbone. Highest recovery of its own best fit (38.3% vs 26.2's 25.7% on the 2026-09 corrected catch; the intervals overlap); usable runs span 6.4 nll against 45 to 307 for the two-sex configurations. Re-fitted on the corrected catch 2026-09-17, seeded from the fit promoted from jitter/048 on 2026-09-12; the 100-run jitter found nothing better."
 )
 
 # Jitter results live in per-model files. This USED to be a workaround: until
