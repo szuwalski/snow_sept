@@ -167,6 +167,39 @@ STILL OPEN from round 3: 24 uncited literature entries (12 named plus the 12-ent
 if the 2018a/b, 2019a/b and 2021a/b/c pairs are pruned rather than cited, drop the surviving letters);
 Figures 66/67 duplicate Figures 18-22 for 26.1b.
 
+**2026-09-21 (GA): uncited literature stays; jitters must show the current runs; rename to
+"Tier 4 fallback" following the CPT; remove the repeated figures.**
+1. **05b rerun on the current jitters** (the 2026-09-17/18 runs, after the catch patch). No R on the
+   device, so the retained runs' Gmacsall.out + gmacs.par (163 runs) were staged and the UNMODIFIED
+   scripts/05b_jitter_movement_decomposition.R was run in the cloud. New files:
+   data/diagnostics/jitter_movement_by_{class,param}_<model>_2026-09-21.csv (4 models). The
+   2026-09-12 files are left in place; the Rmd now keeps only the newest date per model (it
+   required exactly 1 file per model, so 2 dated files would have blanked the section).
+   Results moved materially. 26.1b: retained 31 -> 43 (now equal to Table 28's near-optimal count,
+   so the stale-decomposition caveat no longer prints); sex-allocation share 23.7 -> 38.7 percent;
+   female + sex allocation 64.4 -> 67.9 percent; per-parameter ratio 2.4 -> 4.4. The headline
+   (the minima disagree mostly about the females and the sex split) is STRONGER.
+   **2 Appendix B statements REVERSED and are now written from the data, not typed as verbs:**
+   (a) 26.d3 vs 26.1b: the sex-allocation share now FALLS (38.7 -> 24.3); it had risen. The text now
+   says the backbone restrained the male side and the sex ratio but the movement shifted onto the
+   females (female + sex allocation still rose, 67.9 -> 79.3), so it moves the disagreement rather
+   than removing it. (b) 26.d5 vs 26.2: total movement is now 3.73 against 1.81 (was "almost
+   unchanged", 1.75 vs 1.81), with the male share 30.8 -> 60.3; the text notes 62 vs 29 retained
+   runs and that ranges grow with n. Both sentences pick their verbs from the numbers.
+2. **Stale Appendix B figures.** The author-preferred composite (old Figure 66) and its attribution
+   panel read plots/_twosex_jitter_backup/ (2026-09-12, before the catch patch), and the male-only
+   figures read plots/_male_only_jitter/ (2026-09-12), while 05 wrote the current images to plots/
+   on 2026-09-18. Removed the 26.1b composite and its attribution panel (they repeated Section E's
+   Figures 18-22, which read the current files); the male-only figures now read plots/. The other 4
+   experiments already read current files.
+3. **"Tier 4 fallback".** About 40 uses renamed where they mean this approach (43 in the file now, 3 of them already in quoted SSC/CPT text). KEPT as "Tier 4": the
+   FMP tier and control rule ("ramped crab FMP Tier 4 control rule", "the Tier 4 control rule ramps
+   down"), the tier assignment ("the SSC assigned this stock to Tier 4", "moved from Tier 3 to Tier
+   4", "Tier 4b"), other stocks ("other BSAI crab Tier 4 assessments", "the Tier 4 stocks modeled in
+   GMACS"), and every quoted SSC/CPT comment in Section B, verbatim. Section F heading is now
+   "Tier 4 fallback". The CPT paragraph now says the document follows the CPT's term, the stock
+   itself remains in Tier 4, and the FMP Tier 4 control rule sets F_OFL.
+
 **State B_MSY proxy window: RESOLVED 2026-09-19.** Section C said the ADF&G proxy is the average
 total mature biomass "from 1983 to present", which cannot be right because the closure threshold it
 quotes is a FIXED 230.4 million lb. Cross-referenced against the previous SAFEs and the FMP:
