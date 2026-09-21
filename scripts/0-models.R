@@ -120,9 +120,9 @@ model_purpose <- c(
   "25.1 gmacs"                                                       = "The 2025 accepted model (GMACS 2.20.22), carried as the bridge from the previous assessment.",
   "25.1 gmacs (update + compfix + plus group + new_mat)"             = "Carries the composition correction, expanded plus group and new maturity workflow endorsed in May and June 2026.",
   "25.1 gmacs (update + compfix + plus group + new_mat + data-fix)"  = "As above with the data corrections applied; documents the effect of those corrections.",
-  "26.1 gmacs (update + compfix + plus group + new_mat)"             = "The same configuration advanced to the 2025 fishery and 2026 survey; author-recommended Tier 3 model.",
+  "26.1 gmacs (update + compfix + plus group + new_mat)"             = "The same configuration advanced to the 2025/26 fishery and 2026 survey; author-preferred Tier 3 model.",
   "26.1 gmacs (update + compfix + plus group + new_mat + male_only)" = "Simplification sensitivity: removes the female population, addressing the SSC's request to reduce the parameter set.",
-  "26.1 gmacs (update + compfix + plus group + new_mat + data2019)"  = "Convergence diagnostic: data truncated to 2019 to test whether the recent data drive the multimodality."
+  "26.1 gmacs (update + compfix + plus group + new_mat + data2019)"  = "Convergence diagnostic: data truncated to crab year 2019/20 to test whether the recent data drive the multimodality."
 )
 stopifnot("model_type does not cover model_defs" =
             setequal(names(model_type), names(model_defs)))

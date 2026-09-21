@@ -87,6 +87,135 @@ block 03 copies into reslst). The chunk and every new inline expression were eva
 2026-09-17/18 model files outside the knit; all resolve. Still typed: nothing model-derived that the
 review listed; GMACS versions now come from Gmacsall.out line 1.
 
+**Review round 3 (2026-09-19, on the 2026-09-18 evening knit; 4 reviewers; ~70 edits applied).**
+Substantive: (1) Table 28 scored Model 26.1 against its pre-promotion base (its jitter summary has no
+`reported_nll`), crediting mode A as "best fit found 5 (6.1%)"; `.rep_nll()` now reads the nll from the
+model directory's gmacs.par (new `conv_dirs` map) when it matches the jitter's base or best run, so 26.1
+prints 0 runs at its reported fit and drops out of `cv_same_best` ("only 2 rows"); the table note explains
+the promoted-run case. (2) Tables 29/30 (movement decomposition) were written from an EARLIER jitter set
+(31/32/28/61 retained minima vs 43/21/29/62 near-optimal runs in Table 28); the movement-table note now
+prints a caveat when `mv_n_opt != near(26.1b)`. **Rerun 05b_jitter_movement_decomposition.R after the
+rejitter.** (3) M_pars_est[15] is now described consistently in Section B, Section E (natural mortality
+results), Appendix B pathology 1 and caveat 3: estimated at 1.84 (SE 0.58) in the accepted fit, drifts to
+its bound from default starts, identifiability open. (4) Table 23 note: bycatch is NOT common to both
+models (25.3 keeps the earlier pool); note and code comment corrected. (5) Section C fishery history:
+peak years were 1990/91, 1991/92, 1998/99 (was 1991/92, 1992/93 with calendar-season years); the 2000/01
+figure labelled; Tier 3 recruitment window now cites Table basis-ofl (1984 start in the 2024 assessment).
+(6) ADF&G rule: alpha defined (0.10), prose reconciled with the equation (u = 0.0375 at 25% of the proxy).
+(7) Exec Summary: "Neither value is in the stock status table" corrected (71.40 is there); MSST sentence in
+item 3 no longer says "lowers"; management-performance note no longer duplicates the convention
+paragraph; minima counts everywhere say "well-populated minima (clusters of >= 3 runs) besides the
+reported fit". (8) Section E: mode A is the BEST lettered cluster, not the most populated; "No jitter run
+improved materially" replaced by the 1-of-77 statement; typed parameter counts (407/412/386/234), the
+"5 at bound", "4 were jittered", the bycatch/retained means (now from .bc/.dc) derived; OFL and MMB
+ranges split into comparable models vs truncated run, with the sentence that the 3 models ending 2024/25
+give a 2025/26 OFL; "directed-fishery OFL" defined against the total OFL; 26.1a role lists 3 corrections;
+subtier b sentence; confidence interval wording unified (Table 16 caption and F text). (9) Section G/H:
+buffer sentence no longer blames the equation for the lag; ESP sentence no longer says "juvenile";
+recruitment narrative now includes 2017/18 and 2023/24. (10) Figures: imm_v_mat.png is now a numbered
+figure (fig:imm-v-mat); Figures 15-17 captions say what they are (data inventories); Figure 36 caption
+(maturity is data, no black line); Figure 37 recruits scaled to billions with axis labels; growth and
+selectivity axes labelled; size-comp captions name which models are plotted (25.3 alone on the legacy
+ogive); mmbfits caption reason for excluding 25.3 fixed; Figure 69 "2019/20". (11) Appendix B: several
+self-cancelling sentences rewritten; "only structural experiment" (26.2 also improved on its parent);
+"All 4 jittered experiments require modified source"; 26.d3 gradient disclosure added; OFL-spread column
+says total OFL. (12) 0-models.R purposes: crab-year notation and "author-preferred". (13) Mullowney and
+Baker (2021) added to the literature (ICES JMS 78(2): 516-533). Table 6 (datayears) fishery rows print as
+crab years.
+NOT done, for GA: 24 uncited literature entries (Conan & Comeau 1986; Ennis et al. 1988; Fournier &
+Archibald 1982; McAllister & Ianelli 1997; McBride 1982; Methot 1990; Murphy et al. 2017; Myers 1998;
+Restrepo et al. 1998; Rodionov 2004; Somerton & Otto 1999; Szuwalski & Punt 2012, 2013; Szuwalski 2017
+to 2022, 10 entries; Watson 1972): prune or cite. Figures 66/67 duplicate Figures 18-22 for 26.1b.
+Notes to the REMA figure and Figure 26 break across pages in the PDF.
+
+**Review round 4 (2026-09-19, on the 2026-09-19 knit; 4 reviewers; ~45 edits applied).** No
+[[CHECK]] or [[not yet computed]] flags fired and every derived number matched its table. Fixed:
+26.1a described as carrying 2 corrections in the Exec Summary and Section B but 3 in A and E (now 3
+everywhere); "included in every September model" and "incorporated in every model presented above"
+both excluded 25.3 in fact but not in words; Table 30's "Minima" column was runs retained within 2
+nll of the best fit (31/32/28/61) while Table 28's "Minima" is lettered clusters (4/6/9/6), so the
+column is renamed "Runs retained" and the prose, captions and notes follow; Table 8's row label
+"Distinct minima identified" now says "Well-populated minima besides the reported fit"; Appendix B's
+"26.d3 changed nothing detectable" contradicted the 2 detectable effects reported in the same
+paragraph and on the previous page (now "did not raise the recovery rate"); the 26.d1 explanation was
+given twice with an unrelated sentence between, and 306.6 is the widest span, not "among the widest";
+"Fits to the non-directed fishery catches were good" sat 1 sentence from "had some of the largest
+misfits" (the second is about size compositions and now says so); the bycatch/retained means were
+over different windows (new `.ret_mean_over()` zero-fills the closed years: 33.7 kt, not 35.7);
+the Section F status-interval sentence compared a ratio bound with a biomass threshold; "the
+lowest-likelihood solution" for mode A read backwards; the Tier 3 MMB definition hard-coded 2026/27
+where only 2 models project there; the historical-MMB sentence called this cycle's model an accepted
+assessment; the risk-table and Section J "base model" meant 26.1b while Section E uses that phrase for
+25.3; the ADF&G retained-catch cap was misstated as "capped at 58%"; the third case of the ADF&G
+equation left status exactly 1 uncovered; the hybrid TAC add-on pointed at Section C, which does not
+mention it; the 44-year preferred-male ranking cited Table 10 (2 years) instead of Table 15; "100
+jitters were run" cited the model-overview table instead of the jitter-summary table; Section B's
+"0.0 to 1.3 percent" cited Section E for numbers only Appendix B carries; Appendix B cited the
+attribution table for a claim about 15 parameters where it lists 10; Figure 27's note was the only
+unlabelled one and said the peel "adds no survey information" (it removes data); Figure 26 named
+neither of the 2 definitions it plots; "The author's priorities" (2 authors); labelled/labeled.
+Layout and figure fixes: the size-composition loop used `\newpage`, which does not flush the pending
+float, so every second figure drifted past the next heading and Figure 66 landed inside Appendix B
+(now `\clearpage`); the size-comp sort put fleet_full before ogive, which reversed the New/Old order
+for the pot fishery alone (now ogive first); crab-year and survey-year axis labels on Figures 16, 17,
+30, 36 and 40; Figure 39's subtitle said "2018-2019 Mortality Events".
+FLAGGED, NOT CHANGED (needs GA / 5 AAC 35.508): Section C says the State proxy is the average total
+mature biomass "from 1983 to present" but gives a FIXED 230 million lb threshold, which is 25 percent
+of the 1983-1997 average of 921.6 million lb given 1 page later. A rolling average cannot have a fixed
+threshold; one of the 2 descriptions is wrong.
+STILL OPEN from round 3: 24 uncited literature entries (12 named plus the 12-entry Szuwalski series;
+if the 2018a/b, 2019a/b and 2021a/b/c pairs are pruned rather than cited, drop the surviving letters);
+Figures 66/67 duplicate Figures 18-22 for 26.1b.
+
+**State B_MSY proxy window: RESOLVED 2026-09-19.** Section C said the ADF&G proxy is the average
+total mature biomass "from 1983 to present", which cannot be right because the closure threshold it
+quotes is a FIXED 230.4 million lb. Cross-referenced against the previous SAFEs and the FMP:
+- 2022-09 SAFE: "from 1983 to 1997"
+- 2024-09 SAFE: "from 1983 to 1997"
+- 2025-09 SAFE: "from 1983 to present"  <- the error, introduced last cycle and inherited here
+- 2000-12 Amendment 14 EA: B_MSY = 921.6 million lb (the 1983-1997 average), MSST = 460.8, and
+  230.4 million lb is one half of MSST, below which the fishery closes.
+So 921.6 x 0.25 = 230.4 reconciles exactly and the window is the fixed 1983-1997 one. The paragraph
+now states the fixed window with the 921.6 and 460.8 million lb values, and says in 1 sentence that
+the 2025 assessment's "to present" is not correct and why. It also now says the State proxy is a
+different quantity from the Federal B_MSY proxy used for the specification.
+
+**Language pass 2026-09-19 (GA: "reword all AI sounding language").** Removed from the rendered
+prose: 11 uses of "carries/carried" in the sense of "holds" (now reported, shows, listed, uses,
+advanced to, enters, set to, recommended); "sits" x3 (falls, lies, gives a status of); "and the
+answer is"; "which is what" x3; "essentially unchanged" x2 (almost unchanged); "the source of its
+advantage"; "the configuration these results point toward" (favor); "a real improvement". Left alone
+deliberately: "has not been carried out" and "essentially all large males" (the CPT's own argument),
+"robust multinomial" (the likelihood's name), and em-dashes inside code/HTML comments, which no
+reader sees. A scan for the usual tells (delve, leverage, underscore, pivotal, seamless, testament,
+showcase, myriad, holistic) returns nothing in the prose.
+
+**September 2026 CPT report incorporated 2026-09-19** (GA supplied the docx). 4 additions:
+1. Section F, after the B_MSY window paragraph: the CPT's discussion of which years belong in the
+   proxy. Assessments are inconsistent (snow crab, SMBKC, NSRKC use the whole series; PIBKC and PIRKC
+   a subset); the years should in principle be F_MSY years, which are unknown; the FMP leaves the
+   period open; the CPT concluded that excluding years without a directed fishery is likely better
+   practice but did NOT recommend changing the snow crab window this cycle, and asked the SSC whether
+   assessments should report reference points both ways. Flagged in the text as a candidate for the
+   next cycle.
+2. Section F, after the Tier 4 introduction: the CPT questioned the "Tier 4" label and calls this the
+   fallback option, because the FMP reserves Tier 4 for stocks with simulation modeling capturing
+   population dynamics and fishery performance (a REMA smooth does neither) and because the OFL
+   calculation differs from the GMACS-based Tier 4 stocks (SMBKC, NSRKC). The document KEEPS the
+   Tier 4 label (that is the tier the SSC assigned) and records the distinction. **If the SSC picks
+   this up in October, the label may need to change document-wide.**
+3. Section G: the CPT's 5 stated reasons for the 50 percent buffer, which the document did not have
+   (3.5 percent of terminally molting males reached industry-preferred size in 2026; recruitment very
+   low; roughly 85 mature females per mature male; morphometric maturity rather than >= 95 mm, which
+   changes the OFL by more than an order of magnitude; and the F_OFL x B bias).
+4. Section J: the CPT recommended a simplified male-only model with parameters added back in sequence,
+   testing convergence at each step, and expects that work at the January 2027 modeling workshop.
+Checked and NOT changed: the CPT's "28% decrease in industry preferred males" is ABUNDANCE; the
+document's 29.0 percent is BIOMASS, so they do not conflict. The CPT's "changes the OFL 26-fold" does
+not reproduce from data/tier4/tier4_by_currency.csv (21.22/0.750 = 28.3 against > 101 mm, 21.22/1.243
+= 17.1 against >= 95 mm), so the document says "more than an order of magnitude" and points at the
+currency table rather than quoting 26.
+
 **All 6 models are to be rebuilt on the corrected catch** (decision 2026-09-17), with the 4 jitters and
 4 retrospectives. The 3 September directories are backed up as `Models/_pre_discardfix_*`. The
 May-era models (25.3, 26.1, 26.1a) must NOT be regenerated through `00_advance_model.R` as it stands:
